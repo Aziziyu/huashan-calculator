@@ -119,6 +119,25 @@ input::placeholder{font-weight:400;color:#a8b4c9;letter-spacing:.5px}
 .btn-primary{background:#2d7ae0;color:#fff}
 .btn-primary:active{background:#1e5bb8}
 .btn-secondary{background:#f0f2f5;color:#6a7a99}
+
+/* ── 首期账单 ── */
+.firstbill-card{background:linear-gradient(135deg,#fff9f0 0%,#fffdf8 100%);border:1.5px solid #ffd9a8}
+.firstbill-card .card-title{color:#d4760a}
+.bill-date-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.bill-date-row label{font-size:13px;color:#8c6a3d;font-weight:600;white-space:nowrap}
+.bill-date-row input[type="date"]{flex:1;min-width:140px;padding:8px 12px;border:1.5px solid #f0dcc0;border-radius:8px;font-size:14px;color:#6b4a1a;background:#fffdf8;font-family:inherit}
+.bill-date-row input[type="date"]:focus{outline:none;border-color:#d4760a;background:#fff}
+.bill-date-hint{font-size:12px;color:#b8923e;background:#fef3dc;padding:3px 8px;border-radius:6px;white-space:nowrap}
+.bill-summary{margin-top:0;padding:12px;background:#fff8ed;border-radius:10px;border:1px solid #f5e6cc}
+.bill-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:14px;color:#6b4a1a}
+.bill-row .bill-label{color:#8c6a3d}
+.bill-row .bill-value{font-weight:600;font-family:-apple-system,monospace}
+.bill-row.total{border-top:1.5px dashed #e8c88a;margin-top:8px;padding-top:10px}
+.bill-row.total .bill-label{font-size:15px;font-weight:600;color:#d4760a}
+.bill-row.total .bill-value{font-size:20px;color:#d4760a;font-weight:700}
+.bill-formula-tip{margin-top:10px;font-size:11px;color:#b8923e;line-height:1.6;padding:8px 10px;background:#fef8ee;border-radius:6px;border-left:3px solid #f0d090}
+.bill-copy-btn{width:100%;margin-top:14px;padding:11px;border:1.5px solid #d4760a;background:#fff;color:#d4760a;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:all .18s}
+.bill-copy-btn:active{background:#d4760a;color:#fff}
 </style>
 </head>
 <body>
@@ -221,6 +240,24 @@ input::placeholder{font-weight:400;color:#a8b4c9;letter-spacing:.5px}
         <button onclick="copyResult('full')">复制完整版</button>
       </div>
     </div>
+  </div>
+
+
+  <div id="firstBillCard" class="card firstbill-card" style="display:none">
+    <div class="card-title">💰 首期账单计算</div>
+    <div id="billDateRow" class="bill-date-row" style="display:none">
+      <label>起租日期</label>
+      <input type="date" id="billStartDate">
+      <span class="bill-date-hint" id="billDateHint"></span>
+    </div>
+    <div class="bill-summary" id="billSummary">
+      <div class="bill-row" id="bs-rent-row"><span class="bill-label" id="bs-rent-label">首月租金（折后）</span><span class="bill-value" id="bs-rent">-</span></div>
+      <div class="bill-row" id="bs-fee-row"><span class="bill-label" id="bs-fee-label">服务费（首月）</span><span class="bill-value" id="bs-fee">-</span></div>
+      <div class="bill-row"><span class="bill-label">押金（1个月租金）</span><span class="bill-value" id="bs-deposit">-</span></div>
+      <div class="bill-row total"><span class="bill-label">首期合计</span><span class="bill-value" id="bs-total">-</span></div>
+    </div>
+    <div class="bill-formula-tip" id="billFormulaTip"></div>
+    <button class="bill-copy-btn" onclick="copyBillResult()">📋 复制首期账单</button>
   </div>
 
   <div id="empty" class="empty">
@@ -328,6 +365,7 @@ function render(){
   if(!inputVal.trim()){
     errEl.classList.remove("show");
     detailEl.style.display = "none";
+    document.getElementById("firstBillCard").style.display = "none";
     emptyEl.style.display = "block";
     currentRoom = null;
     return;
@@ -354,7 +392,9 @@ function render(){
   errEl.classList.remove("show");
   emptyEl.style.display = "none";
   detailEl.style.display = "block";
+  document.getElementById("firstBillCard").style.display = "block";
   currentRoom = room;
+  calcFirstBill();
 
   const tagClass = typeTagMap[room.t]||"";
   document.getElementById("d-room").innerHTML = room.b+"-"+room.r;
@@ -423,7 +463,7 @@ function copyResult(mode){
   let text;
   if(mode === 'short'){
     text = `━━━ 报价单 ━━━\n【花山河 ${r.b}-${r.r}】${r.t} · ${r.f}楼 · ${r.a.toFixed(2)}㎡\n${comboLabel}：租金 ${fmt(newRent)} + 服务费 ${fmt(newFee)} = ${fmt(newTotal)} 元/月`;
-  }else{
+      }else{
     const oriTotal = signRent * 1.1;
     text = `━━━ 报价单 ━━━\n交投泊寓·花山河店\n\n📍 房号：${r.b}-${r.r}（${r.f}楼）\n🏠 户型：${r.t}\n📐 面积：${r.a.toFixed(2)} ㎡\n\n【挂牌原价】\n签约租金：${fmt(signRent)} 元\n服务费(10%)：${fmt(signRent*0.1)} 元\n月付总价：${fmt(oriTotal)} 元\n\n【${comboLabel} 折后】\n折扣计算：${comboRateTxt}\n签约租金：${fmt(newRent)} 元\n服务费(10%)：${fmt(newFee)} 元\n月付总价：${fmt(newTotal)} 元\n${finalRate<1?`每月省 ${fmt(oriTotal-newTotal)} 元 · 年省 ${fmt((oriTotal-newTotal)*12)} 元`:''}`;
   }
@@ -587,6 +627,148 @@ document.querySelectorAll(".bldg-tab").forEach(tab => {
   
   setTimeout(function(){ hint.style.display='block'; }, 2000);
 })();
+
+// ── 首期账单计算 ──
+// G10: 首期 = 月租金 + 服务费 + 押金（1个月租金，不含服务费）
+// G11: 首期 = 按天折算租金 + 按天折算服务费 + 押金（1个月租金，不含服务费）
+// 押金统一 = 折后月租金（不含服务费）
+
+function getBillData(){
+  if(!currentRoom) return null;
+  var r = currentRoom;
+  var signRent = r.p;
+  var finalRate = currentRate * (stackEnabled ? stackRate : 1);
+  var newRent = signRent * finalRate;
+  var newFee = newRent * 0.10;
+  var deposit = newRent; // 押金 = 1个月折后租金（不含服务费）
+
+  var billRent, billFee, billHint;
+
+  if(r.b === 'G11'){
+    // G11: 按天折算
+    var startDateStr = document.getElementById('billStartDate').value;
+    if(!startDateStr){
+      return { rent:0, fee:0, deposit:deposit, total:0, isG11:true, noDate:true };
+    }
+    var sd = new Date(startDateStr + 'T00:00:00');
+    var y = sd.getFullYear(), m = sd.getMonth();
+    var lastDay = new Date(y, m+1, 0).getDate();
+    var daysInMonth = lastDay;
+    var daysLeft = daysInMonth - sd.getDate() + 1; // 含起租日当天
+    if(daysLeft <= 0) daysLeft = 0;
+    var dailyRent = newRent / daysInMonth;
+    var dailyFee = newFee / daysInMonth;
+    billRent = dailyRent * daysLeft;
+    billFee = dailyFee * daysLeft;
+    billHint = '起租 ' + (sd.getMonth()+1) + '/' + sd.getDate() + ' → 月底 ' + daysLeft + '天 / 全月 ' + daysInMonth + '天';
+  } else {
+    // G10: 整月
+    billRent = newRent;
+    billFee = newFee;
+    billHint = 'G10 按整月计算';
+  }
+
+  var total = billRent + billFee + deposit;
+  return {
+    rent: billRent, fee: billFee, deposit: deposit, total: total,
+    newRent: newRent, newFee: newFee,
+    isG11: r.b === 'G11', noDate: false, hint: billHint,
+    daysLeft: (r.b === 'G11') ? daysLeft : 0,
+    daysInMonth: (r.b === 'G11') ? daysInMonth : 0
+  };
+}
+
+function calcFirstBill(){
+  if(!currentRoom) return;
+
+  // 显示/隐藏起租日期（仅G11需要）
+  var dateRow = document.getElementById('billDateRow');
+  if(currentRoom.b === 'G11'){
+    dateRow.style.display = 'flex';
+    // 默认日期：今天
+    if(!document.getElementById('billStartDate').value){
+      var today = new Date();
+      var mm = String(today.getMonth()+1).padStart(2,'0');
+      var dd = String(today.getDate()).padStart(2,'0');
+      document.getElementById('billStartDate').value = today.getFullYear() + '-' + mm + '-' + dd;
+    }
+  } else {
+    dateRow.style.display = 'none';
+  }
+
+  var d = getBillData();
+  if(!d) return;
+
+  if(d.isG11){
+    document.getElementById('bs-rent-label').textContent = '折算租金（' + d.daysLeft + '天）';
+    document.getElementById('bs-fee-label').textContent = '折算服务费（' + d.daysLeft + '天）';
+  } else {
+    document.getElementById('bs-rent-label').textContent = '首月租金（折后）';
+    document.getElementById('bs-fee-label').textContent = '服务费（首月）';
+  }
+
+  document.getElementById('bs-rent').textContent = d.noDate ? '请选择起租日期' : fmt(d.rent) + ' 元';
+  document.getElementById('bs-fee').textContent = d.noDate ? '-' : fmt(d.fee) + ' 元';
+  document.getElementById('bs-deposit').textContent = fmt(d.deposit) + ' 元';
+  document.getElementById('bs-total').textContent = d.noDate ? '-' : fmt(d.total) + ' 元';
+
+  // 公式提示
+  var tipEl = document.getElementById('billFormulaTip');
+  if(d.isG11 && !d.noDate){
+    tipEl.innerHTML = '📐 G11首期 = 起租日至月底租金按天折算 + 服务费按天折算 + 押金（1个月租金，不含服务费）<br>当前：' + d.hint;
+  } else if(!d.isG11){
+    tipEl.innerHTML = '📐 G10首期 = 月租金 + 服务费 + 押金（1个月租金，不含服务费）';
+  }
+}
+
+function getBillCopyText(){
+  if(!currentRoom) return '';
+  var r = currentRoom;
+  var d = getBillData();
+  if(!d || d.noDate) return '';
+
+  var text = '';
+
+  if(d.isG11){
+    var sd = new Date(document.getElementById('billStartDate').value + 'T00:00:00');
+    text += '起租日期：' + (sd.getMonth()+1) + '月' + sd.getDate() + '日\n';
+    text += '折算天数：' + d.daysLeft + '天 / 全月' + d.daysInMonth + '天\n\n';
+  }
+
+  text += '💰 费用明细：\n';
+  if(d.isG11){
+    text += '  折算租金（' + d.daysLeft + '天）：' + fmt(d.rent) + ' 元\n';
+    text += '  折算服务费（' + d.daysLeft + '天）：' + fmt(d.fee) + ' 元\n';
+  } else {
+    text += '  首月租金：' + fmt(d.rent) + ' 元\n';
+    text += '  服务费：' + fmt(d.fee) + ' 元\n';
+  }
+  text += '  押金（1个月租金）：' + fmt(d.deposit) + ' 元\n';
+  text += '━━━━━━━━━━━━━━━\n';
+  text += '  首期合计：' + fmt(d.total) + ' 元';
+  return text;
+}
+
+// 复制首期账单（独立）
+function copyBillResult(){
+  if(!currentRoom){ showToast("请先输入房间号"); return; }
+  var billText = getBillCopyText();
+  if(!billText){ showToast("请先选择起租日期"); return; }
+  
+  var r = currentRoom;
+  var comboLabel = stackEnabled ? (currentLabel + ' × ' + stackLabel) : currentLabel;
+  var header = '━━━ 首期账单 ━━━\n交投泊寓·花山河店\n' + r.b + '-' + r.r + '（' + r.t + ' · ' + r.f + '楼）\n折扣方案：' + comboLabel + '\n';
+  
+  var fullText = header + billText;
+  var ta = document.getElementById('copyText');
+  ta.value = fullText;
+  document.getElementById('copyModal').classList.add('show');
+  setTimeout(function(){tryAutoCopy(fullText)}, 100);
+}
+
+// Bind date input
+document.getElementById('billStartDate').addEventListener('change', calcFirstBill);
+
 </script>
 
 </body>
