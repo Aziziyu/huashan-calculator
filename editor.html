@@ -815,12 +815,10 @@ function exportPDF(){
   var tpl = TEMPLATES[curStyle] || TEMPLATES['warm-editorial'];
   var data = getData();
   var dataScript = '<scr'+'ipt>window.__STORE_DATA__='+JSON.stringify(data)+';<\/scr'+'ipt>';
-  var fullHtml = tpl.replace(/<\/head>/i, dataScript + '
-</head>');
+  var fullHtml = tpl.replace(/<\/head>/i, dataScript + '\n</head>');
   // Add print-optimized styles
   var printStyles = '<style>@media print{@page{size:A4;margin:12mm}body{margin:0}html,body{width:100%}}</style>';
-  fullHtml = fullHtml.replace(/<\/head>/i, printStyles + '
-</head>');
+  fullHtml = fullHtml.replace(/<\/head>/i, printStyles + '\n</head>');
   var w = window.open('', '_blank');
   if(!w){ toast('❌ 请允许弹窗以导出PDF'); return; }
   w.document.open();
