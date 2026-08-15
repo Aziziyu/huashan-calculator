@@ -413,6 +413,310 @@ body {
   accent-color: #4361EE;
 }
 
+/* ── Editor Animations ── */
+.card {
+  animation: cardFadeIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) backwards;
+}
+.card:nth-child(1) { animation-delay: 0.05s; }
+.card:nth-child(2) { animation-delay: 0.1s; }
+.card:nth-child(3) { animation-delay: 0.15s; }
+.card:nth-child(4) { animation-delay: 0.2s; }
+.card:nth-child(5) { animation-delay: 0.25s; }
+
+@keyframes cardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Button press effect */
+.btn:active {
+  transform: scale(0.97);
+}
+
+/* Input focus subtle glow - already exists, enhance */
+.fr input[type="text"]:focus, .fr textarea:focus {
+  transform: translateY(-1px);
+}
+
+/* Tab transition enhancement */
+.tab-btn, .st-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Hover lift for cards */
+.card {
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+.card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+/* Upload button pulse when empty */
+.upload-btn {
+  transition: all 0.2s ease;
+}
+.upload-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(67, 97, 238, 0.25);
+}
+
+/* Toast enter animation - already defined, enhance */
+
+/* Amenity card hover effect */
+.amenity-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.amenity-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Preview frame load animation */
+.prev-frame {
+  transition: opacity 0.3s ease;
+}
+
+
+/* ── Crop Modal ── */
+.crop-modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.crop-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+}
+.crop-modal-content {
+  position: relative;
+  background: #fff;
+  border-radius: 14px;
+  width: 90%;
+  max-width: 720px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+  animation: cropModalIn 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+@keyframes cropModalIn {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.crop-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #E5E7EB;
+}
+.crop-modal-header h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111;
+  margin: 0;
+}
+.crop-modal-close {
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: #9CA3AF;
+  cursor: pointer;
+  padding: 4px 10px;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+.crop-modal-close:hover {
+  background: #F3F4F6;
+  color: #374151;
+}
+.crop-modal-body {
+  padding: 16px;
+  flex: 1;
+  overflow-y: auto;
+}
+.crop-container {
+  width: 100%;
+  height: 340px;
+  background: #F9FAFB;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+.crop-container img {
+  max-width: 100%;
+  display: block;
+}
+.crop-controls {
+  background: #F9FAFB;
+  border-radius: 10px;
+  padding: 12px;
+}
+.crop-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6B7280;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+.crop-aspect-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.crop-aspect-btn {
+  padding: 5px 12px;
+  border: 1px solid #D1D5DB;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+  color: #374151;
+}
+.crop-aspect-btn:hover {
+  background: #F3F4F6;
+}
+.crop-aspect-btn.on {
+  background: #4361EE;
+  color: #fff;
+  border-color: #4361EE;
+}
+.crop-tool-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.crop-tool-btn {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #D1D5DB;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+  color: #374151;
+}
+.crop-tool-btn:hover {
+  background: #EEF2FF;
+  border-color: #4361EE;
+  color: #4361EE;
+}
+.crop-size-info {
+  font-size: 11px;
+  color: #9CA3AF;
+  font-family: monospace;
+}
+.crop-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px 20px;
+  border-top: 1px solid #E5E7EB;
+}
+
+/* Crop button in upload area */
+.crop-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  background: #FFF;
+  color: #4361EE;
+  border: 1px solid #C7D2FE;
+  border-radius: 6px;
+  font-size: 11px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.crop-btn:hover {
+  background: #EEF2FF;
+}
+.unit-crop-btn {
+  font-size: 11px;
+  padding: 4px 8px;
+}
+
+
+/* ── Content Generation Buttons ── */
+.gen-card h3 { color: #059669; border-color: #A7F3D0; }
+.gen-card { border-color: #A7F3D0; background: linear-gradient(135deg, #ECFDF5, #F0FDF4); }
+.gen-desc {
+  font-size: 12px;
+  color: #059669;
+  margin-bottom: 14px;
+  line-height: 1.6;
+}
+.gen-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.gen-btns .btn {
+  width: 100%;
+  justify-content: flex-start;
+  padding: 14px 16px;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+.gen-btns .btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.5s;
+}
+.gen-btns .btn:hover::before {
+  left: 100%;
+}
+.gen-btns .btn span {
+  font-size: 24px;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+.gen-btn-text {
+  flex: 1;
+}
+.gen-btn-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.gen-btn-sub {
+  font-size: 11px;
+  font-weight: 400;
+  opacity: 0.8;
+}
+.btn-g { background: #059669; color: #fff; }
+.btn-g:hover { background: #047857; }
+.btn-d { background: #E11D48; color: #fff; }
+.btn-d:hover { background: #BE123C; }
+</style>
 </style>
 <link href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.1/dist/cropper.min.css" rel="stylesheet">
 </head>
@@ -976,312 +1280,7 @@ function exportPDF(){
   var dataScript = '<scr'+'ipt>window.__STORE_DATA__='+JSON.stringify(data)+';<\/scr'+'ipt>';
   var fullHtml = tpl.replace(/<\/head>/i, dataScript + '\n</head>');
   // Add print-optimized styles
-  var printStyles = '<style>@media print{@page{size:A4;margin:12mm}body{margin:0}html,body{width:100%}}
-
-/* ── Editor Animations ── */
-.card {
-  animation: cardFadeIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) backwards;
-}
-.card:nth-child(1) { animation-delay: 0.05s; }
-.card:nth-child(2) { animation-delay: 0.1s; }
-.card:nth-child(3) { animation-delay: 0.15s; }
-.card:nth-child(4) { animation-delay: 0.2s; }
-.card:nth-child(5) { animation-delay: 0.25s; }
-
-@keyframes cardFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Button press effect */
-.btn:active {
-  transform: scale(0.97);
-}
-
-/* Input focus subtle glow - already exists, enhance */
-.fr input[type="text"]:focus, .fr textarea:focus {
-  transform: translateY(-1px);
-}
-
-/* Tab transition enhancement */
-.tab-btn, .st-btn {
-  position: relative;
-  overflow: hidden;
-}
-
-/* Hover lift for cards */
-.card {
-  transition: box-shadow 0.25s ease, transform 0.25s ease;
-}
-.card:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-}
-
-/* Upload button pulse when empty */
-.upload-btn {
-  transition: all 0.2s ease;
-}
-.upload-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(67, 97, 238, 0.25);
-}
-
-/* Toast enter animation - already defined, enhance */
-
-/* Amenity card hover effect */
-.amenity-card {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.amenity-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-/* Preview frame load animation */
-.prev-frame {
-  transition: opacity 0.3s ease;
-}
-
-
-/* ── Crop Modal ── */
-.crop-modal {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  z-index: 10000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.crop-modal-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(4px);
-}
-.crop-modal-content {
-  position: relative;
-  background: #fff;
-  border-radius: 14px;
-  width: 90%;
-  max-width: 720px;
-  max-height: 90vh;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
-  animation: cropModalIn 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-@keyframes cropModalIn {
-  from { opacity: 0; transform: scale(0.95) translateY(10px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
-}
-.crop-modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 20px;
-  border-bottom: 1px solid #E5E7EB;
-}
-.crop-modal-header h3 {
-  font-size: 16px;
-  font-weight: 600;
-  color: #111;
-  margin: 0;
-}
-.crop-modal-close {
-  background: none;
-  border: none;
-  font-size: 22px;
-  color: #9CA3AF;
-  cursor: pointer;
-  padding: 4px 10px;
-  border-radius: 6px;
-  transition: background 0.15s;
-}
-.crop-modal-close:hover {
-  background: #F3F4F6;
-  color: #374151;
-}
-.crop-modal-body {
-  padding: 16px;
-  flex: 1;
-  overflow-y: auto;
-}
-.crop-container {
-  width: 100%;
-  height: 340px;
-  background: #F9FAFB;
-  border-radius: 10px;
-  overflow: hidden;
-  margin-bottom: 14px;
-}
-.crop-container img {
-  max-width: 100%;
-  display: block;
-}
-.crop-controls {
-  background: #F9FAFB;
-  border-radius: 10px;
-  padding: 12px;
-}
-.crop-label {
-  font-size: 12px;
-  font-weight: 500;
-  color: #6B7280;
-  margin-right: 8px;
-  flex-shrink: 0;
-}
-.crop-aspect-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-  margin-bottom: 10px;
-}
-.crop-aspect-btn {
-  padding: 5px 12px;
-  border: 1px solid #D1D5DB;
-  border-radius: 6px;
-  background: #fff;
-  font-size: 12px;
-  cursor: pointer;
-  font-family: inherit;
-  transition: all 0.15s;
-  color: #374151;
-}
-.crop-aspect-btn:hover {
-  background: #F3F4F6;
-}
-.crop-aspect-btn.on {
-  background: #4361EE;
-  color: #fff;
-  border-color: #4361EE;
-}
-.crop-tool-row {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  margin-bottom: 8px;
-}
-.crop-tool-btn {
-  width: 34px;
-  height: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid #D1D5DB;
-  border-radius: 6px;
-  background: #fff;
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.15s;
-  color: #374151;
-}
-.crop-tool-btn:hover {
-  background: #EEF2FF;
-  border-color: #4361EE;
-  color: #4361EE;
-}
-.crop-size-info {
-  font-size: 11px;
-  color: #9CA3AF;
-  font-family: monospace;
-}
-.crop-modal-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  padding: 14px 20px;
-  border-top: 1px solid #E5E7EB;
-}
-
-/* Crop button in upload area */
-.crop-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 5px 10px;
-  background: #FFF;
-  color: #4361EE;
-  border: 1px solid #C7D2FE;
-  border-radius: 6px;
-  font-size: 11px;
-  cursor: pointer;
-  font-family: inherit;
-  transition: all 0.15s;
-}
-.crop-btn:hover {
-  background: #EEF2FF;
-}
-.unit-crop-btn {
-  font-size: 11px;
-  padding: 4px 8px;
-}
-
-
-/* ── Content Generation Buttons ── */
-.gen-card h3 { color: #059669; border-color: #A7F3D0; }
-.gen-card { border-color: #A7F3D0; background: linear-gradient(135deg, #ECFDF5, #F0FDF4); }
-.gen-desc {
-  font-size: 12px;
-  color: #059669;
-  margin-bottom: 14px;
-  line-height: 1.6;
-}
-.gen-btns {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.gen-btns .btn {
-  width: 100%;
-  justify-content: flex-start;
-  padding: 14px 16px;
-  text-align: left;
-  position: relative;
-  overflow: hidden;
-}
-.gen-btns .btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-  transition: left 0.5s;
-}
-.gen-btns .btn:hover::before {
-  left: 100%;
-}
-.gen-btns .btn span {
-  font-size: 24px;
-  margin-right: 12px;
-  flex-shrink: 0;
-}
-.gen-btn-text {
-  flex: 1;
-}
-.gen-btn-title {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 2px;
-}
-.gen-btn-sub {
-  font-size: 11px;
-  font-weight: 400;
-  opacity: 0.8;
-}
-.btn-g { background: #059669; color: #fff; }
-.btn-g:hover { background: #047857; }
-.btn-d { background: #E11D48; color: #fff; }
-.btn-d:hover { background: #BE123C; }
-</style>';
+  var printStyles = '<style>@media print{@page{size:A4;margin:12mm}body{margin:0}html,body{width:100%}}</style>';
   fullHtml = fullHtml.replace(/<\/head>/i, printStyles + '\n</head>');
   var w = window.open('', '_blank');
   if(!w){ toast('❌ 请允许弹窗以导出PDF'); return; }
