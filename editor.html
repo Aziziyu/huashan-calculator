@@ -1930,11 +1930,10 @@ function getData(){
     var idx = parseInt(actCards[ai].dataset.idx, 10);
     var nameEl = actCards[ai].querySelector('.activity-name');
     var actName = nameEl ? nameEl.value : '';
-    if(!actName) continue;
     var images = [];
     for(var j=0; j<3; j++){
       var imgKey = 'activity_'+idx+'_'+j;
-      if(imageStore[imgKey]) images.push(imageStore[imgKey]);
+      images.push(imageStore[imgKey] || '');
     }
     d.communityActivities.push({name: actName, images: images});
   }
