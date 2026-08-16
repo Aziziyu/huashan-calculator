@@ -2156,7 +2156,23 @@ function initImageUploads(){
         if(!file) return;
         compressImage(file, 1200, 1200, 0.82, function(dataUrl){
           imageStore[key] = dataUrl;
+          // 同步更新storeData.media
+          if(!storeData.media) storeData.media = {};
+          storeData.media[key] = dataUrl;
           loadImagePreview(key, dataUrl);
+          // 如果是配套图片，重新渲染配套卡片
+          var isAmenity = false;
+          for(var ai=0; ai<AMENITY_PRESETS.length; ai++){
+            if(AMENITY_PRESETS[ai].key === key){ isAmenity = true; break; }
+          }
+          if(isAmenity){
+            renderAmenityCards(storeData.amenities || [], storeData.customAmenities || [], storeData.media);
+          }
+          // 如果是户型图片，重新渲染户型列表
+          if(key.indexOf('unit_') === 0){
+            storeData.media[key] = dataUrl;
+            renderUnits(storeData.units || []);
+          }
           // 同步更新活动数据
           if(key.indexOf('activity_') === 0){
             var parts = key.split('_');
@@ -2275,6 +2291,7 @@ function compressImage(file, maxW, maxH, quality, cb){
     img.onerror = function(){ toast('❌ 图片读取失败'); };
     img.src = e.target.result;
   };
+  reader.onerror = function(){ toast('❌ 文件读取失败'); };
   reader.readAsDataURL(file);
 }
 
