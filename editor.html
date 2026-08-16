@@ -1526,12 +1526,13 @@ function buildContactPanel(){
   h += '<div class="fr"><label>详细地址</label><textarea id="f_address" rows="2" placeholder="武汉市...">'+escAttr(d.address)+'</textarea></div>';
   h += '<div class="fr"><label>交通信息</label><input type="text" id="f_subway" placeholder="距地铁19号线花山河站1.2公里" value="'+escAttr(d.subway)+'"></div>';
   h += '<div class="fr"><label>周边描述</label><textarea id="f_surrounding" rows="2" placeholder="商业、学校、医院等周边配套...">'+escAttr(d.surrounding)+'</textarea></div>';
+  var mapImg = imageStore.map || '';
   h += '<div class="fr"><label>地图截图（16:9）</label>';
   h += '<div class="upload-field">';
-  h += '<img id="thumb_map" class="upload-thumb" style="display:none" alt="地图">';
+  h += '<img id="thumb_map" class="upload-thumb" '+(mapImg?'src="'+escAttr(mapImg)+'"':'style="display:none"')+' alt="地图">';
   h += '<div class="upload-controls">';
   h += '<button type="button" class="upload-btn" data-key="map" data-aspect="16:9">📁 选择地图截图</button>';
-  h += '<button type="button" class="upload-remove" data-key="map" style="display:none">✕ 移除</button>';
+  h += '<button type="button" class="upload-remove" data-key="map" style="display:'+(mapImg?'inline-block':'none')+'">✕ 移除</button>';
   h += '</div></div></div>';
   h += '</div>';
   
@@ -1541,12 +1542,13 @@ function buildContactPanel(){
   h += '<div class="fr"><label>联系电话</label><input type="text" id="f_phone" placeholder="17786407261" value="'+escAttr(d.phone)+'"></div>';
   h += '<div class="fr"><label>微信</label><input type="text" id="f_wechat" value="'+escAttr(d.wechat)+'"></div>';
   h += '<div class="fr"><label>管家姓名</label><input type="text" id="f_manager" value="'+escAttr(d.manager)+'"></div>';
+  var qrImg = imageStore.qrcode || '';
   h += '<div class="fr"><label>联系二维码（1:1）</label>';
   h += '<div class="upload-field">';
-  h += '<img id="thumb_qrcode" class="upload-thumb" style="display:none" alt="二维码">';
+  h += '<img id="thumb_qrcode" class="upload-thumb" '+(qrImg?'src="'+escAttr(qrImg)+'"':'style="display:none"')+' alt="二维码">';
   h += '<div class="upload-controls">';
   h += '<button type="button" class="upload-btn" data-key="qrcode" data-aspect="1:1">📁 上传二维码</button>';
-  h += '<button type="button" class="upload-remove" data-key="qrcode" style="display:none">✕ 移除</button>';
+  h += '<button type="button" class="upload-remove" data-key="qrcode" style="display:'+(qrImg?'inline-block':'none')+'">✕ 移除</button>';
   h += '</div></div></div>';
   h += '</div>';
   
@@ -2480,10 +2482,8 @@ function init(){
     save();
   }
   
-  // 渲染模块列表和面板（必须先于后续初始化）
-  renderModuleList();
-  renderAllModulePanels();
-  // 初始化配套卡片交互
+  // fillForm 已完成 renderAllModulePanels/renderModuleList/renderUnits/renderAmenityCards
+  // 这里只需要绑定交互事件（必须在面板DOM创建之后）
   initAmenityCards();
   // 初始化图片上传
   initImageUploads();
