@@ -1512,13 +1512,7 @@ function initUnitsAmenitiesPanel(){
       refreshPreview();
     });
   }
-  
-  // 渲染户型列表
-  if(storeData.units && storeData.units.length > 0){
-    renderUnits(storeData.units);
-  }
-  // 渲染配套卡片
-  renderAmenityCards(storeData.amenities || [], storeData.customAmenities || [], storeData.media || {});
+  // 注意：renderUnits() 和 renderAmenityCards() 由 fillForm() 统一调用，此处不再重复
 }
 
 /* ---- Module 3: 联系方式 ---- */
@@ -1960,7 +1954,7 @@ function fillForm(d){
   if(!storeData.media) storeData.media = {};
   if(!storeData.pricing) storeData.pricing = {payment:[]};
   
-  // 加载图片到imageStore
+  // 加载图片到imageStore（必须在渲染面板之前完成）
   initImageStore();
   var media = d.media || {};
   for(var mk in media){
@@ -1992,11 +1986,49 @@ function fillForm(d){
     }
   }
   
-  // 渲染所有面板
+  // 渲染所有面板（此时 storeData 和 imageStore 已就绪）
   renderAllModulePanels();
   renderModuleList();
+  
+  // 显式填充基础信息字段（确保DOM中input值正确）
+  var basicFields = ['brandName','brandSlogan','projectName','tagline','description',
+    'totalRooms','unitRange','buildings','priceRange',
+    'address','subway','surrounding','phone','wechat','manager'];
+  for(var bi=0; bi<basicFields.length; bi++){
+    setVal('f_'+basicFields[bi], storeData[basicFields[bi]] || '');
+  }
+  // 城市选择
+  if(storeData.city){
+    var citySel = document.getElementById('f_city');
+    if(citySel){
+      var found = false;
+      for(var ci=0; ci<citySel.options.length; ci++){
+        if(citySel.options[ci].value === storeData.city){ citySel.value = storeData.city; found=true; break; }
+      }
+      if(!found){ citySel.value = '__custom__'; setVal('f_cityCustom', storeData.city); }
+    }
+  }
+  
+  // 加载图片预览
+  var previewKeys = ['brandLogo','heroImage','map','qrcode'];
+  for(var pk=0; pk<previewKeys.length; pk++){
+    loadImagePreview(previewKeys[pk], imageStore[previewKeys[pk]] || '');
+  }
+  for(var ai2=0; ai2<AMENITY_PRESETS.length; ai2++){
+    loadImagePreview(AMENITY_PRESETS[ai2].key, imageStore[AMENITY_PRESETS[ai2].key] || '');
+  }
+  
+  // 渲染户型列表和配套卡片（只调一次，面板内init不再重复调用）
   renderUnits(storeData.units || []);
   renderAmenityCards(storeData.amenities || [], storeData.customAmenities || [], storeData.media || {});
+  
+  // 恢复社群活动名称输入值
+  if(storeData.communityActivities){
+    for(var ca=0; ca<storeData.communityActivities.length; ca++){
+      var nameInput = document.querySelector('.activity-name[data-idx="'+ca+'"]');
+      if(nameInput) nameInput.value = storeData.communityActivities[ca].name || '';
+    }
+  }
   
   // 填充pricing
   var p = storeData.pricing || {};
