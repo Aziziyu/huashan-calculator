@@ -425,7 +425,7 @@ textarea.form-control { resize: vertical; min-height: 60px; }
       <div class="nav-item" data-page="ka"><span class="nav-icon">🏢</span>企业客户KA</div>
       <div class="nav-item" data-page="settings"><span class="nav-icon">⚙️</span>设置</div>
     </nav>
-    <div class="sidebar-footer">v5.5 · GitHub云同步</div>
+    <div class="sidebar-footer">v5.5.3 · GitHub云同步</div>
   </aside>
 
   <!-- Main Content -->
@@ -5324,7 +5324,7 @@ function renderSettings(area) {
     </div>
 
     <div style="text-align:center;color:#BBB;font-size:12px;padding:20px 0;">
-      店长工作台 v5.5 · GitHub云同步版 · 数据安全由您保管
+      店长工作台 v5.5.3 · GitHub云同步版 · 数据安全由您保管
     </div>
   `;
 
@@ -5761,8 +5761,9 @@ function setupDragLists() {
 // ----- GitHub云同步 -----
 
 function ghHeaders() {
+  const token = localStorage.getItem('gh_pat_store') || store.githubConfig.token || '';
   return {
-    'Authorization': 'token ' + store.githubConfig.token,
+    'Authorization': 'token ' + token,
     'Accept': 'application/vnd.github.v3+json',
     'Content-Type': 'application/json'
   };
@@ -5774,11 +5775,12 @@ function ghApiUrl(path) {
 
 async function syncToGithub() {
   const cfg = store.githubConfig;
-  if (!cfg.token || !cfg.owner || !cfg.repo) {
+  const pat = localStorage.getItem('gh_pat_store') || cfg.token || '';
+  if (!pat || !cfg.owner || !cfg.repo) {
     throw new Error('请先在设置中配置 GitHub Token、Owner 和仓库名');
   }
-  // PAT 分离存储：只保存在 localStorage，不上传到 GitHub（避免触发 secret scanning）
-  localStorage.setItem('gh_pat_store', cfg.token);
+  // 确保 PAT 已保存到 localStorage
+  localStorage.setItem('gh_pat_store', pat);
   const uploadStore = JSON.parse(JSON.stringify(store));
   uploadStore.githubConfig.token = '';
   const jsonStr = JSON.stringify(uploadStore, null, 2);
@@ -5831,7 +5833,8 @@ async function syncToGithub() {
 
 async function syncFromGithub() {
   const cfg = store.githubConfig;
-  if (!cfg.token || !cfg.owner || !cfg.repo) {
+  const pat = localStorage.getItem('gh_pat_store') || cfg.token || '';
+  if (!pat || !cfg.owner || !cfg.repo) {
     throw new Error('请先在设置中配置 GitHub Token、Owner 和仓库名');
   }
   const fileUrl = ghApiUrl(cfg.path);
