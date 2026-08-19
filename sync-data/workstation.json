@@ -69,20 +69,8 @@
   ],
   "channels": [
     {
-      "id": "mszt4rman2m78",
-      "name": "泊寓官方"
-    },
-    {
       "id": "c1",
       "name": "贝壳找房"
-    },
-    {
-      "id": "c7",
-      "name": "老带新"
-    },
-    {
-      "id": "mszw50uaacchb",
-      "name": "人才网"
     },
     {
       "id": "c4",
@@ -93,20 +81,24 @@
       "name": "抖音"
     },
     {
+      "id": "c6",
+      "name": "微信朋友圈"
+    },
+    {
+      "id": "c7",
+      "name": "老带新"
+    },
+    {
       "id": "c8",
       "name": "企业合作"
     },
     {
-      "id": "mszw4md15ynbb",
-      "name": "闲鱼"
+      "id": "c10",
+      "name": "自然到访"
     },
     {
-      "id": "mszw4rtannz8i",
-      "name": "散客"
-    },
-    {
-      "id": "mszw5fu5gdezs",
-      "name": "内部推荐"
+      "id": "mszreigqfo9es",
+      "name": "泊寓官方"
     }
   ],
   "scoringSteps": {
@@ -115,16 +107,20 @@
       "label": "贝壳回复率",
       "steps": [
         {
-          "min": 100,
+          "min": 95,
           "score": 100
         },
         {
-          "min": 95,
-          "score": 95
+          "min": 85,
+          "score": 80
         },
         {
-          "min": 90,
-          "score": 0
+          "min": 70,
+          "score": 60
+        },
+        {
+          "min": 0,
+          "score": 40
         }
       ]
     },
@@ -133,16 +129,20 @@
       "label": "贝壳接通率",
       "steps": [
         {
-          "min": 100,
+          "min": 90,
           "score": 100
         },
         {
-          "min": 95,
+          "min": 80,
           "score": 80
         },
         {
-          "min": 90,
-          "score": 0
+          "min": 60,
+          "score": 60
+        },
+        {
+          "min": 0,
+          "score": 40
         }
       ]
     },
@@ -151,16 +151,20 @@
       "label": "企微回复率",
       "steps": [
         {
-          "min": 100,
+          "min": 95,
           "score": 100
         },
         {
-          "min": 95,
-          "score": 90
+          "min": 85,
+          "score": 80
         },
         {
-          "min": 90,
-          "score": 0
+          "min": 70,
+          "score": 60
+        },
+        {
+          "min": 0,
+          "score": 40
         }
       ]
     },
@@ -169,20 +173,20 @@
       "label": "企微回复时长(分钟)",
       "steps": [
         {
-          "max": 10,
+          "max": 5,
           "score": 100
         },
         {
-          "max": 20,
-          "score": 95
+          "max": 15,
+          "score": 80
         },
         {
           "max": 30,
-          "score": 90
+          "score": 60
         },
         {
-          "max": 60,
-          "score": 0
+          "max": 999,
+          "score": 40
         }
       ]
     }
@@ -280,8 +284,8 @@
       "name": "空房验收",
       "enabled": true,
       "cycle": "daily",
-      "customDays": 0,
-      "deadline": "",
+      "customDays": 1,
+      "deadline": "2026-08-20",
       "note": "",
       "lastDone": ""
     },
@@ -324,49 +328,7 @@
       "note": "近7天续租"
     }
   },
-  "dailyData": {
-    "2026-08-19": {
-      "newSign": 2,
-      "checkOut": 0,
-      "leads": 0,
-      "showings": 0,
-      "staff": {
-        "s1": {
-          "newSign": 0,
-          "showings": 0,
-          "leads": 0,
-          "remark": ""
-        },
-        "s2": {
-          "newSign": 2,
-          "showings": 0,
-          "leads": 0,
-          "remark": ""
-        },
-        "s3": {
-          "newSign": 1,
-          "showings": 0,
-          "leads": 0,
-          "remark": ""
-        },
-        "s4": {
-          "newSign": 1,
-          "showings": 0,
-          "leads": 0,
-          "remark": ""
-        }
-      },
-      "buildings": {
-        "b1": {
-          "rented": 274
-        },
-        "b2": {
-          "rented": 230
-        }
-      },
-      "netAdd": 2
-    }
-  },
+  "dailyData": {},
   "channelData": {},
   "renewals": [],
   "managerScores": {},
@@ -484,21 +446,21 @@
     }
   ],
   "occupancyGoal": {
-    "targetRate": 95,
-    "targetDate": "2026-09-15",
-    "startDate": "2026-08-19",
-    "startRate": 72.7,
-    "estimatedMoveOut": 10
+    "targetRate": 90,
+    "targetDate": "",
+    "startDate": "",
+    "startRate": 0,
+    "estimatedMoveOut": 0
   },
   "currentPage": "settings",
-  "currentOperationGroup": "team",
-  "currentOperationTab": "performance",
+  "currentOperationGroup": "daily",
+  "currentOperationTab": "daily-data",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/19 17:41:41",
-    "lastSyncDirection": "upload",
+    "lastSyncTime": "",
+    "lastSyncDirection": "",
     "autoSync": true
   }
 }
