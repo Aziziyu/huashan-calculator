@@ -390,13 +390,13 @@
           "remark": ""
         },
         "s2": {
-          "newSign": 2,
+          "newSign": 3,
           "showings": 1,
           "leads": 1,
           "remark": ""
         },
         "s3": {
-          "newSign": 2,
+          "newSign": 1,
           "showings": 1,
           "leads": 0,
           "remark": ""
@@ -549,7 +549,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/19 21:41:49",
+    "lastSyncTime": "2026/8/19 21:48:15",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
