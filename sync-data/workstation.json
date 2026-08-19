@@ -338,7 +338,7 @@
           "remark": ""
         },
         "s2": {
-          "newSign": 1,
+          "newSign": 2,
           "showings": 0,
           "leads": 0,
           "remark": ""
@@ -491,7 +491,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/19 17:30:55",
+    "lastSyncTime": "2026/8/19 17:31:02",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
