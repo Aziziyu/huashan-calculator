@@ -378,7 +378,7 @@
   },
   "dailyData": {
     "2026-08-19": {
-      "newSign": 4,
+      "newSign": 5,
       "checkOut": 0,
       "leads": 0,
       "showings": 0,
@@ -396,8 +396,8 @@
           "remark": ""
         },
         "s3": {
-          "newSign": 1,
-          "showings": 0,
+          "newSign": 2,
+          "showings": 1,
           "leads": 0,
           "remark": ""
         },
@@ -410,13 +410,13 @@
       },
       "buildings": {
         "b1": {
-          "rented": 274
+          "rented": 275
         },
         "b2": {
-          "rented": 230
+          "rented": 234
         }
       },
-      "netAdd": 4
+      "netAdd": 5
     }
   },
   "channelData": {},
