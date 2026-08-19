@@ -91,6 +91,10 @@
     {
       "id": "mszt4rman2m78",
       "name": "泊寓官方"
+    },
+    {
+      "id": "mszw4md15ynbb",
+      "name": "闲鱼"
     }
   ],
   "scoringSteps": {
@@ -475,7 +479,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/19 17:29:48",
+    "lastSyncTime": "2026/8/19 17:29:55",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
