@@ -425,7 +425,7 @@ textarea.form-control { resize: vertical; min-height: 60px; }
       <div class="nav-item" data-page="ka"><span class="nav-icon">🏢</span>企业客户KA</div>
       <div class="nav-item" data-page="settings"><span class="nav-icon">⚙️</span>设置</div>
     </nav>
-    <div class="sidebar-footer">v5.4 · 云端同步</div>
+    <div class="sidebar-footer">v5.5 · GitHub云同步</div>
   </aside>
 
   <!-- Main Content -->
@@ -438,10 +438,10 @@ textarea.form-control { resize: vertical; min-height: 60px; }
       <div class="top-bar-right" style="display:flex;align-items:center;gap:8px;position:relative;">
         <button class="btn btn-sm" id="syncBtn" onclick="toggleSyncPanel()">☁️ 同步</button>
         <div id="syncPanel" style="display:none;position:absolute;top:42px;right:0;background:#fff;border:1px solid #E8E8E8;border-radius:8px;padding:16px;box-shadow:0 4px 12px rgba(0,0,0,0.1);z-index:100;width:280px;">
-          <div style="font-weight:600;margin-bottom:12px;font-size:14px;">☁️ 飞书云同步</div>
+          <div style="font-weight:600;margin-bottom:12px;font-size:14px;">☁️ GitHub云同步</div>
           <div style="display:flex;gap:8px;margin-bottom:12px;">
-            <button class="btn btn-sm btn-primary" style="flex:1;" onclick="doSyncToFeishu()">⬆️ 上传</button>
-            <button class="btn btn-sm" style="flex:1;" onclick="doSyncFromFeishu()">⬇️ 下载</button>
+            <button class="btn btn-sm btn-primary" style="flex:1;" onclick="doSyncUpload()">⬆️ 上传</button>
+            <button class="btn btn-sm" style="flex:1;" onclick="doSyncDownload()">⬇️ 下载</button>
           </div>
           <div style="font-size:12px;color:#999;margin-bottom:8px;" id="syncLastTime">最后同步：从未同步</div>
           <div style="font-size:12px;color:#666;" id="syncStatus">状态：未配置</div>
@@ -487,11 +487,12 @@ textarea.form-control { resize: vertical; min-height: 60px; }
 // ============================================================
 // Data Store & LocalStorage
 // ============================================================
-const STORAGE_KEY = 'boyu_workstation_v5_4';
+const STORAGE_KEY = 'boyu_workstation_v5_5';
 const OLD_STORAGE_KEY = 'workstation_v5_data';
 const V51_STORAGE_KEY = 'boyu_workstation_v5_1';
 const V52_STORAGE_KEY = 'boyu_workstation_v5_2';
 const V53_STORAGE_KEY = 'boyu_workstation_v5_3';
+const V54_STORAGE_KEY = 'boyu_workstation_v5_4';
 
 const defaultStore = {
   // 门店信息
@@ -666,14 +667,16 @@ const defaultStore = {
   currentPriceTab: 'list',
   // 工资考勤待办
   salaryTodos: [],
-  // 飞书云同步配置
-  feishuConfig: {
-    appId: 'cli_aa0fa22d3279dbc6',
-    appSecret: 'qVe3isqNQWOOTHuvtz5mbevWHngG2QLr',
-    appToken: 'ZrhDbqfLwazN57sr3wscr00ln5d',
-    tableId: 'tblRLfeXT9bSmhSX',
+  // GitHub云同步配置
+  githubConfig: {
+    token: '',
+    owner: 'Aziziyu',
+    repo: 'huashan-calculator',
+    branch: 'main',
+    path: 'sync-data/workstation.json',
     lastSyncTime: '',
-    lastSyncDirection: ''
+    lastSyncDirection: '',
+    lastSyncSha: ''
   }
 };
 
@@ -706,6 +709,29 @@ let store = loadStore();
 
 function loadStore() {
   try {
+    // v5.5 迁移：从 v5_4 key 迁移数据（飞书→GitHub云同步升级）
+    const v54Raw = localStorage.getItem(V54_STORAGE_KEY);
+    if (v54Raw && !localStorage.getItem(STORAGE_KEY)) {
+      try {
+        const v54Data = JSON.parse(v54Raw);
+        // 将飞书配置转换为GitHub配置
+        v54Data.githubConfig = {
+          token: '',
+          owner: 'Aziziyu',
+          repo: 'huashan-calculator',
+          branch: 'main',
+          path: 'sync-data/workstation.json',
+          lastSyncTime: v54Data.feishuConfig?.lastSyncTime || '',
+          lastSyncDirection: v54Data.feishuConfig?.lastSyncDirection || '',
+          lastSyncSha: ''
+        };
+        delete v54Data.feishuConfig;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(v54Data));
+        console.log('✅ 数据已从 v5.4 迁移到 v5.5（飞书→GitHub同步）');
+      } catch (e) {
+        console.error('Migration v5.4->v5.5 error:', e);
+      }
+    }
     // v5.4 迁移：从 v5_3 key 迁移数据
     const v53Raw = localStorage.getItem(V53_STORAGE_KEY);
     if (v53Raw && !localStorage.getItem(STORAGE_KEY)) {
@@ -1400,6 +1426,8 @@ function renderDashboard(area) {
         <div class="stat-sub">户需跟进续租</div>
       </div>
     </div>
+
+    
 
     <!-- 店长关注提醒 -->
     <div class="card">
@@ -5224,51 +5252,7 @@ function renderSettings(area) {
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-header"><h3>☁️ 飞书云同步</h3></div>
-      <div class="card-body">
-        <p style="font-size:13px;color:#666;margin-bottom:12px;">
-          将数据同步到飞书多维表格，实现多端数据共享。需在
-          <a href="https://open.feishu.cn/" target="_blank" style="color:#4A90D9;">飞书开放平台</a>
-          创建企业自建应用并开启多维表格权限。
-        </p>
-        <div class="form-row">
-          <div class="form-group">
-            <label>App ID</label>
-            <input type="text" class="form-control" id="feishuAppId" value="${store.feishuConfig ? store.feishuConfig.appId : ''}" placeholder="cli_xxxxxxxx">
-          </div>
-          <div class="form-group">
-            <label>App Secret</label>
-            <input type="password" class="form-control" id="feishuAppSecret" value="${store.feishuConfig ? store.feishuConfig.appSecret : ''}" placeholder="应用密钥">
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>多维表格 App Token</label>
-            <input type="text" class="form-control" id="feishuAppToken" value="${store.feishuConfig && store.feishuConfig.appToken ? store.feishuConfig.appToken : 'ZrhDbqfLwazN57sr3wscr00ln5d'}" placeholder="多维表格 App Token">
-          </div>
-          <div class="form-group">
-            <label>数据表 Table ID</label>
-            <input type="text" class="form-control" id="feishuTableId" value="${store.feishuConfig && store.feishuConfig.tableId ? store.feishuConfig.tableId : 'tblRLfeXT9bSmhSX'}" placeholder="数据表 Table ID（默认：每日运营数据）">
-          </div>
-        </div>
-        <div style="display:flex;gap:8px;align-items:center;margin-top:8px;">
-          <button class="btn btn-sm btn-primary" onclick="saveFeishuConfig()">保存配置</button>
-          <button class="btn btn-sm" onclick="testFeishuConnection()">测试连接</button>
-          <span id="feishuConnStatus" style="font-size:12px;color:#999;"></span>
-        </div>
-        <div style="margin-top:12px;padding:10px;background:#F5F7FA;border-radius:6px;font-size:12px;color:#666;line-height:1.7;">
-          <strong>使用说明：</strong><br>
-          1. 前往飞书开放平台 → 创建企业自建应用<br>
-          2. 开启「多维表格」相关权限（bitable:app）<br>
-          3. 创建一个多维表格，新建数据表，将 App Token 和 Table ID 填入上方<br>
-          4. 将应用添加到多维表格的协作者中<br>
-          5. 点击保存配置后即可使用同步功能
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
+        <div class="card">
       <div class="card-header"><h3>💾 数据管理</h3></div>
       <div class="card-body">
         <div class="form-row">
@@ -5290,7 +5274,7 @@ function renderSettings(area) {
     </div>
 
     <div style="text-align:center;color:#BBB;font-size:12px;padding:20px 0;">
-      店长工作台 v5.4 · 云同步版 · 数据安全由您保管
+      店长工作台 v5.5 · GitHub云同步版 · 数据安全由您保管
     </div>
   `;
 
@@ -5724,157 +5708,105 @@ function setupDragLists() {
   });
 }
 
-// ----- 飞书云同步 -----
+// ----- GitHub云同步 -----
 
-const FEISHU_AUTH_URL = 'https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal';
-const FEISHU_BITABLE_BASE = 'https://open.feishu.cn/open-apis/bitable/v1/apps';
-const CORS_PROXY = 'https://corsproxy.io/?';
-
-async function feishuFetch(url, options = {}) {
-  const proxyUrl = CORS_PROXY + encodeURIComponent(url);
-  const resp = await fetch(proxyUrl, options);
-  return resp;
+function ghHeaders() {
+  return {
+    'Authorization': 'token ' + store.githubConfig.token,
+    'Accept': 'application/vnd.github.v3+json',
+    'Content-Type': 'application/json'
+  };
 }
 
-async function getTenantToken() {
-  const cfg = store.feishuConfig;
-  if (!cfg.appId || !cfg.appSecret) {
-    throw new Error('请先在设置中配置 App ID 和 App Secret');
+function ghApiUrl(path) {
+  return 'https://api.github.com/repos/' + store.githubConfig.owner + '/' + store.githubConfig.repo + '/contents/' + path;
+}
+
+async function syncToGithub() {
+  const cfg = store.githubConfig;
+  if (!cfg.token || !cfg.owner || !cfg.repo) {
+    throw new Error('请先在设置中配置 GitHub Token、Owner 和仓库名');
   }
+  const jsonStr = JSON.stringify(store, null, 2);
+  const base64Content = btoa(unescape(encodeURIComponent(jsonStr)));
+  const fileUrl = ghApiUrl(cfg.path);
+  const now = new Date().toISOString();
+  const commitMsg = 'workstation sync v5.5 @ ' + new Date().toLocaleString('zh-CN');
+
+  // 先检查文件是否存在（获取sha）
+  let sha = null;
   try {
-    const response = await feishuFetch(FEISHU_AUTH_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ app_id: cfg.appId, app_secret: cfg.appSecret })
-    });
-    const data = await response.json();
-    if (data.code !== 0) {
-      throw new Error(data.msg || '获取 token 失败');
+    const getResp = await fetch(fileUrl + '?ref=' + cfg.branch, { headers: ghHeaders() });
+    if (getResp.ok) {
+      const getData = await getResp.json();
+      sha = getData.sha;
+    } else if (getResp.status === 404) {
+      sha = null; // 文件不存在，新建
+    } else {
+      throw new Error('查询文件状态失败: ' + getResp.status);
     }
-    return data.tenant_access_token;
   } catch (e) {
-    console.error('getTenantToken error:', e);
-    throw e;
+    // 网络错误也可能是404
+    if (e.message && e.message.includes('404')) sha = null;
+    else if (!sha) throw new Error('无法检查文件状态：' + e.message);
   }
-}
 
-async function syncToFeishu() {
-  const cfg = store.feishuConfig;
-  if (!cfg.appToken || !cfg.tableId) {
-    throw new Error('请先配置多维表格 App Token 和 Table ID');
-  }
-  const token = await getTenantToken();
-  const jsonStr = JSON.stringify(store);
-  const baseUrl = `${FEISHU_BITABLE_BASE}/${cfg.appToken}/tables/${cfg.tableId}/records`;
+  const body = {
+    message: commitMsg,
+    content: base64Content,
+    branch: cfg.branch
+  };
+  if (sha) body.sha = sha;
 
-  // 查找现有记录
-  const searchUrl = `${baseUrl}?page_size=100`;
-  const searchResp = await feishuFetch(searchUrl, {
-    headers: { 'Authorization': `Bearer ${token}` }
+  const putResp = await fetch(fileUrl, {
+    method: 'PUT',
+    headers: ghHeaders(),
+    body: JSON.stringify(body)
   });
-  const searchData = await searchResp.json();
-  if (searchData.code !== 0) {
-    throw new Error(searchData.msg || '查询记录失败');
+  const putData = await putResp.json();
+  if (!putResp.ok) {
+    throw new Error(putData.message || '上传失败 (' + putResp.status + ')');
   }
 
-  const records = searchData.data?.items || [];
-  let existingRecordId = null;
-  for (const rec of records) {
-    const fields = rec.fields || {};
-    if (fields.data_key === 'workstation_data') {
-      existingRecordId = rec.record_id;
-      break;
-    }
-  }
-
-  if (existingRecordId) {
-    const updateUrl = `${baseUrl}/${existingRecordId}`;
-    const updateResp = await feishuFetch(updateUrl, {
-      method: 'PUT',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        fields: {
-          data_key: 'workstation_data',
-          data_json: jsonStr,
-          update_time: new Date().toISOString(),
-          version: 'v5.4'
-        }
-      })
-    });
-    const updateData = await updateResp.json();
-    if (updateData.code !== 0) {
-      throw new Error(updateData.msg || '更新记录失败');
-    }
-  } else {
-    const createResp = await feishuFetch(baseUrl, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        fields: {
-          data_key: 'workstation_data',
-          data_json: jsonStr,
-          update_time: new Date().toISOString(),
-          version: 'v5.4'
-        }
-      })
-    });
-    const createData = await createResp.json();
-    if (createData.code !== 0) {
-      throw new Error(createData.msg || '创建记录失败');
-    }
-  }
-
-  store.feishuConfig.lastSyncTime = new Date().toLocaleString('zh-CN');
-  store.feishuConfig.lastSyncDirection = 'upload';
+  store.githubConfig.lastSyncTime = new Date().toLocaleString('zh-CN');
+  store.githubConfig.lastSyncDirection = 'upload';
+  store.githubConfig.lastSyncSha = putData.content?.sha || sha || '';
   saveStore();
   return true;
 }
 
-async function syncFromFeishu() {
-  const cfg = store.feishuConfig;
-  if (!cfg.appToken || !cfg.tableId) {
-    throw new Error('请先配置多维表格 App Token 和 Table ID');
+async function syncFromGithub() {
+  const cfg = store.githubConfig;
+  if (!cfg.token || !cfg.owner || !cfg.repo) {
+    throw new Error('请先在设置中配置 GitHub Token、Owner 和仓库名');
   }
-  const token = await getTenantToken();
-  const baseUrl = `${FEISHU_BITABLE_BASE}/${cfg.appToken}/tables/${cfg.tableId}/records`;
-  const searchUrl = `${baseUrl}?page_size=100`;
+  const fileUrl = ghApiUrl(cfg.path);
 
-  const searchResp = await feishuFetch(searchUrl, {
-    headers: { 'Authorization': `Bearer ${token}` }
-  });
-  const searchData = await searchResp.json();
-  if (searchData.code !== 0) {
-    throw new Error(searchData.msg || '查询记录失败');
-  }
-
-  const records = searchData.data?.items || [];
-  let dataJson = null;
-  for (const rec of records) {
-    const fields = rec.fields || {};
-    if (fields.data_key === 'workstation_data' && fields.data_json) {
-      dataJson = fields.data_json;
-      break;
+  const getResp = await fetch(fileUrl + '?ref=' + cfg.branch, { headers: ghHeaders() });
+  if (!getResp.ok) {
+    if (getResp.status === 404) {
+      throw new Error('云端文件不存在，请先上传一次数据');
     }
+    throw new Error('下载失败: ' + getResp.status);
   }
+  const getData = await getResp.json();
 
-  if (!dataJson) {
-    throw new Error('未找到云端数据，请先上传一次');
+  if (!getData.content) {
+    throw new Error('云端文件内容为空');
   }
 
   try {
-    const cloudData = JSON.parse(dataJson);
+    const jsonStr = decodeURIComponent(escape(atob(getData.content.replace(/\n/g, ''))));
+    const cloudData = JSON.parse(jsonStr);
     if (!confirm('从云端下载数据将覆盖本地所有数据，确定继续？')) {
       return false;
     }
     store = deepMerge(defaultStore, cloudData);
-    store.feishuConfig.lastSyncTime = new Date().toLocaleString('zh-CN');
-    store.feishuConfig.lastSyncDirection = 'download';
+    // 保留本地githubConfig中的token（云端可能不含敏感信息）
+    store.githubConfig.token = cfg.token;
+    store.githubConfig.lastSyncTime = new Date().toLocaleString('zh-CN');
+    store.githubConfig.lastSyncDirection = 'download';
+    store.githubConfig.lastSyncSha = getData.sha || '';
     saveStore();
     renderPage();
     return true;
@@ -5883,48 +5815,46 @@ async function syncFromFeishu() {
   }
 }
 
-async function testFeishuConnection() {
+async function testGithubConnection() {
   const btn = event.target;
-  const statusEl = document.getElementById('feishuConnStatus');
+  const statusEl = document.getElementById('ghConnStatus');
   btn.disabled = true;
   btn.textContent = '测试中...';
   statusEl.textContent = '';
   try {
-    store.feishuConfig.appId = document.getElementById('feishuAppId').value.trim();
-    store.feishuConfig.appSecret = document.getElementById('feishuAppSecret').value.trim();
-    store.feishuConfig.appToken = document.getElementById('feishuAppToken').value.trim();
-    store.feishuConfig.tableId = document.getElementById('feishuTableId').value.trim();
+    store.githubConfig.token = document.getElementById('ghToken').value.trim();
+    store.githubConfig.owner = document.getElementById('ghOwner').value.trim();
+    store.githubConfig.repo = document.getElementById('ghRepo').value.trim();
+    store.githubConfig.branch = document.getElementById('ghBranch').value.trim();
+    store.githubConfig.path = document.getElementById('ghPath').value.trim();
     saveStore();
 
-    const token = await getTenantToken();
-    if (store.feishuConfig.appToken && store.feishuConfig.tableId) {
-      const testUrl = `${FEISHU_BITABLE_BASE}/${store.feishuConfig.appToken}/tables/${store.feishuConfig.tableId}/records?page_size=1`;
-      const resp = await feishuFetch(testUrl, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const data = await resp.json();
-      if (data.code !== 0) {
-        throw new Error(data.msg || '多维表格访问失败');
-      }
+    // 测试：获取仓库信息
+    const repoUrl = 'https://api.github.com/repos/' + store.githubConfig.owner + '/' + store.githubConfig.repo;
+    const resp = await fetch(repoUrl, { headers: ghHeaders() });
+    if (!resp.ok) {
+      throw new Error('仓库访问失败 (' + resp.status + ')');
     }
-    statusEl.textContent = '✅ 连接成功';
+    const repoData = await resp.json();
+    statusEl.textContent = '✅ 连接成功 - ' + repoData.full_name;
     statusEl.style.color = '#27AE60';
   } catch (e) {
     statusEl.textContent = '❌ ' + (e.message || '连接失败');
     statusEl.style.color = '#E74C3C';
   } finally {
     btn.disabled = false;
-    btn.textContent = '测试连接';
+    btn.textContent = ' 测试连接';
   }
 }
 
-function saveFeishuConfig() {
-  store.feishuConfig.appId = document.getElementById('feishuAppId').value.trim();
-  store.feishuConfig.appSecret = document.getElementById('feishuAppSecret').value.trim();
-  store.feishuConfig.appToken = document.getElementById('feishuAppToken').value.trim();
-  store.feishuConfig.tableId = document.getElementById('feishuTableId').value.trim();
+function saveGithubConfig() {
+  store.githubConfig.token = document.getElementById('ghToken').value.trim();
+  store.githubConfig.owner = document.getElementById('ghOwner').value.trim();
+  store.githubConfig.repo = document.getElementById('ghRepo').value.trim();
+  store.githubConfig.branch = document.getElementById('ghBranch').value.trim();
+  store.githubConfig.path = document.getElementById('ghPath').value.trim();
   saveStore();
-  showToast('配置已保存');
+  showToast('GitHub配置已保存');
   updateSyncStatus();
 }
 
@@ -5940,11 +5870,11 @@ function toggleSyncPanel() {
 function updateSyncStatus() {
   const lastEl = document.getElementById('syncLastTime');
   const statusEl = document.getElementById('syncStatus');
-  if (lastEl && store.feishuConfig.lastSyncTime) {
-    lastEl.textContent = '最后同步：' + store.feishuConfig.lastSyncTime;
+  if (lastEl && store.githubConfig.lastSyncTime) {
+    lastEl.textContent = '最后同步：' + store.githubConfig.lastSyncTime;
   }
   if (statusEl) {
-    if (store.feishuConfig.appId && store.feishuConfig.appToken) {
+    if (store.githubConfig.token && store.githubConfig.owner && store.githubConfig.repo) {
       statusEl.textContent = '状态：已配置';
       statusEl.style.color = '#27AE60';
     } else {
@@ -5954,15 +5884,15 @@ function updateSyncStatus() {
   }
 }
 
-async function doSyncToFeishu() {
+async function doSyncUpload() {
   const statusEl = document.getElementById('syncStatus');
   try {
     statusEl.textContent = '状态：上传中...';
     statusEl.style.color = '#F39C12';
-    await syncToFeishu();
+    await syncToGithub();
     statusEl.textContent = '状态：上传成功 ✅';
     statusEl.style.color = '#27AE60';
-    showToast('数据已上传到飞书');
+    showToast('数据已上传到GitHub');
     updateSyncStatus();
   } catch (e) {
     statusEl.textContent = '状态：上传失败 ❌';
@@ -5971,15 +5901,15 @@ async function doSyncToFeishu() {
   }
 }
 
-async function doSyncFromFeishu() {
+async function doSyncDownload() {
   const statusEl = document.getElementById('syncStatus');
   try {
     statusEl.textContent = '状态：下载中...';
     statusEl.style.color = '#F39C12';
-    await syncFromFeishu();
+    await syncFromGithub();
     statusEl.textContent = '状态：下载成功 ✅';
     statusEl.style.color = '#27AE60';
-    showToast('数据已从飞书下载');
+    showToast('数据已从GitHub下载');
     updateSyncStatus();
   } catch (e) {
     statusEl.textContent = '状态：下载失败 ❌';
@@ -6149,16 +6079,23 @@ window.viewKARecords = viewKARecords;
 window.getTodayKAFollowUps = getTodayKAFollowUps;
 window.markKAFollowDone = markKAFollowDone;
 
-// 飞书同步
+// GitHub同步
 window.toggleSyncPanel = toggleSyncPanel;
 window.updateSyncStatus = updateSyncStatus;
-window.doSyncToFeishu = doSyncToFeishu;
-window.doSyncFromFeishu = doSyncFromFeishu;
+window.doSyncUpload = doSyncUpload;
+window.doSyncDownload = doSyncDownload;
 window.goToSyncSettings = goToSyncSettings;
-window.saveFeishuConfig = saveFeishuConfig;
-window.testFeishuConnection = testFeishuConnection;
-window.syncToFeishu = syncToFeishu;
-window.syncFromFeishu = syncFromFeishu;
+window.saveGithubConfig = saveGithubConfig;
+window.testGithubConnection = testGithubConnection;
+window.syncToGithub = syncToGithub;
+window.syncFromGithub = syncFromGithub;
+
+// 待办管理
+window.addMyTodo = addMyTodo;
+window.openMyTodoSetting = openMyTodoSetting;
+window.toggleMyTodoDone = toggleMyTodoDone;
+window.toggleMyTodoEnabled = toggleMyTodoEnabled;
+window.deleteMyTodo = deleteMyTodo;
 
 // 设置
 window.saveSetting = saveSetting;
@@ -6185,4 +6122,4 @@ window.resetData = resetData;
 })(); // end IIFE
 </script>
 </body>
-</html>
+</html> 
