@@ -780,6 +780,15 @@ function loadStore() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
+      // PAT 迁移：将 store 中的 token 迁移到 localStorage 独立存储（避免上传到 GitHub 触发 secret scanning）
+      if (parsed.githubConfig && parsed.githubConfig.token) {
+        if (!localStorage.getItem('gh_pat_store')) {
+          localStorage.setItem('gh_pat_store', parsed.githubConfig.token);
+        }
+        parsed.githubConfig.token = '';
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+        console.log('✅ PAT 已迁移到独立存储');
+      }
       // Merge with defaults to handle new fields
       return deepMerge(defaultStore, parsed);
     }
@@ -791,7 +800,9 @@ function loadStore() {
 
 function saveStore() {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
+    const saveData = JSON.parse(JSON.stringify(store));
+    saveData.githubConfig.token = ''; // PAT 独立存储，不写入主 store
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(saveData));
   } catch (e) {
     console.error('Save store error:', e);
   }
@@ -5279,7 +5290,7 @@ function renderSettings(area) {
         <p style="font-size:13px;color:#666;margin-bottom:12px;">将数据同步到 GitHub 仓库，实现多设备共享与备份。首次使用请填写 PAT 并测试连接。</p>
         <div class="form-group">
           <label>Personal Access Token (PAT)</label>
-          <input type="password" class="form-control" id="ghToken" value="${store.githubConfig.token || ''}" placeholder="ghp_xxxx">
+          <input type="password" class="form-control" id="ghToken" value="${localStorage.getItem('gh_pat_store') || ''}" placeholder="ghp_xxxx">
           <div style="font-size:11px;color:#999;margin-top:4px;">在 GitHub Settings → Developer settings → Personal access tokens 创建，需 repo 权限</div>
         </div>
         <div class="form-row">
@@ -5767,7 +5778,11 @@ async function syncToGithub() {
   if (!cfg.token || !cfg.owner || !cfg.repo) {
     throw new Error('请先在设置中配置 GitHub Token、Owner 和仓库名');
   }
-  const jsonStr = JSON.stringify(store, null, 2);
+  // PAT 分离存储：只保存在 localStorage，不上传到 GitHub（避免触发 secret scanning）
+  localStorage.setItem('gh_pat_store', cfg.token);
+  const uploadStore = JSON.parse(JSON.stringify(store));
+  uploadStore.githubConfig.token = '';
+  const jsonStr = JSON.stringify(uploadStore, null, 2);
   const base64Content = btoa(unescape(encodeURIComponent(jsonStr)));
   const fileUrl = ghApiUrl(cfg.path);
   const now = new Date().toISOString();
@@ -5842,8 +5857,9 @@ async function syncFromGithub() {
       return false;
     }
     store = deepMerge(defaultStore, cloudData);
-    // 保留本地githubConfig中的token（云端可能不含敏感信息）
-    store.githubConfig.token = cfg.token;
+    // PAT 从 localStorage 恢复（云端不含 PAT）
+    const savedPat = localStorage.getItem('gh_pat_store');
+    store.githubConfig.token = savedPat || '';
     store.githubConfig.lastSyncTime = new Date().toLocaleString('zh-CN');
     store.githubConfig.lastSyncDirection = 'download';
     store.githubConfig.lastSyncSha = getData.sha || '';
@@ -5862,7 +5878,9 @@ async function testGithubConnection() {
   btn.textContent = '测试中...';
   statusEl.textContent = '';
   try {
-    store.githubConfig.token = document.getElementById('ghToken').value.trim();
+    const token = document.getElementById('ghToken').value.trim();
+    localStorage.setItem('gh_pat_store', token);
+    store.githubConfig.token = token;
     store.githubConfig.owner = document.getElementById('ghOwner').value.trim();
     store.githubConfig.repo = document.getElementById('ghRepo').value.trim();
     store.githubConfig.branch = document.getElementById('ghBranch').value.trim();
@@ -5888,7 +5906,9 @@ async function testGithubConnection() {
 }
 
 function saveGithubConfig() {
-  store.githubConfig.token = document.getElementById('ghToken').value.trim();
+  const token = document.getElementById('ghToken').value.trim();
+  localStorage.setItem('gh_pat_store', token);
+  store.githubConfig.token = token;
   store.githubConfig.owner = document.getElementById('ghOwner').value.trim();
   store.githubConfig.repo = document.getElementById('ghRepo').value.trim();
   store.githubConfig.branch = document.getElementById('ghBranch').value.trim();
