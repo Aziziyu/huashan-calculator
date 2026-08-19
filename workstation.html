@@ -1350,7 +1350,7 @@ function calcTodayTasks() {
 }
 
 function calcWeekNewSign() {
-  // 本周新签
+  // 本周新签 - 从管家数据实时汇总
   const now = new Date();
   const dayOfWeek = now.getDay() || 7; // 1-7
   const monday = new Date(now);
@@ -1361,7 +1361,7 @@ function calcWeekNewSign() {
     d.setDate(monday.getDate() + i);
     const key = fmtDate(d);
     if (store.dailyData[key]) {
-      count += store.dailyData[key].newSign || 0;
+      count += calcStaffNewSignTotal(store.dailyData[key]);
     }
   }
   return count;
@@ -2121,6 +2121,8 @@ let dailyDataDate = todayStr();
 function renderDailyData(body) {
   const date = dailyDataDate;
   const data = store.dailyData[date] || { newSign: 0, checkOut: 0, leads: 0, showings: 0, staff: {}, buildings: {} };
+  // 实时从管家数据汇总计算新签
+  data.newSign = calcStaffNewSignTotal(data);
   data.netAdd = (data.newSign || 0) - (data.checkOut || 0);
   const occ = calcOccupancy();
 
