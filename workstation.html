@@ -1045,30 +1045,66 @@ function renderPage() {
 // ============================================================
 // 驾驶舱 - 我的待办
 // ============================================================
-function getCycleLabel(cycle, customDays) {
-  const map = { daily: '每日', weekly: '每周', once: '单次', custom: '自定义' };
-  if (cycle === 'custom' && customDays) return '每' + customDays + '天';
-  return map[cycle] || cycle;
+function getCycleLabel(cycle, customDays, todo) {
+  const WEEKDAY_NAMES = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+  const map = { daily: '每日', weekly: '每周', once: '单次', custom: '自定义', monthly: '每月' };
+  let label = map[cycle] || cycle;
+  if (cycle === 'custom' && customDays) label = '每' + customDays + '天';
+  if (cycle === 'weekly' && todo && todo.weekDay !== undefined && todo.weekDay !== null) {
+    label = '每' + WEEKDAY_NAMES[todo.weekDay];
+  }
+  if (cycle === 'monthly' && todo && todo.monthDay) {
+    label = '每月' + todo.monthDay + '日';
+  }
+  if (todo && todo.time) {
+    label += ' ' + todo.time;
+  }
+  return label;
 }
 
 function isMyTodoDue(todo) {
   if (!todo.enabled) return false;
-  const today = new Date();
+  const now = new Date();
+  const today = new Date(now);
   today.setHours(0, 0, 0, 0);
   const todayStr = today.toISOString().slice(0, 10);
 
-  // 有截止日期且已过期 -> 显示
+  // 有截止日期且已过期 -> 始终显示
   if (todo.deadline && todo.deadline < todayStr) return true;
+
+  // 如果设置了具体时间，当前时间未到时不显示（今天还没到提醒时间）
+  if (todo.time && !todo.lastDone) {
+    // 今天还没做过，检查当前时间是否已过提醒时间
+    const [hh, mm] = todo.time.split(':').map(Number);
+    const reminderToday = new Date(now);
+    reminderToday.setHours(hh, mm, 0, 0);
+    if (now < reminderToday) return false; // 还没到提醒时间
+  } else if (todo.time && todo.lastDone === todayStr) {
+    // 今天已完成，不显示
+  }
 
   if (!todo.lastDone) return true; // 从未完成过
 
   const lastDone = new Date(todo.lastDone);
   lastDone.setHours(0, 0, 0, 0);
   const diffDays = Math.floor((today - lastDone) / (1000 * 60 * 60 * 24));
+  const todayDow = today.getDay(); // 0=Sun, 1=Mon, ...
 
   switch (todo.cycle) {
     case 'daily': return diffDays >= 1;
-    case 'weekly': return diffDays >= 7;
+    case 'weekly':
+      // 如果设置了固定周几，只在对应周几且未做过时显示
+      if (todo.weekDay !== undefined && todo.weekDay !== null) {
+        return todayDow === todo.weekDay && todo.lastDone !== todayStr;
+      }
+      return diffDays >= 7;
+    case 'monthly':
+      // 每月固定日期
+      if (todo.monthDay) {
+        const todayDom = today.getDate();
+        return todayDom === todo.monthDay && todo.lastDone !== todayStr;
+      }
+      return diffDays >= 30;
     case 'once': return !todo.lastDone;
     case 'custom':
       const days = todo.customDays || 1;
@@ -1102,7 +1138,7 @@ function renderDashboardMyTodos() {
         <div class="todo-text" style="flex:1;">
           <span style="${overdue ? 'color:#E74C3C;font-weight:500;' : ''}">${t.name}</span>
           <span style="font-size:12px;color:#999;margin-left:8px;">
-            ${getCycleLabel(t.cycle, t.customDays)}
+            ${getCycleLabel(t.cycle, t.customDays, t)}
             ${t.deadline ? ' · 截止 ' + t.deadline : ''}
             ${overdue ? ' · <span style="color:#E74C3C;">已过期</span>' : ''}
           </span>
@@ -1140,6 +1176,10 @@ function openMyTodoSetting(id) {
   const t = store.myTodos.find(x => x.id === id);
   if (!t) return;
 
+  // 初始化新字段默认值
+  if (t.weekDay === undefined || t.weekDay === null) t.weekDay = '';
+  if (t.monthDay === undefined || t.monthDay === null) t.monthDay = '';
+
   const html = `
     <div class="form-group">
       <label>待办名称</label>
@@ -1148,9 +1188,10 @@ function openMyTodoSetting(id) {
     <div class="form-row">
       <div class="form-group">
         <label>提醒周期</label>
-        <select class="form-control" id="mtCycle" onchange="toggleCustomDays()">
+        <select class="form-control" id="mtCycle" onchange="toggleCustomDaysModal()">
           <option value="daily" ${t.cycle === 'daily' ? 'selected' : ''}>每日</option>
-          <option value="weekly" ${t.cycle === 'weekly' ? 'selected' : ''}>每周</option>
+          <option value="weekly" ${t.cycle === 'weekly' ? 'selected' : ''}>每周（固定周几）</option>
+          <option value="monthly" ${t.cycle === 'monthly' ? 'selected' : ''}>每月（固定日期）</option>
           <option value="once" ${t.cycle === 'once' ? 'selected' : ''}>单次</option>
           <option value="custom" ${t.cycle === 'custom' ? 'selected' : ''}>自定义间隔</option>
         </select>
@@ -1159,6 +1200,42 @@ function openMyTodoSetting(id) {
         <label>间隔天数</label>
         <input type="number" class="form-control" id="mtCustomDays" value="${t.customDays || 1}" min="1">
       </div>
+    </div>
+    <div class="form-row" id="weekDayGroup" style="display:${t.cycle === 'weekly' ? 'flex' : 'none'};">
+      <div class="form-group" style="flex:1;">
+        <label>固定周几</label>
+        <select class="form-control" id="mtWeekDay">
+          <option value="" ${t.weekDay === '' ? 'selected' : ''}>不指定（默认每周）</option>
+          <option value="1" ${String(t.weekDay) === '1' ? 'selected' : ''}>周一</option>
+          <option value="2" ${String(t.weekDay) === '2' ? 'selected' : ''}>周二</option>
+          <option value="3" ${String(t.weekDay) === '3' ? 'selected' : ''}>周三</option>
+          <option value="4" ${String(t.weekDay) === '4' ? 'selected' : ''}>周四</option>
+          <option value="5" ${String(t.weekDay) === '5' ? 'selected' : ''}>周五</option>
+          <option value="6" ${String(t.weekDay) === '6' ? 'selected' : ''}>周六</option>
+          <option value="0" ${String(t.weekDay) === '0' ? 'selected' : ''}>周日</option>
+        </select>
+      </div>
+      <div class="form-group" style="flex:1;">
+        <label>提醒时间（可选）</label>
+        <input type="time" class="form-control" id="mtTime" value="${t.time || ''}">
+      </div>
+    </div>
+    <div class="form-row" id="monthDayGroup" style="display:${t.cycle === 'monthly' ? 'flex' : 'none'};">
+      <div class="form-group" style="flex:1;">
+        <label>每月几号</label>
+        <input type="number" class="form-control" id="mtMonthDay" value="${t.monthDay || ''}" min="1" max="31" placeholder="如：15">
+      </div>
+      <div class="form-group" style="flex:1;">
+        <label>提醒时间（可选）</label>
+        <input type="time" class="form-control" id="mtTimeM" value="${t.time || ''}">
+      </div>
+    </div>
+    <div class="form-row" id="dailyTimeGroup" style="display:${t.cycle === 'daily' ? 'flex' : 'none'};">
+      <div class="form-group" style="flex:1;">
+        <label>提醒时间（可选，留空=全天）</label>
+        <input type="time" class="form-control" id="mtTimeD" value="${t.time || ''}">
+      </div>
+      <div class="form-group" style="flex:1;"></div>
     </div>
     <div class="form-row">
       <div class="form-group">
@@ -1181,11 +1258,32 @@ function openMyTodoSetting(id) {
 
   showModal('待办设置', html, function() {
     t.name = document.getElementById('mtName').value.trim() || t.name;
-    t.cycle = document.getElementById('mtCycle').value;
-    t.customDays = parseInt(document.getElementById('mtCustomDays').value) || 0;
+    const cycle = document.getElementById('mtCycle').value;
+    t.cycle = cycle;
+    t.customDays = cycle === 'custom' ? (parseInt(document.getElementById('mtCustomDays').value) || 1) : 0;
     t.deadline = document.getElementById('mtDeadline').value;
     t.enabled = document.getElementById('mtEnabled').value === 'true';
     t.note = document.getElementById('mtNote').value.trim();
+
+    if (cycle === 'weekly') {
+      const wd = document.getElementById('mtWeekDay').value;
+      t.weekDay = wd === '' ? null : parseInt(wd);
+      t.time = document.getElementById('mtTime').value || '';
+      t.monthDay = null;
+    } else if (cycle === 'monthly') {
+      t.weekDay = null;
+      t.time = document.getElementById('mtTimeM').value || '';
+      t.monthDay = parseInt(document.getElementById('mtMonthDay').value) || null;
+    } else if (cycle === 'daily') {
+      t.weekDay = null;
+      t.monthDay = null;
+      t.time = document.getElementById('mtTimeD').value || '';
+    } else {
+      t.weekDay = null;
+      t.monthDay = null;
+      t.time = '';
+    }
+
     saveStore();
     const card = document.getElementById('dashboardMyTodoList');
     if (card) card.innerHTML = renderDashboardMyTodos();
@@ -1194,10 +1292,16 @@ function openMyTodoSetting(id) {
   });
 }
 
-function toggleCustomDays() {
+function toggleCustomDaysModal() {
   const cycle = document.getElementById('mtCycle').value;
-  const group = document.getElementById('customDaysGroup');
-  if (group) group.style.display = cycle === 'custom' ? 'block' : 'none';
+  const customGroup = document.getElementById('customDaysGroup');
+  const weekGroup = document.getElementById('weekDayGroup');
+  const monthGroup = document.getElementById('monthDayGroup');
+  const dailyTimeGroup = document.getElementById('dailyTimeGroup');
+  if (customGroup) customGroup.style.display = cycle === 'custom' ? 'block' : 'none';
+  if (weekGroup) weekGroup.style.display = cycle === 'weekly' ? 'flex' : 'none';
+  if (monthGroup) monthGroup.style.display = cycle === 'monthly' ? 'flex' : 'none';
+  if (dailyTimeGroup) dailyTimeGroup.style.display = cycle === 'daily' ? 'flex' : 'none';
 }
 
 function scrollToTodoSettings() {
@@ -2062,8 +2166,8 @@ function renderDailyData(body) {
       <div class="card-body">
         <div class="grid-4">
           <div class="form-group">
-            <label>新签</label>
-            <input type="number" class="form-control" value="${data.newSign || 0}" onchange="saveDailyField('newSign', this.value)">
+            <label>新签（管家汇总）</label>
+            <input type="number" class="form-control" value="${calcStaffNewSignTotal(data)}" readonly style="background:#F0F5FA;color:#1A5276;font-weight:600;">
           </div>
           <div class="form-group">
             <label>退房</label>
@@ -2176,6 +2280,18 @@ function saveDailyField(field, value) {
   renderOpTabBody();
 }
 
+// 汇总所有管家的当日新签数
+function calcStaffNewSignTotal(data) {
+  let total = 0;
+  if (data.staff) {
+    store.staff.forEach(s => {
+      const sd = data.staff[s.id];
+      if (sd && sd.newSign) total += sd.newSign;
+    });
+  }
+  return total;
+}
+
 function saveStaffDaily(staffId, field, value) {
   const d = ensureDailyData(dailyDataDate);
   if (!d.staff[staffId]) d.staff[staffId] = { newSign: 0, showings: 0, leads: 0, remark: '' };
@@ -2184,7 +2300,11 @@ function saveStaffDaily(staffId, field, value) {
   } else {
     d.staff[staffId][field] = parseInt(value) || 0;
   }
+  // 自动汇总新签到全店数据
+  d.newSign = calcStaffNewSignTotal(d);
+  d.netAdd = (d.newSign || 0) - (d.checkOut || 0);
   saveStore();
+  renderOpTabBody();
 }
 
 function saveBuildingDaily(buildingId, value) {
@@ -2927,24 +3047,6 @@ function renderPerformance(body) {
       </div>
     </div>
 
-    <!-- 工资考勤待办 -->
-    <div class="card">
-      <div class="card-header">
-        <h3>📝 工资考勤待办清单</h3>
-        <button class="btn btn-sm btn-primary" onclick="addSalaryTodo()">+ 新增</button>
-      </div>
-      <div class="card-body">
-        ${store.salaryTodos.length === 0 ? '<div class="empty-state" style="padding:20px 0;"><div class="empty-icon">📝</div>暂无待办</div>' :
-          store.salaryTodos.map(t => `
-            <div class="todo-item">
-              <span class="todo-check ${t.done ? 'done' : ''}" onclick="toggleSalaryTodo('${t.id}')">${t.done ? '✓' : ''}</span>
-              <span class="todo-text ${t.done ? 'done' : ''}">${t.text}</span>
-              <span class="todo-del" onclick="deleteSalaryTodo('${t.id}')">&times;</span>
-            </div>
-          `).join('')
-        }
-      </div>
-    </div>
 
     <div class="card">
       <div class="card-header">
@@ -3374,29 +3476,6 @@ function saveManagerScore(staffId, val) {
   renderPage();
 }
 
-
-function addSalaryTodo() {
-  const html = '<div class="form-group"><label>待办内容</label><input type="text" class="form-control" id="salTodoText" placeholder="如：核对考勤、提交工资表"></div>';
-  showModal('新增工资考勤待办', html, () => {
-    const text = document.getElementById('salTodoText').value.trim();
-    if (!text) { showToast('请输入内容'); return false; }
-    store.salaryTodos.push({ id: uid(), text, done: false });
-    saveStore();
-    renderPage();
-  });
-}
-
-function toggleSalaryTodo(id) {
-  const t = store.salaryTodos.find(x => x.id === id);
-  if (t) { t.done = !t.done; saveStore(); renderPage(); }
-}
-
-function deleteSalaryTodo(id) {
-  if (!confirm('确定删除该待办吗？')) return;
-  store.salaryTodos = store.salaryTodos.filter(t => t.id !== id);
-  saveStore();
-  renderPage();
-}
 
 // ---------- 排班管理 ----------
 let scheduleMonth = fmtMonth(new Date());
@@ -5127,7 +5206,7 @@ function renderSettings(area) {
               <div class="item-content">
                 <strong>${t.name}</strong>
                 <span style="font-size:12px;color:#888;margin-left:8px;">
-                  ${getCycleLabel(t.cycle, t.customDays)}
+                  ${getCycleLabel(t.cycle, t.customDays, t)}
                   ${t.deadline ? ' · 截止 ' + t.deadline : ''}
                   ${t.note ? ' · ' + t.note : ''}
                 </span>
@@ -5359,7 +5438,8 @@ function addMyTodo() {
         <label>提醒周期</label>
         <select class="form-control" id="newMtCycle" onchange="toggleNewCustomDays()">
           <option value="daily">每日</option>
-          <option value="weekly">每周</option>
+          <option value="weekly">每周（固定周几）</option>
+          <option value="monthly">每月（固定日期）</option>
           <option value="once">单次</option>
           <option value="custom">自定义间隔</option>
         </select>
@@ -5367,6 +5447,35 @@ function addMyTodo() {
       <div class="form-group" id="newCustomDaysGroup" style="display:none;">
         <label>间隔天数</label>
         <input type="number" class="form-control" id="newMtCustomDays" value="1" min="1">
+      </div>
+    </div>
+    <div class="form-row" id="newWeekDayGroup" style="display:none;">
+      <div class="form-group" style="flex:1;">
+        <label>固定周几</label>
+        <select class="form-control" id="newMtWeekDay">
+          <option value="">不指定（默认每周）</option>
+          <option value="1">周一</option>
+          <option value="2">周二</option>
+          <option value="3">周三</option>
+          <option value="4">周四</option>
+          <option value="5">周五</option>
+          <option value="6">周六</option>
+          <option value="0">周日</option>
+        </select>
+      </div>
+      <div class="form-group" style="flex:1;">
+        <label>提醒时间（可选）</label>
+        <input type="time" class="form-control" id="newMtTime">
+      </div>
+    </div>
+    <div class="form-row" id="newMonthDayGroup" style="display:none;">
+      <div class="form-group" style="flex:1;">
+        <label>每月几号</label>
+        <input type="number" class="form-control" id="newMtMonthDay" min="1" max="31" placeholder="如：15">
+      </div>
+      <div class="form-group" style="flex:1;">
+        <label>提醒时间（可选）</label>
+        <input type="time" class="form-control" id="newMtTimeM">
       </div>
     </div>
     <div class="form-group">
@@ -5384,7 +5493,7 @@ function addMyTodo() {
     if (!name) { showToast('请输入待办名称'); return false; }
     const cycle = document.getElementById('newMtCycle').value;
     const customDays = cycle === 'custom' ? (parseInt(document.getElementById('newMtCustomDays').value) || 1) : 0;
-    store.myTodos.push({
+    const newTodo = {
       id: 'mt' + Date.now(),
       name: name,
       enabled: true,
@@ -5392,8 +5501,20 @@ function addMyTodo() {
       customDays: customDays,
       deadline: document.getElementById('newMtDeadline').value,
       note: document.getElementById('newMtNote').value.trim(),
-      lastDone: ''
-    });
+      lastDone: '',
+      weekDay: null,
+      monthDay: null,
+      time: ''
+    };
+    if (cycle === 'weekly') {
+      const wd = document.getElementById('newMtWeekDay').value;
+      newTodo.weekDay = wd === '' ? null : parseInt(wd);
+      newTodo.time = document.getElementById('newMtTime').value || '';
+    } else if (cycle === 'monthly') {
+      newTodo.monthDay = parseInt(document.getElementById('newMtMonthDay').value) || null;
+      newTodo.time = document.getElementById('newMtTimeM').value || '';
+    }
+    store.myTodos.push(newTodo);
     saveStore();
     renderPage();
     showToast('已添加');
@@ -5402,8 +5523,12 @@ function addMyTodo() {
 
 function toggleNewCustomDays() {
   const cycle = document.getElementById('newMtCycle').value;
-  const group = document.getElementById('newCustomDaysGroup');
-  if (group) group.style.display = cycle === 'custom' ? 'block' : 'none';
+  const customGroup = document.getElementById('newCustomDaysGroup');
+  const weekGroup = document.getElementById('newWeekDayGroup');
+  const monthGroup = document.getElementById('newMonthDayGroup');
+  if (customGroup) customGroup.style.display = cycle === 'custom' ? 'block' : 'none';
+  if (weekGroup) weekGroup.style.display = cycle === 'weekly' ? 'flex' : 'none';
+  if (monthGroup) monthGroup.style.display = cycle === 'monthly' ? 'flex' : 'none';
 }
 
 function toggleMyTodoEnabled(id) {
@@ -6159,9 +6284,7 @@ window.addEventRecord = addEventRecord;
 window.renderEventRecordTable = renderEventRecordTable;
 window.renderChannelMetricsTable = renderChannelMetricsTable;
 window.saveChannelMetrics = saveChannelMetrics;
-window.addSalaryTodo = addSalaryTodo;
-window.toggleSalaryTodo = toggleSalaryTodo;
-window.deleteSalaryTodo = deleteSalaryTodo;
+
 
 // 排班管理
 window.changeScheduleMonth = changeScheduleMonth;
@@ -6213,6 +6336,8 @@ window.openMyTodoSetting = openMyTodoSetting;
 window.toggleMyTodoDone = toggleMyTodoDone;
 window.toggleMyTodoEnabled = toggleMyTodoEnabled;
 window.deleteMyTodo = deleteMyTodo;
+window.toggleCustomDaysModal = toggleCustomDaysModal;
+window.toggleNewCustomDays = toggleNewCustomDays;
 
 // 设置
 window.saveSetting = saveSetting;
