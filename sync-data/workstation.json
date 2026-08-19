@@ -292,6 +292,46 @@
   "todoResetDate": "2026-08-19",
   "myTodos": [
     {
+      "id": "mt1787125974677",
+      "name": "每日数据填报",
+      "enabled": true,
+      "cycle": "daily",
+      "customDays": 0,
+      "deadline": "",
+      "note": "",
+      "lastDone": ""
+    },
+    {
+      "id": "mt1787125896958",
+      "name": "尾期账单处理",
+      "enabled": true,
+      "cycle": "daily",
+      "customDays": 0,
+      "deadline": "",
+      "note": "",
+      "lastDone": ""
+    },
+    {
+      "id": "mt1787125903926",
+      "name": "催缴",
+      "enabled": true,
+      "cycle": "daily",
+      "customDays": 0,
+      "deadline": "",
+      "note": "",
+      "lastDone": ""
+    },
+    {
+      "id": "mt3",
+      "name": "推荐房源设置",
+      "enabled": true,
+      "cycle": "daily",
+      "customDays": 0,
+      "deadline": "",
+      "note": "",
+      "lastDone": ""
+    },
+    {
       "id": "mt1",
       "name": "空房验收",
       "enabled": true,
@@ -312,10 +352,20 @@
       "lastDone": ""
     },
     {
-      "id": "mt3",
-      "name": "推荐房源设置",
+      "id": "mt1787125918741",
+      "name": "贝壳检视",
       "enabled": true,
-      "cycle": "daily",
+      "cycle": "weekly",
+      "customDays": 0,
+      "deadline": "",
+      "note": "",
+      "lastDone": ""
+    },
+    {
+      "id": "mt1787125951123",
+      "name": "秒杀上架",
+      "enabled": true,
+      "cycle": "weekly",
       "customDays": 0,
       "deadline": "",
       "note": "",
@@ -500,9 +550,9 @@
     "startRate": 0,
     "estimatedMoveOut": 0
   },
-  "currentPage": "operation",
-  "currentOperationGroup": "task",
-  "currentOperationTab": "todo",
+  "currentPage": "settings",
+  "currentOperationGroup": "daily",
+  "currentOperationTab": "daily-data",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "githubConfig": {
@@ -511,8 +561,8 @@
     "repo": "huashan-calculator",
     "branch": "main",
     "path": "sync-data/workstation.json",
-    "lastSyncTime": "2026/8/19 15:44:32",
+    "lastSyncTime": "2026/8/19 15:45:56",
     "lastSyncDirection": "upload",
-    "lastSyncSha": "113a759930c2d184abd14ae71f3a7d16c3335e28"
+    "lastSyncSha": "3476708cec01d7b83bce9daeed397574eba15e1f"
   }
 }
