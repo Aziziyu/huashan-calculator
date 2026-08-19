@@ -5273,6 +5273,46 @@ function renderSettings(area) {
       </div>
     </div>
 
+    <div class="card">
+      <div class="card-header"><h3>☁️ GitHub云同步</h3></div>
+      <div class="card-body">
+        <p style="font-size:13px;color:#666;margin-bottom:12px;">将数据同步到 GitHub 仓库，实现多设备共享与备份。首次使用请填写 PAT 并测试连接。</p>
+        <div class="form-group">
+          <label>Personal Access Token (PAT)</label>
+          <input type="password" class="form-control" id="ghToken" value="${store.githubConfig.token || ''}" placeholder="ghp_xxxx">
+          <div style="font-size:11px;color:#999;margin-top:4px;">在 GitHub Settings → Developer settings → Personal access tokens 创建，需 repo 权限</div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Owner（用户名）</label>
+            <input type="text" class="form-control" id="ghOwner" value="${store.githubConfig.owner || ''}" placeholder="Aziziyu">
+          </div>
+          <div class="form-group">
+            <label>Repo（仓库名）</label>
+            <input type="text" class="form-control" id="ghRepo" value="${store.githubConfig.repo || ''}" placeholder="huashan-calculator">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Branch（分支）</label>
+            <input type="text" class="form-control" id="ghBranch" value="${store.githubConfig.branch || 'main'}" placeholder="main">
+          </div>
+          <div class="form-group">
+            <label>Path（文件路径）</label>
+            <input type="text" class="form-control" id="ghPath" value="${store.githubConfig.path || 'sync-data/workstation.json'}" placeholder="sync-data/workstation.json">
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+          <button class="btn btn-sm" onclick="testGithubConnection()">🔗 测试连接</button>
+          <button class="btn btn-sm btn-primary" onclick="saveGithubConfig()">💾 保存配置</button>
+          <button class="btn btn-sm btn-primary" onclick="doSyncUpload()">⬆️ 上传到GitHub</button>
+          <button class="btn btn-sm" onclick="doSyncDownload()">⬇️ 从GitHub下载</button>
+        </div>
+        <div style="font-size:12px;color:#27AE60;margin-top:8px;" id="ghConnStatus"></div>
+        <div style="font-size:12px;color:#999;margin-top:8px;" id="ghSyncInfo">${store.githubConfig.lastSyncTime ? '最后同步：' + store.githubConfig.lastSyncTime + '（' + (store.githubConfig.lastSyncDirection === 'upload' ? '上传' : '下载') + '）' : '尚未同步'}</div>
+      </div>
+    </div>
+
     <div style="text-align:center;color:#BBB;font-size:12px;padding:20px 0;">
       店长工作台 v5.5 · GitHub云同步版 · 数据安全由您保管
     </div>
@@ -5882,6 +5922,16 @@ function updateSyncStatus() {
       statusEl.style.color = '#999';
     }
   }
+  // 同步更新设置页的同步信息
+  const infoEl = document.getElementById('ghSyncInfo');
+  if (infoEl) {
+    if (store.githubConfig.lastSyncTime) {
+      const dir = store.githubConfig.lastSyncDirection === 'upload' ? '上传' : '下载';
+      infoEl.textContent = '最后同步：' + store.githubConfig.lastSyncTime + '（' + dir + '）';
+    } else {
+      infoEl.textContent = '尚未同步';
+    }
+  }
 }
 
 async function doSyncUpload() {
@@ -5924,6 +5974,16 @@ function goToSyncSettings() {
   renderPage();
   const panel = document.getElementById('syncPanel');
   if (panel) panel.style.display = 'none';
+  // 滚动到 GitHub 云同步卡片
+  setTimeout(() => {
+    const cards = document.querySelectorAll('.card');
+    for (const c of cards) {
+      if (c.querySelector('#ghToken')) {
+        c.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        break;
+      }
+    }
+  }, 100);
 }
 
 // ----- 导入导出 -----
