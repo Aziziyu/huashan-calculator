@@ -99,6 +99,10 @@
     {
       "id": "mszw4rtannz8i",
       "name": "散客"
+    },
+    {
+      "id": "mszw50uaacchb",
+      "name": "人才网"
     }
   ],
   "scoringSteps": {
@@ -483,7 +487,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/19 17:30:02",
+    "lastSyncTime": "2026/8/19 17:30:09",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
