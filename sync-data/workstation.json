@@ -348,6 +348,12 @@
           "showings": 0,
           "leads": 0,
           "remark": ""
+        },
+        "s4": {
+          "newSign": 1,
+          "showings": 0,
+          "leads": 0,
+          "remark": ""
         }
       },
       "buildings": {
@@ -491,7 +497,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/19 17:31:55",
+    "lastSyncTime": "2026/8/19 17:32:03",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
