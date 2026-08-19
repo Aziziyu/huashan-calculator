@@ -95,6 +95,10 @@
     {
       "id": "mszw4md15ynbb",
       "name": "闲鱼"
+    },
+    {
+      "id": "mszw4rtannz8i",
+      "name": "散客"
     }
   ],
   "scoringSteps": {
@@ -479,7 +483,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/19 17:29:55",
+    "lastSyncTime": "2026/8/19 17:30:02",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
