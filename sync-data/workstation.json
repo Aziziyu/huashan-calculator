@@ -1,6 +1,6 @@
 {
   "storeInfo": {
-    "name": "交投|泊寓·花山河店",
+    "name": "长租公寓门店",
     "managerName": "于洋"
   },
   "buildings": [
@@ -69,12 +69,16 @@
   ],
   "channels": [
     {
-      "id": "mszsseyb5mgyn",
-      "name": "泊寓官方"
-    },
-    {
       "id": "c1",
       "name": "贝壳找房"
+    },
+    {
+      "id": "c2",
+      "name": "58同城"
+    },
+    {
+      "id": "c3",
+      "name": "安居客"
     },
     {
       "id": "c4",
@@ -85,6 +89,10 @@
       "name": "抖音"
     },
     {
+      "id": "c6",
+      "name": "微信朋友圈"
+    },
+    {
       "id": "c7",
       "name": "老带新"
     },
@@ -93,20 +101,12 @@
       "name": "企业合作"
     },
     {
+      "id": "c9",
+      "name": "周边中介"
+    },
+    {
       "id": "c10",
-      "name": "散客"
-    },
-    {
-      "id": "mszssixwoac6f",
-      "name": "闲鱼"
-    },
-    {
-      "id": "mszssmpf11p2o",
-      "name": "人才网"
-    },
-    {
-      "id": "mszssrqfbf7uu",
-      "name": "内部推荐"
+      "name": "自然到访"
     }
   ],
   "scoringSteps": {
@@ -115,20 +115,16 @@
       "label": "贝壳回复率",
       "steps": [
         {
-          "min": 95,
+          "min": 100,
           "score": 100
         },
         {
-          "min": 85,
-          "score": 80
+          "min": 95,
+          "score": 95
         },
         {
-          "min": 70,
-          "score": 60
-        },
-        {
-          "min": 0,
-          "score": 40
+          "min": 90,
+          "score": 0
         }
       ]
     },
@@ -137,20 +133,16 @@
       "label": "贝壳接通率",
       "steps": [
         {
-          "min": 90,
+          "min": 100,
           "score": 100
         },
         {
-          "min": 80,
+          "min": 95,
           "score": 80
         },
         {
-          "min": 60,
-          "score": 60
-        },
-        {
-          "min": 0,
-          "score": 40
+          "min": 90,
+          "score": 0
         }
       ]
     },
@@ -159,20 +151,16 @@
       "label": "企微回复率",
       "steps": [
         {
-          "min": 95,
+          "min": 100,
           "score": 100
         },
         {
-          "min": 85,
-          "score": 80
+          "min": 95,
+          "score": 90
         },
         {
-          "min": 70,
-          "score": 60
-        },
-        {
-          "min": 0,
-          "score": 40
+          "min": 90,
+          "score": 0
         }
       ]
     },
@@ -181,20 +169,20 @@
       "label": "企微回复时长(分钟)",
       "steps": [
         {
-          "max": 5,
+          "max": 10,
           "score": 100
         },
         {
-          "max": 15,
-          "score": 80
+          "max": 20,
+          "score": 95
         },
         {
           "max": 30,
-          "score": 60
+          "score": 90
         },
         {
-          "max": 999,
-          "score": 40
+          "max": 60,
+          "score": 0
         }
       ]
     }
@@ -219,11 +207,7 @@
       "period": "week"
     }
   ],
-  "taskProgress": {
-    "t1_s1_2026-W34": 2,
-    "t2_s1_2026-08-19": 1,
-    "t3_s1_2026-W34": 1
-  },
+  "taskProgress": {},
   "posNegEvents": [
     {
       "id": "pe1",
@@ -292,46 +276,6 @@
   "todoResetDate": "2026-08-19",
   "myTodos": [
     {
-      "id": "mt1787125974677",
-      "name": "每日数据填报",
-      "enabled": true,
-      "cycle": "daily",
-      "customDays": 0,
-      "deadline": "",
-      "note": "",
-      "lastDone": ""
-    },
-    {
-      "id": "mt1787125896958",
-      "name": "尾期账单处理",
-      "enabled": true,
-      "cycle": "daily",
-      "customDays": 0,
-      "deadline": "",
-      "note": "",
-      "lastDone": ""
-    },
-    {
-      "id": "mt1787125903926",
-      "name": "催缴",
-      "enabled": true,
-      "cycle": "daily",
-      "customDays": 0,
-      "deadline": "",
-      "note": "",
-      "lastDone": ""
-    },
-    {
-      "id": "mt3",
-      "name": "推荐房源设置",
-      "enabled": true,
-      "cycle": "daily",
-      "customDays": 0,
-      "deadline": "",
-      "note": "",
-      "lastDone": ""
-    },
-    {
       "id": "mt1",
       "name": "空房验收",
       "enabled": true,
@@ -352,20 +296,10 @@
       "lastDone": ""
     },
     {
-      "id": "mt1787125918741",
-      "name": "贝壳检视",
+      "id": "mt3",
+      "name": "推荐房源设置",
       "enabled": true,
-      "cycle": "weekly",
-      "customDays": 0,
-      "deadline": "",
-      "note": "",
-      "lastDone": ""
-    },
-    {
-      "id": "mt1787125951123",
-      "name": "秒杀上架",
-      "enabled": true,
-      "cycle": "weekly",
+      "cycle": "daily",
       "customDays": 0,
       "deadline": "",
       "note": "",
@@ -392,11 +326,17 @@
   },
   "dailyData": {
     "2026-08-19": {
-      "newSign": 3,
+      "newSign": 2,
       "checkOut": 0,
       "leads": 0,
       "showings": 0,
       "staff": {
+        "s1": {
+          "newSign": 0,
+          "showings": 0,
+          "leads": 0,
+          "remark": ""
+        },
         "s2": {
           "newSign": 1,
           "showings": 0,
@@ -404,12 +344,6 @@
           "remark": ""
         },
         "s3": {
-          "newSign": 1,
-          "showings": 0,
-          "leads": 0,
-          "remark": ""
-        },
-        "s4": {
           "newSign": 1,
           "showings": 0,
           "leads": 0,
@@ -424,7 +358,7 @@
           "rented": 230
         }
       },
-      "netAdd": 3
+      "netAdd": 2
     }
   },
   "channelData": {},
@@ -544,15 +478,15 @@
     }
   ],
   "occupancyGoal": {
-    "targetRate": 93,
+    "targetRate": 95,
     "targetDate": "2026-09-15",
     "startDate": "2026-08-19",
-    "startRate": 72.8,
+    "startRate": 72.7,
     "estimatedMoveOut": 10
   },
   "currentPage": "settings",
   "currentOperationGroup": "daily",
-  "currentOperationTab": "channel-data",
+  "currentOperationTab": "daily-data",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "githubConfig": {
@@ -561,8 +495,8 @@
     "repo": "huashan-calculator",
     "branch": "main",
     "path": "sync-data/workstation.json",
-    "lastSyncTime": "2026/8/19 15:54:00",
-    "lastSyncDirection": "upload",
-    "lastSyncSha": "7856dd55e47a1b104700a700f6ffb2b6c3566bfc"
+    "lastSyncTime": "",
+    "lastSyncDirection": "",
+    "lastSyncSha": ""
   }
 }
