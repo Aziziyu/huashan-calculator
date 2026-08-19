@@ -405,6 +405,19 @@
       "weekDay": null,
       "monthDay": 25,
       "time": ""
+    },
+    {
+      "id": "mt1787148418338",
+      "name": "资方汇报",
+      "enabled": true,
+      "cycle": "once",
+      "customDays": 0,
+      "deadline": "2026-09-10",
+      "note": "",
+      "lastDone": "",
+      "weekDay": null,
+      "monthDay": null,
+      "time": ""
     }
   ],
   "reminders": {
@@ -607,7 +620,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/19 22:06:52",
+    "lastSyncTime": "2026/8/19 22:07:00",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
