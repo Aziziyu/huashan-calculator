@@ -304,6 +304,19 @@
       "deadline": "",
       "note": "",
       "lastDone": ""
+    },
+    {
+      "id": "mt1787132574828",
+      "name": "贝壳展位",
+      "enabled": true,
+      "cycle": "weekly",
+      "customDays": 0,
+      "deadline": "",
+      "note": "",
+      "lastDone": "",
+      "weekDay": 2,
+      "monthDay": null,
+      "time": "21:55"
     }
   ],
   "reminders": {
@@ -497,8 +510,8 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/19 17:41:58",
-    "lastSyncDirection": "download",
+    "lastSyncTime": "2026/8/19 17:42:05",
+    "lastSyncDirection": "upload",
     "autoSync": true
   }
 }
