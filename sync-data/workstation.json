@@ -346,14 +346,14 @@
     },
     {
       "id": "mt1787132802485",
-      "name": "工资合算",
+      "name": "工资核算",
       "enabled": true,
       "cycle": "monthly",
       "customDays": 0,
       "deadline": "",
       "note": "",
       "lastDone": "",
-      "weekDay": "",
+      "weekDay": null,
       "monthDay": 25,
       "time": ""
     }
@@ -549,7 +549,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/19 18:16:41",
+    "lastSyncTime": "2026/8/19 18:16:47",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
