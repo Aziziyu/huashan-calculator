@@ -73,24 +73,12 @@
       "name": "贝壳找房"
     },
     {
-      "id": "c2",
-      "name": "58同城"
-    },
-    {
-      "id": "c3",
-      "name": "安居客"
-    },
-    {
       "id": "c4",
       "name": "小红书"
     },
     {
       "id": "c5",
       "name": "抖音"
-    },
-    {
-      "id": "c6",
-      "name": "微信朋友圈"
     },
     {
       "id": "c7",
@@ -101,12 +89,8 @@
       "name": "企业合作"
     },
     {
-      "id": "c9",
-      "name": "周边中介"
-    },
-    {
-      "id": "c10",
-      "name": "自然到访"
+      "id": "mszt4rman2m78",
+      "name": "泊寓官方"
     }
   ],
   "scoringSteps": {
@@ -489,14 +473,10 @@
   "currentOperationTab": "daily-data",
   "currentPriceTab": "list",
   "salaryTodos": [],
-  "githubConfig": {
-    "token": "",
-    "owner": "Aziziyu",
-    "repo": "huashan-calculator",
-    "branch": "main",
-    "path": "sync-data/workstation.json",
-    "lastSyncTime": "",
-    "lastSyncDirection": "",
-    "lastSyncSha": ""
+  "cloudSync": {
+    "pat": "",
+    "lastSyncTime": "2026/8/19 16:05:29",
+    "lastSyncDirection": "upload",
+    "autoSync": true
   }
 }
