@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>店长工作台 v5.4</title>
+<title>店长工作台 v5.7</title>
 <style>
 /* ===== CSS Reset & Base ===== */
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -425,7 +425,7 @@ textarea.form-control { resize: vertical; min-height: 60px; }
       <div class="nav-item" data-page="ka"><span class="nav-icon">🏢</span>企业客户KA</div>
       <div class="nav-item" data-page="settings"><span class="nav-icon">⚙️</span>设置</div>
     </nav>
-    <div class="sidebar-footer">v5.6 · 自动云同步</div>
+    <div class="sidebar-footer">v5.7 · GitHub 自动同步</div>
   </aside>
 
   <!-- Main Content -->
@@ -668,12 +668,11 @@ const defaultStore = {
   currentPriceTab: 'list',
   // 工资考勤待办
   salaryTodos: [],
-  // 云同步配置（JSONBin.io）
+  // 云同步配置（GitHub 仓库文件同步）
   cloudSync: {
-    apiKey: '',
-    binId: '',
+    pat: '',           // PAT 独立存储在 localStorage gh_pat_store，不写入 store
     lastSyncTime: '',
-    lastSyncDirection: '',
+    lastSyncDirection: '',  // 'upload' 或 'download'
     autoSync: true
   }
 };
@@ -778,23 +777,26 @@ function loadStore() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      // v5.6 迁移：从 githubConfig 迁移到 cloudSync（JSONBin）
+      // v5.6→v5.7 迁移：从 JSONBin cloudSync 迁移到 GitHub 仓库同步
+      if (parsed.cloudSync && (parsed.cloudSync.apiKey !== undefined || parsed.cloudSync.binId !== undefined)) {
+        // 清除 JSONBin 相关字段
+        delete parsed.cloudSync.apiKey;
+        delete parsed.cloudSync.binId;
+        parsed.cloudSync.pat = '';
+        localStorage.removeItem('jsonbin_api_key');
+        // 如果之前有 PAT 在 localStorage，保留
+        console.log('✅ 数据已从 v5.6 JSONBin 迁移到 v5.7 GitHub 仓库同步');
+      }
+      // v5.5→v5.7 迁移：从旧 githubConfig 迁移到 cloudSync
       if (parsed.githubConfig && !parsed.cloudSync) {
         parsed.cloudSync = {
-          apiKey: localStorage.getItem('jsonbin_api_key') || '',
-          binId: '',
+          pat: '',
           lastSyncTime: parsed.githubConfig.lastSyncTime || '',
           lastSyncDirection: parsed.githubConfig.lastSyncDirection || '',
           autoSync: true
         };
         delete parsed.githubConfig;
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
-        console.log('✅ 数据已从 v5.5 GitHub同步 迁移到 v5.6 JSONBin自动同步');
-      }
-      // 恢复 API Key 到内存（独立存储）
-      if (parsed.cloudSync && !parsed.cloudSync.apiKey) {
-        const savedKey = localStorage.getItem('jsonbin_api_key');
-        if (savedKey) parsed.cloudSync.apiKey = savedKey;
+        console.log('✅ 数据已从 v5.5 githubConfig 迁移到 v5.7 cloudSync');
       }
       // Merge with defaults to handle new fields
       return deepMerge(defaultStore, parsed);
@@ -808,10 +810,10 @@ function loadStore() {
 function saveStore() {
   try {
     const saveData = JSON.parse(JSON.stringify(store));
-    saveData.cloudSync.apiKey = ''; // API Key 独立存储，不写入主 store
+    saveData.cloudSync.pat = ''; // PAT 独立存储在 localStorage，不写入主 store
     localStorage.setItem(STORAGE_KEY, JSON.stringify(saveData));
-    // 自动同步：防抖 5 秒后上传
-    if (store.cloudSync.autoSync && store.cloudSync.binId) {
+    // 自动同步：防抖 5 秒后上传到 GitHub
+    if (store.cloudSync.autoSync && getGitHubPAT()) {
       scheduleAutoSync();
     }
   } catch (e) {
@@ -5295,29 +5297,32 @@ function renderSettings(area) {
     </div>
 
     <div class="card">
-      <div class="card-header"><h3>☁️ 自动云同步</h3></div>
+      <div class="card-header"><h3>☁️ GitHub 自动云同步</h3></div>
       <div class="card-body">
-        <p style="font-size:13px;color:#666;margin-bottom:12px;">使用 JSONBin.io 免费云存储，数据变化后自动同步，多设备共享。首次使用只需填写 API Key 并一键初始化。</p>
+        <p style="font-size:13px;color:#666;margin-bottom:12px;">数据自动同步到你的 GitHub 仓库，多设备共享。只需填一次 PAT，之后全自动。</p>
         <div class="form-group">
-          <label>API Key</label>
-          <input type="password" class="form-control" id="jsonbinApiKey" value="${localStorage.getItem('jsonbin_api_key') || ''}" placeholder="粘贴你的 JSONBin API Key">
-          <div style="font-size:11px;color:#999;margin-top:4px;">前往 <a href="https://jsonbin.io" target="_blank" style="color:#4A90D9;">jsonbin.io</a> 注册免费账号，在 Dashboard 复制 X-Master-Key</div>
+          <label>GitHub PAT（Personal Access Token）</label>
+          <input type="password" class="form-control" id="githubPatInput" value="${getGitHubPAT()}" placeholder="粘贴你的 GitHub PAT">
+          <div style="font-size:11px;color:#999;margin-top:4px;">
+            获取方式：GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token<br>
+            权限勾选 <code style="background:#F0F0F0;padding:1px 4px;border-radius:3px;">repo</code> 即可。
+            <a href="https://github.com/settings/tokens" target="_blank" style="color:#4A90D9;">去生成 →</a>
+          </div>
         </div>
-        <div id="jsonbinBinIdDisplay" style="font-size:12px;color:#666;margin-top:8px;">${store.cloudSync.binId ? '已绑定 Bin：' + store.cloudSync.binId : '尚未初始化云存储'}</div>
         <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
-          <button class="btn btn-sm btn-primary" onclick="handleOneClickSetup()">🚀 一键初始化</button>
-          <button class="btn btn-sm" onclick="handleManualDownload()">⬇️ 手动下载</button>
+          <button class="btn btn-sm btn-primary" onclick="handleBindGitHub()">🔗 绑定并上传</button>
+          <button class="btn btn-sm" onclick="handleManualDownload()">⬇️ 从 GitHub 下载</button>
         </div>
-        <div style="font-size:12px;color:#27AE60;margin-top:8px;" id="ghConnStatus"></div>
+        <div style="font-size:12px;color:#27AE60;margin-top:8px;" id="ghConnStatus">${getGitHubPAT() ? '✅ PAT 已配置' : ''}</div>
         <div style="font-size:12px;color:#999;margin-top:8px;" id="ghSyncInfo">${store.cloudSync.lastSyncTime ? '最后同步：' + store.cloudSync.lastSyncTime + '（' + (store.cloudSync.lastSyncDirection === 'upload' ? '上传' : '下载') + '）' : '尚未同步'}</div>
         <div style="margin-top:12px;padding-top:12px;border-top:1px solid #F0F0F0;">
-          <label style="font-size:13px;cursor:pointer;"><input type="checkbox" id="autoSyncToggle" ${store.cloudSync.autoSync !== false ? 'checked' : ''} onchange="toggleAutoSync()"> 开启自动同步（数据变化后自动上传）</label>
+          <label style="font-size:13px;cursor:pointer;"><input type="checkbox" id="autoSyncToggle" ${store.cloudSync.autoSync !== false ? 'checked' : ''} onchange="toggleAutoSync()"> 开启自动同步（数据变化后 5 秒自动上传到 GitHub）</label>
         </div>
       </div>
     </div>
 
     <div style="text-align:center;color:#BBB;font-size:12px;padding:20px 0;">
-      店长工作台 v5.6 · 自动云同步版 · 数据安全由您保管
+      店长工作台 v5.7 · GitHub 自动同步版 · 数据安全由您保管
     </div>
   `;
 
@@ -5751,17 +5756,27 @@ function setupDragLists() {
   });
 }
 
-// ----- JSONBin.io 自动云同步 -----
+// ----- GitHub 仓库文件自动云同步 -----
+
+const GITHUB_REPO_OWNER = 'Aziziyu';
+const GITHUB_REPO_NAME = 'huashan-calculator';
+const GITHUB_SYNC_FILE = 'sync-data/workstation.json';
+const GITHUB_BRANCH = 'main';
 
 let _autoSyncTimer = null;
 
-function getApiKey() {
-  return localStorage.getItem('jsonbin_api_key') || store.cloudSync.apiKey || '';
+function getGitHubPAT() {
+  return localStorage.getItem('gh_pat_store') || '';
 }
 
-function jsonbinHeaders() {
+function setGitHubPAT(pat) {
+  localStorage.setItem('gh_pat_store', pat);
+}
+
+function githubHeaders() {
   return {
-    'X-Master-Key': '$2a$10$' + getApiKey(),
+    'Authorization': 'token ' + getGitHubPAT(),
+    'Accept': 'application/vnd.github+json',
     'Content-Type': 'application/json'
   };
 }
@@ -5772,7 +5787,7 @@ function scheduleAutoSync() {
   _autoSyncTimer = setTimeout(async () => {
     _autoSyncTimer = null;
     try {
-      await syncUploadJsonBin();
+      await syncUploadGitHub();
       updateSyncStatus();
       console.log('✅ 自动同步完成');
     } catch (e) {
@@ -5781,129 +5796,105 @@ function scheduleAutoSync() {
   }, 5000);
 }
 
-async function syncUploadJsonBin() {
-  const apiKey = getApiKey();
-  const binId = store.cloudSync.binId;
-  if (!apiKey) throw new Error('请先配置 API Key');
+async function syncUploadGitHub() {
+  const pat = getGitHubPAT();
+  if (!pat) throw new Error('请先配置 GitHub PAT');
 
   const uploadStore = JSON.parse(JSON.stringify(store));
-  uploadStore.cloudSync.apiKey = ''; // 不上传 API Key
+  uploadStore.cloudSync.pat = ''; // 不上传 PAT
   const jsonStr = JSON.stringify(uploadStore, null, 2);
-  const headers = { 'X-Master-Key': '$2a$10$' + apiKey, 'Content-Type': 'application/json' };
+  const b64 = btoa(unescape(encodeURIComponent(jsonStr)));
 
-  if (binId) {
-    // 更新已有 Bin
-    const resp = await fetch('https://api.jsonbin.io/v3/b/' + binId, {
-      method: 'PUT',
-      headers: headers,
-      body: jsonStr
-    });
-    if (!resp.ok) {
-      const errData = await resp.json().catch(() => ({}));
-      throw new Error('上传失败：' + (errData.message || resp.status));
+  // 获取当前文件的 SHA（如果已存在）
+  const apiUrl = `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/contents/${GITHUB_SYNC_FILE}?ref=${GITHUB_BRANCH}`;
+  let currentSha = '';
+  try {
+    const getResp = await fetch(apiUrl, { headers: { 'Authorization': 'token ' + pat, 'Accept': 'application/vnd.github+json' } });
+    if (getResp.ok) {
+      const getData = await getResp.json();
+      currentSha = getData.sha || '';
     }
-    store.cloudSync.lastSyncTime = new Date().toLocaleString('zh-CN');
-    store.cloudSync.lastSyncDirection = 'upload';
-    saveStore();
-    return true;
-  } else {
-    throw new Error('请先初始化云存储（在设置中点击"一键配置"）');
+  } catch (e) { /* 文件不存在，首次上传 */ }
+
+  // 上传/更新文件
+  const body = {
+    message: currentSha ? 'auto-sync: update workstation data' : 'auto-sync: init workstation data',
+    content: b64,
+    branch: GITHUB_BRANCH
+  };
+  if (currentSha) body.sha = currentSha;
+
+  const resp = await fetch(apiUrl, {
+    method: 'PUT',
+    headers: githubHeaders(),
+    body: JSON.stringify(body)
+  });
+  if (!resp.ok) {
+    const errData = await resp.json().catch(() => ({}));
+    throw new Error('上传失败：' + (errData.message || resp.status));
   }
+  store.cloudSync.lastSyncTime = new Date().toLocaleString('zh-CN');
+  store.cloudSync.lastSyncDirection = 'upload';
+  saveStore();
+  return true;
 }
 
-async function syncDownloadJsonBin() {
-  const apiKey = getApiKey();
-  const binId = store.cloudSync.binId;
-  if (!apiKey) throw new Error('请先配置 API Key');
-  if (!binId) throw new Error('请先初始化云存储');
+async function syncDownloadGitHub() {
+  const pat = getGitHubPAT();
+  if (!pat) throw new Error('请先配置 GitHub PAT');
 
-  const headers = { 'X-Master-Key': '$2a$10$' + apiKey };
-  const resp = await fetch('https://api.jsonbin.io/v3/b/' + binId + '/latest', { headers: headers });
+  const apiUrl = `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/contents/${GITHUB_SYNC_FILE}?ref=${GITHUB_BRANCH}`;
+  const resp = await fetch(apiUrl, { headers: { 'Authorization': 'token ' + pat, 'Accept': 'application/vnd.github+json' } });
   if (!resp.ok) {
-    if (resp.status === 404) throw new Error('云端数据不存在，请先上传一次');
+    if (resp.status === 404) throw new Error('云端没有数据，请先上传一次');
     throw new Error('下载失败：' + resp.status);
   }
   const data = await resp.json();
-  const cloudData = data.record;
-  if (!cloudData) throw new Error('云端数据为空');
+  if (!data.content) throw new Error('云端数据为空');
+
+  const jsonStr = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
+  const cloudData = JSON.parse(jsonStr);
+  if (!cloudData) throw new Error('云端数据解析失败');
 
   store = deepMerge(defaultStore, cloudData);
-  // 恢复 API Key（云端不含 API Key）
-  store.cloudSync.apiKey = apiKey;
-  store.cloudSync.binId = binId;
   store.cloudSync.lastSyncTime = new Date().toLocaleString('zh-CN');
   store.cloudSync.lastSyncDirection = 'download';
   saveStore();
   return true;
 }
 
-async function initJsonBin() {
-  const apiKey = getApiKey();
-  if (!apiKey) throw new Error('请先输入 API Key');
-
-  const headers = { 'X-Master-Key': '$2a$10$' + apiKey, 'Content-Type': 'application/json' };
-  const uploadStore = JSON.parse(JSON.stringify(store));
-  uploadStore.cloudSync.apiKey = '';
-  const jsonStr = JSON.stringify(uploadStore, null, 2);
-
-  // 创建新 Bin
-  const resp = await fetch('https://api.jsonbin.io/v3/b', {
-    method: 'POST',
-    headers: headers,
-    body: jsonStr
+async function testGitHubConnection() {
+  const pat = getGitHubPAT();
+  if (!pat) throw new Error('请先输入 GitHub PAT');
+  const resp = await fetch(`https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}`, {
+    headers: { 'Authorization': 'token ' + pat, 'Accept': 'application/vnd.github+json' }
   });
-  if (!resp.ok) {
-    const errData = await resp.json().catch(() => ({}));
-    throw new Error('创建失败：' + (errData.message || resp.status));
-  }
-  const data = await resp.json();
-  const newBinId = data.metadata?.id || data.record?.id || '';
-  if (!newBinId) throw new Error('未获取到 Bin ID');
-
-  store.cloudSync.binId = newBinId;
-  store.cloudSync.lastSyncTime = new Date().toLocaleString('zh-CN');
-  store.cloudSync.lastSyncDirection = 'upload';
-  saveStore();
-  return newBinId;
-}
-
-async function testJsonBinConnection() {
-  const apiKey = getApiKey();
-  if (!apiKey) throw new Error('请先输入 API Key');
-
-  const headers = { 'X-Master-Key': '$2a$10$' + apiKey };
-  // 测试：读取 bins 列表
-  const resp = await fetch('https://api.jsonbin.io/v3/b', { headers: headers });
-  if (!resp.ok) throw new Error('API Key 无效或网络错误 (' + resp.status + ')');
+  if (!resp.ok) throw new Error('PAT 无效或仓库不存在 (' + resp.status + ')');
   return true;
 }
 
 async function autoSyncOnPageLoad() {
-  // 页面加载时自动从云端拉取最新数据
-  const apiKey = getApiKey();
-  const binId = store.cloudSync.binId;
-  if (!apiKey || !binId) return; // 未配置，跳过
+  const pat = getGitHubPAT();
+  if (!pat) return; // 未配置 PAT，跳过
   if (!store.cloudSync.autoSync) return;
 
   try {
-    const headers = { 'X-Master-Key': '$2a$10$' + apiKey };
-    const resp = await fetch('https://api.jsonbin.io/v3/b/' + binId + '/latest', { headers: headers });
-    if (!resp.ok) {
-      console.warn('⚠️ 自动拉取失败：', resp.status);
-      return;
-    }
+    const apiUrl = `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/contents/${GITHUB_SYNC_FILE}?ref=${GITHUB_BRANCH}`;
+    const resp = await fetch(apiUrl, { headers: { 'Authorization': 'token ' + pat, 'Accept': 'application/vnd.github+json' } });
+    if (!resp.ok) return; // 文件不存在或网络问题，静默跳过
+
     const data = await resp.json();
-    const cloudData = data.record;
+    if (!data.content) return;
+
+    const jsonStr = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
+    const cloudData = JSON.parse(jsonStr);
     if (!cloudData) return;
 
-    // 比较时间戳，取更新的
+    // 比较时间戳
     const localTime = store.cloudSync.lastSyncTime || '';
     const cloudTime = cloudData.cloudSync?.lastSyncTime || '';
-    // 简单策略：如果云端有数据且本地没有同步记录，或云端更新，则使用云端数据
     if (!localTime || cloudTime > localTime) {
       store = deepMerge(defaultStore, cloudData);
-      store.cloudSync.apiKey = apiKey;
-      store.cloudSync.binId = binId;
       saveStore();
       console.log('✅ 页面加载时自动同步了云端数据');
     }
@@ -5925,11 +5916,12 @@ function updateSyncStatus() {
   const lastEl = document.getElementById('syncLastTime');
   const statusEl = document.getElementById('syncStatus');
   const autoEl = document.getElementById('syncAutoStatus');
+  const pat = getGitHubPAT();
   if (lastEl && store.cloudSync.lastSyncTime) {
     lastEl.textContent = '最后同步：' + store.cloudSync.lastSyncTime;
   }
   if (autoEl) {
-    if (!store.cloudSync.apiKey || !store.cloudSync.binId) {
+    if (!pat) {
       autoEl.textContent = '💤 未配置云同步';
       autoEl.style.color = '#999';
     } else if (store.cloudSync.autoSync) {
@@ -5941,12 +5933,9 @@ function updateSyncStatus() {
     }
   }
   if (statusEl) {
-    if (store.cloudSync.apiKey && store.cloudSync.binId) {
-      statusEl.textContent = '状态：已连接 ✅';
+    if (pat) {
+      statusEl.textContent = '状态：已连接 GitHub ✅';
       statusEl.style.color = '#27AE60';
-    } else if (store.cloudSync.apiKey) {
-      statusEl.textContent = '状态：API Key 已配置，未初始化';
-      statusEl.style.color = '#F39C12';
     } else {
       statusEl.textContent = '状态：未配置';
       statusEl.style.color = '#999';
@@ -5968,9 +5957,9 @@ async function doSyncUpload() {
   const statusEl = document.getElementById('syncStatus');
   try {
     if (statusEl) { statusEl.textContent = '状态：上传中...'; statusEl.style.color = '#F39C12'; }
-    await syncUploadJsonBin();
+    await syncUploadGitHub();
     if (statusEl) { statusEl.textContent = '状态：上传成功 ✅'; statusEl.style.color = '#27AE60'; }
-    showToast('数据已上传到云端');
+    showToast('数据已上传到 GitHub');
     updateSyncStatus();
   } catch (e) {
     if (statusEl) { statusEl.textContent = '状态：上传失败 ❌'; statusEl.style.color = '#E74C3C'; }
@@ -5982,9 +5971,9 @@ async function doSyncDownload() {
   const statusEl = document.getElementById('syncStatus');
   try {
     if (statusEl) { statusEl.textContent = '状态：下载中...'; statusEl.style.color = '#F39C12'; }
-    await syncDownloadJsonBin();
+    await syncDownloadGitHub();
     if (statusEl) { statusEl.textContent = '状态：下载成功 ✅'; statusEl.style.color = '#27AE60'; }
-    showToast('数据已从云端下载');
+    showToast('数据已从 GitHub 下载');
     renderPage();
     updateSyncStatus();
   } catch (e) {
@@ -5993,32 +5982,37 @@ async function doSyncDownload() {
   }
 }
 
-async function handleOneClickSetup() {
+async function handleBindGitHub() {
   const statusEl = document.getElementById('ghConnStatus');
-  const apiKey = document.getElementById('jsonbinApiKey').value.trim();
-  if (!apiKey) {
-    showToast('请先输入 API Key');
+  const patInput = document.getElementById('githubPatInput');
+  if (!patInput) { showToast('找不到输入框'); return; }
+  const pat = patInput.value.trim();
+  if (!pat) {
+    showToast('请先输入 GitHub PAT');
     return;
   }
-  localStorage.setItem('jsonbin_api_key', apiKey);
-  store.cloudSync.apiKey = apiKey;
-  if (statusEl) { statusEl.textContent = '正在初始化...'; statusEl.style.color = '#F39C12'; }
+  setGitHubPAT(pat);
+  if (statusEl) { statusEl.textContent = '正在测试连接...'; statusEl.style.color = '#F39C12'; }
   try {
-    const binId = await initJsonBin();
-    if (statusEl) { statusEl.textContent = '✅ 初始化成功！Bin ID: ' + binId; statusEl.style.color = '#27AE60'; }
-    const displayEl = document.getElementById('jsonbinBinIdDisplay');
-    if (displayEl) displayEl.textContent = '已绑定 Bin：' + binId;
-    showToast('云存储初始化完成，数据已自动上传！');
+    await testGitHubConnection();
+    if (statusEl) { statusEl.textContent = '✅ PAT 有效，已绑定！'; statusEl.style.color = '#27AE60'; }
+    showToast('GitHub PAT 绑定成功！');
+    // 绑定成功后立即上传一次
+    try {
+      await syncUploadGitHub();
+      showToast('数据已自动上传到 GitHub');
+    } catch (e2) {
+      console.warn('首次上传失败：', e2.message);
+    }
     updateSyncStatus();
   } catch (e) {
-    if (statusEl) { statusEl.textContent = '❌ ' + (e.message || '初始化失败'); statusEl.style.color = '#E74C3C'; }
-    showToast('初始化失败：' + (e.message || '未知错误'));
+    if (statusEl) { statusEl.textContent = '❌ ' + (e.message || '绑定失败'); statusEl.style.color = '#E74C3C'; }
+    showToast('绑定失败：' + (e.message || '未知错误'));
   }
 }
 
 async function handleManualDownload() {
-  if (!getApiKey()) { showToast('请先配置 API Key'); return; }
-  if (!store.cloudSync.binId) { showToast('请先一键初始化'); return; }
+  if (!getGitHubPAT()) { showToast('请先绑定 GitHub PAT'); return; }
   await doSyncDownload();
 }
 
@@ -6039,7 +6033,7 @@ function goToSyncSettings() {
   setTimeout(() => {
     const cards = document.querySelectorAll('.card');
     for (const c of cards) {
-      if (c.querySelector('#jsonbinApiKey')) {
+      if (c.querySelector('#githubPatInput')) {
         c.scrollIntoView({ behavior: 'smooth', block: 'start' });
         break;
       }
@@ -6209,7 +6203,7 @@ window.updateSyncStatus = updateSyncStatus;
 window.doSyncUpload = doSyncUpload;
 window.doSyncDownload = doSyncDownload;
 window.goToSyncSettings = goToSyncSettings;
-window.handleOneClickSetup = handleOneClickSetup;
+window.handleBindGitHub = handleBindGitHub;
 window.handleManualDownload = handleManualDownload;
 window.toggleAutoSync = toggleAutoSync;
 
