@@ -343,6 +343,19 @@
       "weekDay": null,
       "monthDay": null,
       "time": ""
+    },
+    {
+      "id": "mt1787132802485",
+      "name": "工作合算",
+      "enabled": true,
+      "cycle": "monthly",
+      "customDays": 0,
+      "deadline": "",
+      "note": "",
+      "lastDone": "",
+      "weekDay": null,
+      "monthDay": 25,
+      "time": ""
     }
   ],
   "reminders": {
@@ -536,7 +549,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/19 17:46:35",
+    "lastSyncTime": "2026/8/19 17:46:42",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
