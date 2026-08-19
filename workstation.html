@@ -425,7 +425,7 @@ textarea.form-control { resize: vertical; min-height: 60px; }
       <div class="nav-item" data-page="ka"><span class="nav-icon">🏢</span>企业客户KA</div>
       <div class="nav-item" data-page="settings"><span class="nav-icon">⚙️</span>设置</div>
     </nav>
-    <div class="sidebar-footer">v5.5.3 · GitHub云同步</div>
+    <div class="sidebar-footer">v5.6 · 自动云同步</div>
   </aside>
 
   <!-- Main Content -->
@@ -438,10 +438,11 @@ textarea.form-control { resize: vertical; min-height: 60px; }
       <div class="top-bar-right" style="display:flex;align-items:center;gap:8px;position:relative;">
         <button class="btn btn-sm" id="syncBtn" onclick="toggleSyncPanel()">☁️ 同步</button>
         <div id="syncPanel" style="display:none;position:absolute;top:42px;right:0;background:#fff;border:1px solid #E8E8E8;border-radius:8px;padding:16px;box-shadow:0 4px 12px rgba(0,0,0,0.1);z-index:100;width:280px;">
-          <div style="font-weight:600;margin-bottom:12px;font-size:14px;">☁️ GitHub云同步</div>
+          <div style="font-weight:600;margin-bottom:12px;font-size:14px;">☁️ 云同步</div>
+          <div id="syncAutoStatus" style="font-size:12px;color:#666;margin-bottom:8px;"></div>
           <div style="display:flex;gap:8px;margin-bottom:12px;">
-            <button class="btn btn-sm btn-primary" style="flex:1;" onclick="doSyncUpload()">⬆️ 上传</button>
-            <button class="btn btn-sm" style="flex:1;" onclick="doSyncDownload()">⬇️ 下载</button>
+            <button class="btn btn-sm btn-primary" style="flex:1;" onclick="doSyncUpload()">⬆️ 立即上传</button>
+            <button class="btn btn-sm" style="flex:1;" onclick="doSyncDownload()">⬇️ 手动下载</button>
           </div>
           <div style="font-size:12px;color:#999;margin-bottom:8px;" id="syncLastTime">最后同步：从未同步</div>
           <div style="font-size:12px;color:#666;" id="syncStatus">状态：未配置</div>
@@ -667,16 +668,13 @@ const defaultStore = {
   currentPriceTab: 'list',
   // 工资考勤待办
   salaryTodos: [],
-  // GitHub云同步配置
-  githubConfig: {
-    token: '',
-    owner: 'Aziziyu',
-    repo: 'huashan-calculator',
-    branch: 'main',
-    path: 'sync-data/workstation.json',
+  // 云同步配置（JSONBin.io）
+  cloudSync: {
+    apiKey: '',
+    binId: '',
     lastSyncTime: '',
     lastSyncDirection: '',
-    lastSyncSha: ''
+    autoSync: true
   }
 };
 
@@ -780,14 +778,23 @@ function loadStore() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      // PAT 迁移：将 store 中的 token 迁移到 localStorage 独立存储（避免上传到 GitHub 触发 secret scanning）
-      if (parsed.githubConfig && parsed.githubConfig.token) {
-        if (!localStorage.getItem('gh_pat_store')) {
-          localStorage.setItem('gh_pat_store', parsed.githubConfig.token);
-        }
-        parsed.githubConfig.token = '';
+      // v5.6 迁移：从 githubConfig 迁移到 cloudSync（JSONBin）
+      if (parsed.githubConfig && !parsed.cloudSync) {
+        parsed.cloudSync = {
+          apiKey: localStorage.getItem('jsonbin_api_key') || '',
+          binId: '',
+          lastSyncTime: parsed.githubConfig.lastSyncTime || '',
+          lastSyncDirection: parsed.githubConfig.lastSyncDirection || '',
+          autoSync: true
+        };
+        delete parsed.githubConfig;
         localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
-        console.log('✅ PAT 已迁移到独立存储');
+        console.log('✅ 数据已从 v5.5 GitHub同步 迁移到 v5.6 JSONBin自动同步');
+      }
+      // 恢复 API Key 到内存（独立存储）
+      if (parsed.cloudSync && !parsed.cloudSync.apiKey) {
+        const savedKey = localStorage.getItem('jsonbin_api_key');
+        if (savedKey) parsed.cloudSync.apiKey = savedKey;
       }
       // Merge with defaults to handle new fields
       return deepMerge(defaultStore, parsed);
@@ -801,8 +808,12 @@ function loadStore() {
 function saveStore() {
   try {
     const saveData = JSON.parse(JSON.stringify(store));
-    saveData.githubConfig.token = ''; // PAT 独立存储，不写入主 store
+    saveData.cloudSync.apiKey = ''; // API Key 独立存储，不写入主 store
     localStorage.setItem(STORAGE_KEY, JSON.stringify(saveData));
+    // 自动同步：防抖 5 秒后上传
+    if (store.cloudSync.autoSync && store.cloudSync.binId) {
+      scheduleAutoSync();
+    }
   } catch (e) {
     console.error('Save store error:', e);
   }
@@ -5284,47 +5295,29 @@ function renderSettings(area) {
     </div>
 
     <div class="card">
-      <div class="card-header"><h3>☁️ GitHub云同步</h3></div>
+      <div class="card-header"><h3>☁️ 自动云同步</h3></div>
       <div class="card-body">
-        <p style="font-size:13px;color:#666;margin-bottom:12px;">将数据同步到 GitHub 仓库，实现多设备共享与备份。首次使用请填写 PAT 并测试连接。</p>
+        <p style="font-size:13px;color:#666;margin-bottom:12px;">使用 JSONBin.io 免费云存储，数据变化后自动同步，多设备共享。首次使用只需填写 API Key 并一键初始化。</p>
         <div class="form-group">
-          <label>Personal Access Token (PAT)</label>
-          <input type="password" class="form-control" id="ghToken" value="${localStorage.getItem('gh_pat_store') || ''}" placeholder="ghp_xxxx">
-          <div style="font-size:11px;color:#999;margin-top:4px;">在 GitHub Settings → Developer settings → Personal access tokens 创建，需 repo 权限</div>
+          <label>API Key</label>
+          <input type="password" class="form-control" id="jsonbinApiKey" value="${localStorage.getItem('jsonbin_api_key') || ''}" placeholder="粘贴你的 JSONBin API Key">
+          <div style="font-size:11px;color:#999;margin-top:4px;">前往 <a href="https://jsonbin.io" target="_blank" style="color:#4A90D9;">jsonbin.io</a> 注册免费账号，在 Dashboard 复制 X-Master-Key</div>
         </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Owner（用户名）</label>
-            <input type="text" class="form-control" id="ghOwner" value="${store.githubConfig.owner || ''}" placeholder="Aziziyu">
-          </div>
-          <div class="form-group">
-            <label>Repo（仓库名）</label>
-            <input type="text" class="form-control" id="ghRepo" value="${store.githubConfig.repo || ''}" placeholder="huashan-calculator">
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Branch（分支）</label>
-            <input type="text" class="form-control" id="ghBranch" value="${store.githubConfig.branch || 'main'}" placeholder="main">
-          </div>
-          <div class="form-group">
-            <label>Path（文件路径）</label>
-            <input type="text" class="form-control" id="ghPath" value="${store.githubConfig.path || 'sync-data/workstation.json'}" placeholder="sync-data/workstation.json">
-          </div>
-        </div>
+        <div id="jsonbinBinIdDisplay" style="font-size:12px;color:#666;margin-top:8px;">${store.cloudSync.binId ? '已绑定 Bin：' + store.cloudSync.binId : '尚未初始化云存储'}</div>
         <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
-          <button class="btn btn-sm" onclick="testGithubConnection()">🔗 测试连接</button>
-          <button class="btn btn-sm btn-primary" onclick="saveGithubConfig()">💾 保存配置</button>
-          <button class="btn btn-sm btn-primary" onclick="doSyncUpload()">⬆️ 上传到GitHub</button>
-          <button class="btn btn-sm" onclick="doSyncDownload()">⬇️ 从GitHub下载</button>
+          <button class="btn btn-sm btn-primary" onclick="handleOneClickSetup()">🚀 一键初始化</button>
+          <button class="btn btn-sm" onclick="handleManualDownload()">⬇️ 手动下载</button>
         </div>
         <div style="font-size:12px;color:#27AE60;margin-top:8px;" id="ghConnStatus"></div>
-        <div style="font-size:12px;color:#999;margin-top:8px;" id="ghSyncInfo">${store.githubConfig.lastSyncTime ? '最后同步：' + store.githubConfig.lastSyncTime + '（' + (store.githubConfig.lastSyncDirection === 'upload' ? '上传' : '下载') + '）' : '尚未同步'}</div>
+        <div style="font-size:12px;color:#999;margin-top:8px;" id="ghSyncInfo">${store.cloudSync.lastSyncTime ? '最后同步：' + store.cloudSync.lastSyncTime + '（' + (store.cloudSync.lastSyncDirection === 'upload' ? '上传' : '下载') + '）' : '尚未同步'}</div>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid #F0F0F0;">
+          <label style="font-size:13px;cursor:pointer;"><input type="checkbox" id="autoSyncToggle" ${store.cloudSync.autoSync !== false ? 'checked' : ''} onchange="toggleAutoSync()"> 开启自动同步（数据变化后自动上传）</label>
+        </div>
       </div>
     </div>
 
     <div style="text-align:center;color:#BBB;font-size:12px;padding:20px 0;">
-      店长工作台 v5.5.3 · GitHub云同步版 · 数据安全由您保管
+      店长工作台 v5.6 · 自动云同步版 · 数据安全由您保管
     </div>
   `;
 
@@ -5758,166 +5751,165 @@ function setupDragLists() {
   });
 }
 
-// ----- GitHub云同步 -----
+// ----- JSONBin.io 自动云同步 -----
 
-function ghHeaders() {
-  const token = localStorage.getItem('gh_pat_store') || store.githubConfig.token || '';
+let _autoSyncTimer = null;
+
+function getApiKey() {
+  return localStorage.getItem('jsonbin_api_key') || store.cloudSync.apiKey || '';
+}
+
+function jsonbinHeaders() {
   return {
-    'Authorization': 'token ' + token,
-    'Accept': 'application/vnd.github.v3+json',
+    'X-Master-Key': '$2a$10$' + getApiKey(),
     'Content-Type': 'application/json'
   };
 }
 
-function ghApiUrl(path) {
-  return 'https://api.github.com/repos/' + store.githubConfig.owner + '/' + store.githubConfig.repo + '/contents/' + path;
+// 防抖自动同步：数据变化后 5 秒静默上传
+function scheduleAutoSync() {
+  if (_autoSyncTimer) clearTimeout(_autoSyncTimer);
+  _autoSyncTimer = setTimeout(async () => {
+    _autoSyncTimer = null;
+    try {
+      await syncUploadJsonBin();
+      updateSyncStatus();
+      console.log('✅ 自动同步完成');
+    } catch (e) {
+      console.warn('⚠️ 自动同步失败，下次再试：', e.message);
+    }
+  }, 5000);
 }
 
-async function syncToGithub() {
-  const cfg = store.githubConfig;
-  const pat = localStorage.getItem('gh_pat_store') || cfg.token || '';
-  if (!pat || !cfg.owner || !cfg.repo) {
-    throw new Error('请先在设置中配置 GitHub Token、Owner 和仓库名');
-  }
-  // 确保 PAT 已保存到 localStorage
-  localStorage.setItem('gh_pat_store', pat);
+async function syncUploadJsonBin() {
+  const apiKey = getApiKey();
+  const binId = store.cloudSync.binId;
+  if (!apiKey) throw new Error('请先配置 API Key');
+
   const uploadStore = JSON.parse(JSON.stringify(store));
-  uploadStore.githubConfig.token = '';
+  uploadStore.cloudSync.apiKey = ''; // 不上传 API Key
   const jsonStr = JSON.stringify(uploadStore, null, 2);
-  const base64Content = btoa(unescape(encodeURIComponent(jsonStr)));
-  const fileUrl = ghApiUrl(cfg.path);
-  const now = new Date().toISOString();
-  const commitMsg = 'workstation sync v5.5 @ ' + new Date().toLocaleString('zh-CN');
+  const headers = { 'X-Master-Key': '$2a$10$' + apiKey, 'Content-Type': 'application/json' };
 
-  // 先检查文件是否存在（获取sha）
-  let sha = null;
-  try {
-    const getResp = await fetch(fileUrl + '?ref=' + cfg.branch, { headers: ghHeaders() });
-    if (getResp.ok) {
-      const getData = await getResp.json();
-      sha = getData.sha;
-    } else if (getResp.status === 404) {
-      sha = null; // 文件不存在，新建
-    } else {
-      throw new Error('查询文件状态失败: ' + getResp.status);
+  if (binId) {
+    // 更新已有 Bin
+    const resp = await fetch('https://api.jsonbin.io/v3/b/' + binId, {
+      method: 'PUT',
+      headers: headers,
+      body: jsonStr
+    });
+    if (!resp.ok) {
+      const errData = await resp.json().catch(() => ({}));
+      throw new Error('上传失败：' + (errData.message || resp.status));
     }
-  } catch (e) {
-    // 网络错误也可能是404
-    if (e.message && e.message.includes('404')) sha = null;
-    else if (!sha) throw new Error('无法检查文件状态：' + e.message);
+    store.cloudSync.lastSyncTime = new Date().toLocaleString('zh-CN');
+    store.cloudSync.lastSyncDirection = 'upload';
+    saveStore();
+    return true;
+  } else {
+    throw new Error('请先初始化云存储（在设置中点击"一键配置"）');
   }
+}
 
-  const body = {
-    message: commitMsg,
-    content: base64Content,
-    branch: cfg.branch
-  };
-  if (sha) body.sha = sha;
+async function syncDownloadJsonBin() {
+  const apiKey = getApiKey();
+  const binId = store.cloudSync.binId;
+  if (!apiKey) throw new Error('请先配置 API Key');
+  if (!binId) throw new Error('请先初始化云存储');
 
-  const putResp = await fetch(fileUrl, {
-    method: 'PUT',
-    headers: ghHeaders(),
-    body: JSON.stringify(body)
-  });
-  const putData = await putResp.json();
-  if (!putResp.ok) {
-    throw new Error(putData.message || '上传失败 (' + putResp.status + ')');
+  const headers = { 'X-Master-Key': '$2a$10$' + apiKey };
+  const resp = await fetch('https://api.jsonbin.io/v3/b/' + binId + '/latest', { headers: headers });
+  if (!resp.ok) {
+    if (resp.status === 404) throw new Error('云端数据不存在，请先上传一次');
+    throw new Error('下载失败：' + resp.status);
   }
+  const data = await resp.json();
+  const cloudData = data.record;
+  if (!cloudData) throw new Error('云端数据为空');
 
-  store.githubConfig.lastSyncTime = new Date().toLocaleString('zh-CN');
-  store.githubConfig.lastSyncDirection = 'upload';
-  store.githubConfig.lastSyncSha = putData.content?.sha || sha || '';
+  store = deepMerge(defaultStore, cloudData);
+  // 恢复 API Key（云端不含 API Key）
+  store.cloudSync.apiKey = apiKey;
+  store.cloudSync.binId = binId;
+  store.cloudSync.lastSyncTime = new Date().toLocaleString('zh-CN');
+  store.cloudSync.lastSyncDirection = 'download';
   saveStore();
   return true;
 }
 
-async function syncFromGithub() {
-  const cfg = store.githubConfig;
-  const pat = localStorage.getItem('gh_pat_store') || cfg.token || '';
-  if (!pat || !cfg.owner || !cfg.repo) {
-    throw new Error('请先在设置中配置 GitHub Token、Owner 和仓库名');
+async function initJsonBin() {
+  const apiKey = getApiKey();
+  if (!apiKey) throw new Error('请先输入 API Key');
+
+  const headers = { 'X-Master-Key': '$2a$10$' + apiKey, 'Content-Type': 'application/json' };
+  const uploadStore = JSON.parse(JSON.stringify(store));
+  uploadStore.cloudSync.apiKey = '';
+  const jsonStr = JSON.stringify(uploadStore, null, 2);
+
+  // 创建新 Bin
+  const resp = await fetch('https://api.jsonbin.io/v3/b', {
+    method: 'POST',
+    headers: headers,
+    body: jsonStr
+  });
+  if (!resp.ok) {
+    const errData = await resp.json().catch(() => ({}));
+    throw new Error('创建失败：' + (errData.message || resp.status));
   }
-  const fileUrl = ghApiUrl(cfg.path);
+  const data = await resp.json();
+  const newBinId = data.metadata?.id || data.record?.id || '';
+  if (!newBinId) throw new Error('未获取到 Bin ID');
 
-  const getResp = await fetch(fileUrl + '?ref=' + cfg.branch, { headers: ghHeaders() });
-  if (!getResp.ok) {
-    if (getResp.status === 404) {
-      throw new Error('云端文件不存在，请先上传一次数据');
-    }
-    throw new Error('下载失败: ' + getResp.status);
-  }
-  const getData = await getResp.json();
-
-  if (!getData.content) {
-    throw new Error('云端文件内容为空');
-  }
-
-  try {
-    const jsonStr = decodeURIComponent(escape(atob(getData.content.replace(/\n/g, ''))));
-    const cloudData = JSON.parse(jsonStr);
-    if (!confirm('从云端下载数据将覆盖本地所有数据，确定继续？')) {
-      return false;
-    }
-    store = deepMerge(defaultStore, cloudData);
-    // PAT 从 localStorage 恢复（云端不含 PAT）
-    const savedPat = localStorage.getItem('gh_pat_store');
-    store.githubConfig.token = savedPat || '';
-    store.githubConfig.lastSyncTime = new Date().toLocaleString('zh-CN');
-    store.githubConfig.lastSyncDirection = 'download';
-    store.githubConfig.lastSyncSha = getData.sha || '';
-    saveStore();
-    renderPage();
-    return true;
-  } catch (e) {
-    throw new Error('云端数据解析失败：' + e.message);
-  }
-}
-
-async function testGithubConnection() {
-  const btn = event.target;
-  const statusEl = document.getElementById('ghConnStatus');
-  btn.disabled = true;
-  btn.textContent = '测试中...';
-  statusEl.textContent = '';
-  try {
-    const token = document.getElementById('ghToken').value.trim();
-    localStorage.setItem('gh_pat_store', token);
-    store.githubConfig.token = token;
-    store.githubConfig.owner = document.getElementById('ghOwner').value.trim();
-    store.githubConfig.repo = document.getElementById('ghRepo').value.trim();
-    store.githubConfig.branch = document.getElementById('ghBranch').value.trim();
-    store.githubConfig.path = document.getElementById('ghPath').value.trim();
-    saveStore();
-
-    // 测试：获取仓库信息
-    const repoUrl = 'https://api.github.com/repos/' + store.githubConfig.owner + '/' + store.githubConfig.repo;
-    const resp = await fetch(repoUrl, { headers: ghHeaders() });
-    if (!resp.ok) {
-      throw new Error('仓库访问失败 (' + resp.status + ')');
-    }
-    const repoData = await resp.json();
-    statusEl.textContent = '✅ 连接成功 - ' + repoData.full_name;
-    statusEl.style.color = '#27AE60';
-  } catch (e) {
-    statusEl.textContent = '❌ ' + (e.message || '连接失败');
-    statusEl.style.color = '#E74C3C';
-  } finally {
-    btn.disabled = false;
-    btn.textContent = ' 测试连接';
-  }
-}
-
-function saveGithubConfig() {
-  const token = document.getElementById('ghToken').value.trim();
-  localStorage.setItem('gh_pat_store', token);
-  store.githubConfig.token = token;
-  store.githubConfig.owner = document.getElementById('ghOwner').value.trim();
-  store.githubConfig.repo = document.getElementById('ghRepo').value.trim();
-  store.githubConfig.branch = document.getElementById('ghBranch').value.trim();
-  store.githubConfig.path = document.getElementById('ghPath').value.trim();
+  store.cloudSync.binId = newBinId;
+  store.cloudSync.lastSyncTime = new Date().toLocaleString('zh-CN');
+  store.cloudSync.lastSyncDirection = 'upload';
   saveStore();
-  showToast('GitHub配置已保存');
-  updateSyncStatus();
+  return newBinId;
+}
+
+async function testJsonBinConnection() {
+  const apiKey = getApiKey();
+  if (!apiKey) throw new Error('请先输入 API Key');
+
+  const headers = { 'X-Master-Key': '$2a$10$' + apiKey };
+  // 测试：读取 bins 列表
+  const resp = await fetch('https://api.jsonbin.io/v3/b', { headers: headers });
+  if (!resp.ok) throw new Error('API Key 无效或网络错误 (' + resp.status + ')');
+  return true;
+}
+
+async function autoSyncOnPageLoad() {
+  // 页面加载时自动从云端拉取最新数据
+  const apiKey = getApiKey();
+  const binId = store.cloudSync.binId;
+  if (!apiKey || !binId) return; // 未配置，跳过
+  if (!store.cloudSync.autoSync) return;
+
+  try {
+    const headers = { 'X-Master-Key': '$2a$10$' + apiKey };
+    const resp = await fetch('https://api.jsonbin.io/v3/b/' + binId + '/latest', { headers: headers });
+    if (!resp.ok) {
+      console.warn('⚠️ 自动拉取失败：', resp.status);
+      return;
+    }
+    const data = await resp.json();
+    const cloudData = data.record;
+    if (!cloudData) return;
+
+    // 比较时间戳，取更新的
+    const localTime = store.cloudSync.lastSyncTime || '';
+    const cloudTime = cloudData.cloudSync?.lastSyncTime || '';
+    // 简单策略：如果云端有数据且本地没有同步记录，或云端更新，则使用云端数据
+    if (!localTime || cloudTime > localTime) {
+      store = deepMerge(defaultStore, cloudData);
+      store.cloudSync.apiKey = apiKey;
+      store.cloudSync.binId = binId;
+      saveStore();
+      console.log('✅ 页面加载时自动同步了云端数据');
+    }
+  } catch (e) {
+    console.warn('⚠️ 自动拉取失败：', e.message);
+  }
 }
 
 function toggleSyncPanel() {
@@ -5932,13 +5924,29 @@ function toggleSyncPanel() {
 function updateSyncStatus() {
   const lastEl = document.getElementById('syncLastTime');
   const statusEl = document.getElementById('syncStatus');
-  if (lastEl && store.githubConfig.lastSyncTime) {
-    lastEl.textContent = '最后同步：' + store.githubConfig.lastSyncTime;
+  const autoEl = document.getElementById('syncAutoStatus');
+  if (lastEl && store.cloudSync.lastSyncTime) {
+    lastEl.textContent = '最后同步：' + store.cloudSync.lastSyncTime;
+  }
+  if (autoEl) {
+    if (!store.cloudSync.apiKey || !store.cloudSync.binId) {
+      autoEl.textContent = '💤 未配置云同步';
+      autoEl.style.color = '#999';
+    } else if (store.cloudSync.autoSync) {
+      autoEl.textContent = '🔄 自动同步已开启';
+      autoEl.style.color = '#27AE60';
+    } else {
+      autoEl.textContent = '💤 自动同步已关闭';
+      autoEl.style.color = '#F39C12';
+    }
   }
   if (statusEl) {
-    if (store.githubConfig.token && store.githubConfig.owner && store.githubConfig.repo) {
-      statusEl.textContent = '状态：已配置';
+    if (store.cloudSync.apiKey && store.cloudSync.binId) {
+      statusEl.textContent = '状态：已连接 ✅';
       statusEl.style.color = '#27AE60';
+    } else if (store.cloudSync.apiKey) {
+      statusEl.textContent = '状态：API Key 已配置，未初始化';
+      statusEl.style.color = '#F39C12';
     } else {
       statusEl.textContent = '状态：未配置';
       statusEl.style.color = '#999';
@@ -5947,9 +5955,9 @@ function updateSyncStatus() {
   // 同步更新设置页的同步信息
   const infoEl = document.getElementById('ghSyncInfo');
   if (infoEl) {
-    if (store.githubConfig.lastSyncTime) {
-      const dir = store.githubConfig.lastSyncDirection === 'upload' ? '上传' : '下载';
-      infoEl.textContent = '最后同步：' + store.githubConfig.lastSyncTime + '（' + dir + '）';
+    if (store.cloudSync.lastSyncTime) {
+      const dir = store.cloudSync.lastSyncDirection === 'upload' ? '上传' : '下载';
+      infoEl.textContent = '最后同步：' + store.cloudSync.lastSyncTime + '（' + dir + '）';
     } else {
       infoEl.textContent = '尚未同步';
     }
@@ -5959,16 +5967,13 @@ function updateSyncStatus() {
 async function doSyncUpload() {
   const statusEl = document.getElementById('syncStatus');
   try {
-    statusEl.textContent = '状态：上传中...';
-    statusEl.style.color = '#F39C12';
-    await syncToGithub();
-    statusEl.textContent = '状态：上传成功 ✅';
-    statusEl.style.color = '#27AE60';
-    showToast('数据已上传到GitHub');
+    if (statusEl) { statusEl.textContent = '状态：上传中...'; statusEl.style.color = '#F39C12'; }
+    await syncUploadJsonBin();
+    if (statusEl) { statusEl.textContent = '状态：上传成功 ✅'; statusEl.style.color = '#27AE60'; }
+    showToast('数据已上传到云端');
     updateSyncStatus();
   } catch (e) {
-    statusEl.textContent = '状态：上传失败 ❌';
-    statusEl.style.color = '#E74C3C';
+    if (statusEl) { statusEl.textContent = '状态：上传失败 ❌'; statusEl.style.color = '#E74C3C'; }
     showToast('上传失败：' + (e.message || '未知错误'));
   }
 }
@@ -5976,18 +5981,52 @@ async function doSyncUpload() {
 async function doSyncDownload() {
   const statusEl = document.getElementById('syncStatus');
   try {
-    statusEl.textContent = '状态：下载中...';
-    statusEl.style.color = '#F39C12';
-    await syncFromGithub();
-    statusEl.textContent = '状态：下载成功 ✅';
-    statusEl.style.color = '#27AE60';
-    showToast('数据已从GitHub下载');
+    if (statusEl) { statusEl.textContent = '状态：下载中...'; statusEl.style.color = '#F39C12'; }
+    await syncDownloadJsonBin();
+    if (statusEl) { statusEl.textContent = '状态：下载成功 ✅'; statusEl.style.color = '#27AE60'; }
+    showToast('数据已从云端下载');
+    renderPage();
     updateSyncStatus();
   } catch (e) {
-    statusEl.textContent = '状态：下载失败 ❌';
-    statusEl.style.color = '#E74C3C';
+    if (statusEl) { statusEl.textContent = '状态：下载失败 ❌'; statusEl.style.color = '#E74C3C'; }
     showToast('下载失败：' + (e.message || '未知错误'));
   }
+}
+
+async function handleOneClickSetup() {
+  const statusEl = document.getElementById('ghConnStatus');
+  const apiKey = document.getElementById('jsonbinApiKey').value.trim();
+  if (!apiKey) {
+    showToast('请先输入 API Key');
+    return;
+  }
+  localStorage.setItem('jsonbin_api_key', apiKey);
+  store.cloudSync.apiKey = apiKey;
+  if (statusEl) { statusEl.textContent = '正在初始化...'; statusEl.style.color = '#F39C12'; }
+  try {
+    const binId = await initJsonBin();
+    if (statusEl) { statusEl.textContent = '✅ 初始化成功！Bin ID: ' + binId; statusEl.style.color = '#27AE60'; }
+    const displayEl = document.getElementById('jsonbinBinIdDisplay');
+    if (displayEl) displayEl.textContent = '已绑定 Bin：' + binId;
+    showToast('云存储初始化完成，数据已自动上传！');
+    updateSyncStatus();
+  } catch (e) {
+    if (statusEl) { statusEl.textContent = '❌ ' + (e.message || '初始化失败'); statusEl.style.color = '#E74C3C'; }
+    showToast('初始化失败：' + (e.message || '未知错误'));
+  }
+}
+
+async function handleManualDownload() {
+  if (!getApiKey()) { showToast('请先配置 API Key'); return; }
+  if (!store.cloudSync.binId) { showToast('请先一键初始化'); return; }
+  await doSyncDownload();
+}
+
+function toggleAutoSync() {
+  const checkbox = document.getElementById('autoSyncToggle');
+  store.cloudSync.autoSync = checkbox.checked;
+  saveStore();
+  showToast(checkbox.checked ? '已开启自动同步' : '已关闭自动同步');
 }
 
 function goToSyncSettings() {
@@ -5996,11 +6035,11 @@ function goToSyncSettings() {
   renderPage();
   const panel = document.getElementById('syncPanel');
   if (panel) panel.style.display = 'none';
-  // 滚动到 GitHub 云同步卡片
+  // 滚动到云同步卡片
   setTimeout(() => {
     const cards = document.querySelectorAll('.card');
     for (const c of cards) {
-      if (c.querySelector('#ghToken')) {
+      if (c.querySelector('#jsonbinApiKey')) {
         c.scrollIntoView({ behavior: 'smooth', block: 'start' });
         break;
       }
@@ -6062,6 +6101,9 @@ function init() {
 
   // 每日重置检查
   checkTodoReset();
+
+  // 自动云同步：页面加载时静默拉取最新数据
+  autoSyncOnPageLoad();
 }
 
 // 页面加载完成后启动
@@ -6161,16 +6203,15 @@ window.viewKARecords = viewKARecords;
 window.getTodayKAFollowUps = getTodayKAFollowUps;
 window.markKAFollowDone = markKAFollowDone;
 
-// GitHub同步
+// 云同步
 window.toggleSyncPanel = toggleSyncPanel;
 window.updateSyncStatus = updateSyncStatus;
 window.doSyncUpload = doSyncUpload;
 window.doSyncDownload = doSyncDownload;
 window.goToSyncSettings = goToSyncSettings;
-window.saveGithubConfig = saveGithubConfig;
-window.testGithubConnection = testGithubConnection;
-window.syncToGithub = syncToGithub;
-window.syncFromGithub = syncFromGithub;
+window.handleOneClickSetup = handleOneClickSetup;
+window.handleManualDownload = handleManualDownload;
+window.toggleAutoSync = toggleAutoSync;
 
 // 待办管理
 window.addMyTodo = addMyTodo;
