@@ -69,8 +69,20 @@
   ],
   "channels": [
     {
+      "id": "mszt4rman2m78",
+      "name": "泊寓官方"
+    },
+    {
       "id": "c1",
       "name": "贝壳找房"
+    },
+    {
+      "id": "c7",
+      "name": "老带新"
+    },
+    {
+      "id": "mszw50uaacchb",
+      "name": "人才网"
     },
     {
       "id": "c4",
@@ -81,16 +93,8 @@
       "name": "抖音"
     },
     {
-      "id": "c7",
-      "name": "老带新"
-    },
-    {
       "id": "c8",
       "name": "企业合作"
-    },
-    {
-      "id": "mszt4rman2m78",
-      "name": "泊寓官方"
     },
     {
       "id": "mszw4md15ynbb",
@@ -101,8 +105,8 @@
       "name": "散客"
     },
     {
-      "id": "mszw50uaacchb",
-      "name": "人才网"
+      "id": "mszw5fu5gdezs",
+      "name": "内部推荐"
     }
   ],
   "scoringSteps": {
@@ -487,7 +491,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/19 17:30:09",
+    "lastSyncTime": "2026/8/19 17:30:20",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
