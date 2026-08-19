@@ -317,6 +317,32 @@
       "weekDay": 2,
       "monthDay": null,
       "time": "21:55"
+    },
+    {
+      "id": "mt1787132588577",
+      "name": "尾期账单",
+      "enabled": true,
+      "cycle": "daily",
+      "customDays": 0,
+      "deadline": "",
+      "note": "",
+      "lastDone": "",
+      "weekDay": null,
+      "monthDay": null,
+      "time": ""
+    },
+    {
+      "id": "mt1787132592675",
+      "name": "催缴",
+      "enabled": true,
+      "cycle": "daily",
+      "customDays": 0,
+      "deadline": "",
+      "note": "",
+      "lastDone": "",
+      "weekDay": null,
+      "monthDay": null,
+      "time": ""
     }
   ],
   "reminders": {
@@ -510,7 +536,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/19 17:43:01",
+    "lastSyncTime": "2026/8/19 17:43:08",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
