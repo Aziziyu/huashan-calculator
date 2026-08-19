@@ -234,7 +234,56 @@
       "description": "公客回收是否达标"
     }
   ],
-  "eventRecords": {},
+  "eventRecords": {
+    "s1_2026-08_pe1": {
+      "plus": 1,
+      "minus": 1,
+      "entries": [
+        {
+          "type": "plus",
+          "date": "2026-08-19",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-19",
+          "note": ""
+        }
+      ]
+    },
+    "s1_2026-08_pe3": {
+      "plus": 1,
+      "minus": 2,
+      "entries": [
+        {
+          "type": "minus",
+          "date": "2026-08-19",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-19",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-19",
+          "note": ""
+        }
+      ]
+    },
+    "s3_2026-08_pe3": {
+      "plus": 0,
+      "minus": 1,
+      "entries": [
+        {
+          "type": "minus",
+          "date": "2026-08-19",
+          "note": ""
+        }
+      ]
+    }
+  },
   "channelMonthlyData": {},
   "todoList": [
     {
@@ -549,7 +598,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/19 21:49:32",
+    "lastSyncTime": "2026/8/19 21:49:41",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
