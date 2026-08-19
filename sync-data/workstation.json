@@ -1,6 +1,6 @@
 {
   "storeInfo": {
-    "name": "长租公寓门店",
+    "name": "交投|泊寓·花山河店",
     "managerName": "于洋"
   },
   "buildings": [
@@ -8,16 +8,16 @@
       "id": "b1",
       "name": "G10栋",
       "totalRooms": 288,
-      "initialRented": 0
+      "initialRented": 274
     },
     {
       "id": "b2",
       "name": "G11栋",
       "totalRooms": 408,
-      "initialRented": 0
+      "initialRented": 230
     }
   ],
-  "initialRentedTotal": 0,
+  "initialRentedTotal": 504,
   "roomTypes": [
     {
       "id": "rt1",
@@ -471,8 +471,8 @@
     "repo": "huashan-calculator",
     "branch": "main",
     "path": "sync-data/workstation.json",
-    "lastSyncTime": "",
-    "lastSyncDirection": "",
-    "lastSyncSha": ""
+    "lastSyncTime": "2026/8/19 15:43:41",
+    "lastSyncDirection": "upload",
+    "lastSyncSha": "b4efd64faf9f91ae93fba906ec49c4f5c2a1474d"
   }
 }
