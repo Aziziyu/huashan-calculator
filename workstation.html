@@ -5728,6 +5728,13 @@ function setupDragLists() {
 
 const FEISHU_AUTH_URL = 'https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal';
 const FEISHU_BITABLE_BASE = 'https://open.feishu.cn/open-apis/bitable/v1/apps';
+const CORS_PROXY = 'https://corsproxy.io/?';
+
+async function feishuFetch(url, options = {}) {
+  const proxyUrl = CORS_PROXY + encodeURIComponent(url);
+  const resp = await fetch(proxyUrl, options);
+  return resp;
+}
 
 async function getTenantToken() {
   const cfg = store.feishuConfig;
@@ -5735,7 +5742,7 @@ async function getTenantToken() {
     throw new Error('请先在设置中配置 App ID 和 App Secret');
   }
   try {
-    const response = await fetch(FEISHU_AUTH_URL, {
+    const response = await feishuFetch(FEISHU_AUTH_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ app_id: cfg.appId, app_secret: cfg.appSecret })
@@ -5762,7 +5769,7 @@ async function syncToFeishu() {
 
   // 查找现有记录
   const searchUrl = `${baseUrl}?page_size=100`;
-  const searchResp = await fetch(searchUrl, {
+  const searchResp = await feishuFetch(searchUrl, {
     headers: { 'Authorization': `Bearer ${token}` }
   });
   const searchData = await searchResp.json();
@@ -5782,7 +5789,7 @@ async function syncToFeishu() {
 
   if (existingRecordId) {
     const updateUrl = `${baseUrl}/${existingRecordId}`;
-    const updateResp = await fetch(updateUrl, {
+    const updateResp = await feishuFetch(updateUrl, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -5802,7 +5809,7 @@ async function syncToFeishu() {
       throw new Error(updateData.msg || '更新记录失败');
     }
   } else {
-    const createResp = await fetch(baseUrl, {
+    const createResp = await feishuFetch(baseUrl, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -5838,7 +5845,7 @@ async function syncFromFeishu() {
   const baseUrl = `${FEISHU_BITABLE_BASE}/${cfg.appToken}/tables/${cfg.tableId}/records`;
   const searchUrl = `${baseUrl}?page_size=100`;
 
-  const searchResp = await fetch(searchUrl, {
+  const searchResp = await feishuFetch(searchUrl, {
     headers: { 'Authorization': `Bearer ${token}` }
   });
   const searchData = await searchResp.json();
@@ -5892,7 +5899,7 @@ async function testFeishuConnection() {
     const token = await getTenantToken();
     if (store.feishuConfig.appToken && store.feishuConfig.tableId) {
       const testUrl = `${FEISHU_BITABLE_BASE}/${store.feishuConfig.appToken}/tables/${store.feishuConfig.tableId}/records?page_size=1`;
-      const resp = await fetch(testUrl, {
+      const resp = await feishuFetch(testUrl, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await resp.json();
