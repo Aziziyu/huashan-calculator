@@ -5245,11 +5245,11 @@ function renderSettings(area) {
         <div class="form-row">
           <div class="form-group">
             <label>多维表格 App Token</label>
-            <input type="text" class="form-control" id="feishuAppToken" value="${store.feishuConfig ? store.feishuConfig.appToken : ''}" placeholder="bascnxxxxxxxxxxxx">
+            <input type="text" class="form-control" id="feishuAppToken" value="${store.feishuConfig && store.feishuConfig.appToken ? store.feishuConfig.appToken : 'ZrhDbqfLwazN57sr3wscr00ln5d'}" placeholder="多维表格 App Token">
           </div>
           <div class="form-group">
             <label>数据表 Table ID</label>
-            <input type="text" class="form-control" id="feishuTableId" value="${store.feishuConfig ? store.feishuConfig.tableId : ''}" placeholder="tblxxxxxxxx">
+            <input type="text" class="form-control" id="feishuTableId" value="${store.feishuConfig && store.feishuConfig.tableId ? store.feishuConfig.tableId : 'tblRLfeXT9bSmhSX'}" placeholder="数据表 Table ID（默认：每日运营数据）">
           </div>
         </div>
         <div style="display:flex;gap:8px;align-items:center;margin-top:8px;">
