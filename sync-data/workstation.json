@@ -219,7 +219,11 @@
       "period": "week"
     }
   ],
-  "taskProgress": {},
+  "taskProgress": {
+    "t1_s1_2026-W34": 2,
+    "t2_s1_2026-08-19": 1,
+    "t3_s1_2026-W34": 1
+  },
   "posNegEvents": [
     {
       "id": "pe1",
@@ -336,7 +340,43 @@
       "note": "近7天续租"
     }
   },
-  "dailyData": {},
+  "dailyData": {
+    "2026-08-19": {
+      "newSign": 3,
+      "checkOut": 0,
+      "leads": 0,
+      "showings": 0,
+      "staff": {
+        "s2": {
+          "newSign": 1,
+          "showings": 0,
+          "leads": 0,
+          "remark": ""
+        },
+        "s3": {
+          "newSign": 1,
+          "showings": 0,
+          "leads": 0,
+          "remark": ""
+        },
+        "s4": {
+          "newSign": 1,
+          "showings": 0,
+          "leads": 0,
+          "remark": ""
+        }
+      },
+      "buildings": {
+        "b1": {
+          "rented": 274
+        },
+        "b2": {
+          "rented": 230
+        }
+      },
+      "netAdd": 3
+    }
+  },
   "channelData": {},
   "renewals": [],
   "managerScores": {},
@@ -460,9 +500,9 @@
     "startRate": 0,
     "estimatedMoveOut": 0
   },
-  "currentPage": "settings",
-  "currentOperationGroup": "daily",
-  "currentOperationTab": "daily-data",
+  "currentPage": "operation",
+  "currentOperationGroup": "task",
+  "currentOperationTab": "todo",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "githubConfig": {
@@ -471,8 +511,8 @@
     "repo": "huashan-calculator",
     "branch": "main",
     "path": "sync-data/workstation.json",
-    "lastSyncTime": "2026/8/19 15:43:41",
+    "lastSyncTime": "2026/8/19 15:44:32",
     "lastSyncDirection": "upload",
-    "lastSyncSha": "b4efd64faf9f91ae93fba906ec49c4f5c2a1474d"
+    "lastSyncSha": "113a759930c2d184abd14ae71f3a7d16c3335e28"
   }
 }
