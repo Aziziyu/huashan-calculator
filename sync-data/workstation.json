@@ -403,7 +403,7 @@
         },
         "s4": {
           "newSign": 1,
-          "showings": 0,
+          "showings": 1,
           "leads": 2,
           "remark": ""
         }
@@ -549,7 +549,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/19 21:30:53",
+    "lastSyncTime": "2026/8/19 21:31:01",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
