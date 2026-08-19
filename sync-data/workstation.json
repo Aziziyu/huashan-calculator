@@ -378,7 +378,7 @@
   },
   "dailyData": {
     "2026-08-19": {
-      "newSign": 2,
+      "newSign": 4,
       "checkOut": 0,
       "leads": 0,
       "showings": 0,
@@ -416,7 +416,7 @@
           "rented": 230
         }
       },
-      "netAdd": 2
+      "netAdd": 4
     }
   },
   "channelData": {},
@@ -542,7 +542,7 @@
     "startRate": 72.7,
     "estimatedMoveOut": 10
   },
-  "currentPage": "dashboard",
+  "currentPage": "operation",
   "currentOperationGroup": "daily",
   "currentOperationTab": "daily-data",
   "currentPriceTab": "list",
