@@ -385,13 +385,13 @@
       "staff": {
         "s1": {
           "newSign": 0,
-          "showings": 0,
+          "showings": 1,
           "leads": 2,
           "remark": ""
         },
         "s2": {
           "newSign": 2,
-          "showings": 0,
+          "showings": 1,
           "leads": 0,
           "remark": ""
         },
@@ -549,7 +549,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/19 21:30:18",
+    "lastSyncTime": "2026/8/19 21:30:25",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
