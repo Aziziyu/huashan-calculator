@@ -69,16 +69,12 @@
   ],
   "channels": [
     {
+      "id": "mszsseyb5mgyn",
+      "name": "泊寓官方"
+    },
+    {
       "id": "c1",
       "name": "贝壳找房"
-    },
-    {
-      "id": "c2",
-      "name": "58同城"
-    },
-    {
-      "id": "c3",
-      "name": "安居客"
     },
     {
       "id": "c4",
@@ -89,10 +85,6 @@
       "name": "抖音"
     },
     {
-      "id": "c6",
-      "name": "微信朋友圈"
-    },
-    {
       "id": "c7",
       "name": "老带新"
     },
@@ -101,12 +93,20 @@
       "name": "企业合作"
     },
     {
-      "id": "c9",
-      "name": "周边中介"
+      "id": "c10",
+      "name": "散客"
     },
     {
-      "id": "c10",
-      "name": "自然到访"
+      "id": "mszssixwoac6f",
+      "name": "闲鱼"
+    },
+    {
+      "id": "mszssmpf11p2o",
+      "name": "人才网"
+    },
+    {
+      "id": "mszssrqfbf7uu",
+      "name": "内部推荐"
     }
   ],
   "scoringSteps": {
@@ -544,15 +544,15 @@
     }
   ],
   "occupancyGoal": {
-    "targetRate": 90,
-    "targetDate": "",
-    "startDate": "",
-    "startRate": 0,
-    "estimatedMoveOut": 0
+    "targetRate": 93,
+    "targetDate": "2026-09-15",
+    "startDate": "2026-08-19",
+    "startRate": 72.8,
+    "estimatedMoveOut": 10
   },
   "currentPage": "settings",
   "currentOperationGroup": "daily",
-  "currentOperationTab": "daily-data",
+  "currentOperationTab": "channel-data",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "githubConfig": {
@@ -561,8 +561,8 @@
     "repo": "huashan-calculator",
     "branch": "main",
     "path": "sync-data/workstation.json",
-    "lastSyncTime": "2026/8/19 15:45:56",
+    "lastSyncTime": "2026/8/19 15:54:00",
     "lastSyncDirection": "upload",
-    "lastSyncSha": "3476708cec01d7b83bce9daeed397574eba15e1f"
+    "lastSyncSha": "7856dd55e47a1b104700a700f6ffb2b6c3566bfc"
   }
 }
