@@ -425,7 +425,7 @@ textarea.form-control { resize: vertical; min-height: 60px; }
       <div class="nav-item" data-page="ka"><span class="nav-icon">🏢</span>企业客户KA</div>
       <div class="nav-item" data-page="settings"><span class="nav-icon">⚙️</span>设置</div>
     </nav>
-    <div class="sidebar-footer">v5.2 · 云端同步</div>
+    <div class="sidebar-footer">v5.4 · 云端同步</div>
   </aside>
 
   <!-- Main Content -->
@@ -668,10 +668,10 @@ const defaultStore = {
   salaryTodos: [],
   // 飞书云同步配置
   feishuConfig: {
-    appId: '',
-    appSecret: '',
-    appToken: '',
-    tableId: '',
+    appId: 'cli_aa0fa22d3279dbc6',
+    appSecret: 'qVe3isqNQWOOTHuvtz5mbevWHngG2QLr',
+    appToken: 'ZrhDbqfLwazN57sr3wscr00ln5d',
+    tableId: 'tblRLfeXT9bSmhSX',
     lastSyncTime: '',
     lastSyncDirection: ''
   }
@@ -5793,7 +5793,7 @@ async function syncToFeishu() {
           data_key: 'workstation_data',
           data_json: jsonStr,
           update_time: new Date().toISOString(),
-          version: 'v5.2'
+          version: 'v5.4'
         }
       })
     });
@@ -5813,7 +5813,7 @@ async function syncToFeishu() {
           data_key: 'workstation_data',
           data_json: jsonStr,
           update_time: new Date().toISOString(),
-          version: 'v5.2'
+          version: 'v5.4'
         }
       })
     });
