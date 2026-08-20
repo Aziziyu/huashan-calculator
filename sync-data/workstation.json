@@ -663,7 +663,7 @@
   "schedule": {
     "2026-08": {
       "s1": {
-        "1": "rest",
+        "1": "duty",
         "2": "evening",
         "3": "morning",
         "4": "evening",
@@ -1088,7 +1088,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/20 15:57:03",
+    "lastSyncTime": "2026/8/20 15:56:34",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
