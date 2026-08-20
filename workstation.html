@@ -891,6 +891,11 @@ function loadStore() {
         }];
         console.log('✅ 数据已迁移：globalManagementFeeDiscount → genericDiscounts');
       }
+      // 修复：如果pricePlans为空则恢复默认值
+      if (!parsed.pricePlans || parsed.pricePlans.length === 0) {
+        parsed.pricePlans = defaultStore.pricePlans;
+        console.log("✅ pricePlans已恢复默认值");
+      }
       return deepMerge(defaultStore, parsed);
     }
   } catch (e) {
@@ -3173,22 +3178,61 @@ function calcMonthlyTaskRate(staffId, monthKey) {
   return weekRates.reduce((a, b) => a + b, 0) / weekRates.length;
 }
 
+function calcChannelStaffConversion(staffId, monthKey) {
+  // 从 dailyData 汇总当月该管家的进线/带看/新签，计算3个转化率
+  let tL = 0, tS = 0, tN = 0;
+  Object.entries(store.dailyData || {}).forEach(([date, d]) => {
+    if (date.startsWith(monthKey) && d.staff && d.staff[staffId]) {
+      const sd = d.staff[staffId];
+      tL += (sd.leads || 0);
+      tS += (sd.showings || 0);
+      tN += (sd.newSign || 0);
+    }
+  });
+  const leadToVisitRate = tL > 0 ? Math.round((tS / tL) * 1000) / 10 : 0;
+  const visitToSignRate = tS > 0 ? Math.round((tN / tS) * 1000) / 10 : 0;
+  const leadToSignRate = tL > 0 ? Math.round((tN / tL) * 1000) / 10 : 0;
+  return { leadToVisitRate, visitToSignRate, leadToSignRate, tL, tS, tN };
+}
+
+function calcChannelStoreConversion(monthKey) {
+  // 全店汇总转化率（非个人平均）
+  let tL = 0, tS = 0, tN = 0;
+  Object.entries(store.dailyData || {}).forEach(([date, d]) => {
+    if (date.startsWith(monthKey) && d.staff) {
+      Object.values(d.staff).forEach(sd => {
+        tL += (sd.leads || 0);
+        tS += (sd.showings || 0);
+        tN += (sd.newSign || 0);
+      });
+    }
+  });
+  const leadToVisitRate = tL > 0 ? Math.round((tS / tL) * 1000) / 10 : 0;
+  const visitToSignRate = tS > 0 ? Math.round((tN / tS) * 1000) / 10 : 0;
+  const leadToSignRate = tL > 0 ? Math.round((tN / tL) * 1000) / 10 : 0;
+  return { leadToVisitRate, visitToSignRate, leadToSignRate };
+}
+
 function calcChannelScore(staffId, monthKey) {
-  // 从 channelMonthlyData 读取当月4项渠道指标，计算阶梯得分后取均分
-  const monthData = store.channelMonthlyData[monthKey];
-  if (!monthData || !monthData[staffId]) {
-    return { score: null, items: [null, null, null, null], filled: false };
-  }
-  const sd = monthData[staffId];
-  const items = [
-    sd.shellReplyRate !== undefined ? calcStepScore('shellReplyRate', sd.shellReplyRate) : null,
-    sd.shellAnswerRate !== undefined ? calcStepScore('shellAnswerRate', sd.shellAnswerRate) : null,
-    sd.wecomReplyRate !== undefined ? calcStepScore('wecomReplyRate', sd.wecomReplyRate) : null,
-    sd.wecomReplyTime !== undefined ? calcStepScore('wecomReplyTime', sd.wecomReplyTime) : null
-  ];
+  // 7项渠道指标：前4项来自 channelMonthlyData 填报，后3项从 dailyData 自动计算
+  const metricKeys = ['shellReplyRate','shellAnswerRate','wecomReplyRate','wecomReplyTime','leadToVisitRate','visitToSignRate','leadToSignRate'];
+  const monthData = store.channelMonthlyData[monthKey] || {};
+  const sd = monthData[staffId] || {};
+  const conv = calcChannelStaffConversion(staffId, monthKey);
+
+  const items = metricKeys.map(k => {
+    let val;
+    if (k === 'leadToVisitRate') val = conv.leadToVisitRate;
+    else if (k === 'visitToSignRate') val = conv.visitToSignRate;
+    else if (k === 'leadToSignRate') val = conv.leadToSignRate;
+    else val = sd[k];
+    if (val === undefined || val === null || val === '') return null;
+    return calcStepScore(k, val);
+  });
   const valid = items.filter(x => x !== null);
   if (valid.length === 0) return { score: null, items, filled: false };
-  const avg = valid.reduce((a, b) => a + b, 0) / valid.length;
+  // 等权平均：按7项算，缺失项计0分，确保口径统一
+  const avg = items.reduce((a, b) => a + (b === null ? 0 : b), 0) / 7;
   return { score: avg, items, filled: true };
 }
 
@@ -3441,7 +3485,7 @@ function renderPerformance(body) {
         <h3>📱 ${monthKey} 渠道指标月度填报</h3>
       </div>
       <div class="card-body">
-        <p style="font-size:12px;color:#666;margin-bottom:12px;">录入各管家当月4项渠道指标实际值，系统自动按阶梯评分标准计算得分，纳入日常任务综合绩效。</p>
+        <p style="font-size:12px;color:#666;margin-bottom:12px;">录入各管家当月4项渠道指标实际值（后3项转化漏斗指标从每日数据自动计算），系统自动按阶梯评分标准计算得分，纳入日常任务综合绩效。</p>
         <div id="channelMetricsTable"></div>
         <div style="margin-top:12px;text-align:right;">
           <button class="btn btn-sm btn-primary" onclick="saveChannelMetrics()">保存填报数据</button>
