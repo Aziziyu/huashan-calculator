@@ -1148,14 +1148,14 @@
     "startRate": 72.7,
     "estimatedMoveOut": 10
   },
-  "currentPage": "price",
+  "currentPage": "calculator",
   "currentOperationGroup": "team",
   "currentOperationTab": "schedule",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/20 16:43:49",
+    "lastSyncTime": "2026/8/20 16:43:58",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
