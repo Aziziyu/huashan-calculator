@@ -971,12 +971,12 @@
   },
   "currentPage": "operation",
   "currentOperationGroup": "team",
-  "currentOperationTab": "schedule",
+  "currentOperationTab": "performance",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/20 14:37:36",
+    "lastSyncTime": "2026/8/20 14:37:44",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
