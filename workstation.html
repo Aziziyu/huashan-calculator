@@ -3240,11 +3240,13 @@ function renderPerformance(body) {
     }
     signScore = Math.round(signScore * 10) / 10;
     const daily = calcDailyCompositeScore(s.id, monthKey);
+    const conv = calcConversionScore(s.id, monthKey);
     const managerScore = store.managerScores[s.id] !== undefined ? store.managerScores[s.id] : 80;
     const wSales = pw.sales / 100;
     const wOps = pw.ops / 100;
+    const wConv = (pw.conversion || 0) / 100;
     const wMgr = pw.manager / 100;
-    const finalScore = Math.round((signScore * wSales + daily.composite * wOps + managerScore * wMgr) * 10) / 10;
+    const finalScore = Math.round((signScore * wSales + daily.composite * wOps + conv.conversionScore * wConv + managerScore * wMgr) * 10) / 10;
     return {
       id: s.id,
       name: s.name,
@@ -3255,6 +3257,8 @@ function renderPerformance(body) {
       channelFilled: daily.channelFilled,
       eventNet: daily.eventNet,
       dailyComposite: daily.composite,
+      conversionScore: conv.conversionScore,
+      convDetail: conv,
       managerScore,
       finalScore
     };
@@ -3774,7 +3778,7 @@ function saveManagerScore(staffId, val) {
 
 // ---------- 排班管理 ----------
 let scheduleMonth = fmtMonth(new Date());
-const DEFAULT_SHIFTS = [
+let DEFAULT_SHIFTS = [
   { key: '', icon: '', label: '未排', type: 'none' },
   { key: 'morning', icon: '🟢', label: '早班', type: 'morning' },
   { key: 'middle', icon: '🔵', label: '中班', type: 'other' },
@@ -4017,7 +4021,7 @@ function renderSchedule(body) {
     const evening = counts.evening || 0;
     const warn = morning === 0 || evening === 0;
     html += `<td style="font-size:11px;${warn ? 'color:#E74C3C;' : ''}">
-      🟢${morning}<br>🟣${evening}
+      早${morning}<br>晚${evening}
     </td>`;
   }
   html += '<td style="background:#F0F7FF;"></td></tr>';
@@ -4191,8 +4195,26 @@ function renderPriceBody() {
   else if (priceTab === 'query') renderPriceQuery(body);
 }
 
+function saveGlobalMgtDiscount(val) {
+  store.globalManagementFeeDiscount = parseFloat(val) || 100;
+  saveStore();
+  showToast('通用折扣已更新为 ' + store.globalManagementFeeDiscount + '%');
+  renderPriceList($('#priceBody'));
+}
+
 function renderPriceList(body) {
   let html = `
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-header"><h3>🏷️ 通用折扣设置</h3></div>
+      <div class="card-body">
+        <p style="font-size:13px;color:#666;margin-bottom:12px;">通用折扣适用于所有价格方案的管理费折扣，独立于各方案的租金折扣。</p>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <label style="font-size:14px;">通用管理费折扣：</label>
+          <input type="number" class="form-control" id="globalMgtDiscount" value="${store.globalManagementFeeDiscount || 100}" min="0" max="100" style="width:80px;text-align:center;" onchange="saveGlobalMgtDiscount(this.value)">
+          <span style="font-size:14px;font-weight:bold;color:#2E86C1;">${store.globalManagementFeeDiscount || 100}%</span>
+        </div>
+      </div>
+    </div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
       <div style="font-size:13px;color:#666;">共 ${store.pricePlans.length} 个价格方案，可拖拽排序</div>
       <button class="btn btn-primary btn-sm" onclick="addPricePlan()">+ 新增方案</button>
@@ -4238,7 +4260,6 @@ function renderPriceList(body) {
           </div>
           ${p.note ? `<div style="font-size:12px;color:#888;margin-bottom:10px;">📝 ${p.note}</div>` : ''}
           <div style="background:#F8F9FA;border-top:1px solid #E8E8E8;border-radius:0 0 8px 8px;padding:8px 12px;display:flex;gap:16px;font-size:12px;color:#888;flex-wrap:wrap;">
-            <span>通用折扣：<strong style="color:#555;">${p.managementFeeDiscount || 100}%</strong></span>
             <span>租金折扣：<strong style="color:#555;">${p.rentDiscount || 100}%</strong></span>
             ${p.oldBringNew ? '<span>老带新优惠：<strong style="color:#555;">' + p.oldBringNew + '</strong></span>' : ''}
           </div>
