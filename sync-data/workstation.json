@@ -697,7 +697,7 @@
     "2026-08-20": {
       "newSign": 4,
       "checkOut": 0,
-      "leads": 9,
+      "leads": 12,
       "showings": 6,
       "staff": {
         "s1": {
@@ -721,7 +721,7 @@
         "s4": {
           "newSign": 1,
           "showings": 2,
-          "leads": 0,
+          "leads": 3,
           "remark": ""
         }
       },
@@ -730,7 +730,7 @@
           "rented": 275
         },
         "b2": {
-          "rented": 234
+          "rented": 238
         }
       },
       "netAdd": 4
@@ -1188,7 +1188,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/20 21:18:04",
+    "lastSyncTime": "2026/8/20 21:18:18",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
