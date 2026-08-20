@@ -614,13 +614,13 @@
     "estimatedMoveOut": 10
   },
   "currentPage": "operation",
-  "currentOperationGroup": "daily",
-  "currentOperationTab": "channel-data",
+  "currentOperationGroup": "task",
+  "currentOperationTab": "task-exec",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/20 10:06:55",
+    "lastSyncTime": "2026/8/20 10:07:03",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
