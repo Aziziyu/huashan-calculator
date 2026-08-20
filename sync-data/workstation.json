@@ -351,7 +351,9 @@
     "2026-08": {
       "s1": {
         "shellReplyRate": 99,
-        "shellAnswerRate": 100
+        "shellAnswerRate": 100,
+        "wecomReplyRate": 89,
+        "wecomReplyTime": 23
       },
       "s2": {
         "shellReplyRate": 96,
@@ -1006,7 +1008,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/20 14:40:37",
+    "lastSyncTime": "2026/8/20 14:40:44",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
