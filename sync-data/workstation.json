@@ -590,7 +590,11 @@
       "buildingIds": [
         "b2"
       ],
-      "roomTypeIds": [],
+      "roomTypeIds": [
+        "rt1",
+        "rt2",
+        "rt3"
+      ],
       "rentDiscount": 90,
       "managementFeeDiscount": 100,
       "leaseTerm": 12,
@@ -687,7 +691,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/20 14:11:40",
+    "lastSyncTime": "2026/8/20 14:11:47",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
