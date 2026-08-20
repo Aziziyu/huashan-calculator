@@ -613,7 +613,7 @@
     "startRate": 72.7,
     "estimatedMoveOut": 10
   },
-  "currentPage": "operation",
+  "currentPage": "dashboard",
   "currentOperationGroup": "daily",
   "currentOperationTab": "channel-data",
   "currentPriceTab": "list",
