@@ -539,7 +539,30 @@
     }
   },
   "scheduleTemplates": [],
-  "pricePlans": [],
+  "pricePlans": [
+    {
+      "id": "mt147wsgzl57i",
+      "name": "G11 一人团基础折扣",
+      "buildingIds": [
+        "b2"
+      ],
+      "roomTypeIds": [
+        "rt1",
+        "rt2",
+        "rt3"
+      ],
+      "rentDiscount": 96,
+      "managementFeeDiscount": 100,
+      "leaseTerm": 12,
+      "oldBringNew": "",
+      "target": "",
+      "approval": "",
+      "validFrom": "2026-08-20",
+      "validTo": "2026-09-30",
+      "note": "",
+      "enabled": true
+    }
+  ],
   "calcHistory": [],
   "kaCustomers": [
     {
@@ -583,7 +606,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/20 14:04:06",
+    "lastSyncTime": "2026/8/20 14:04:13",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
