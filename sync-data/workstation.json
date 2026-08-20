@@ -548,16 +548,7 @@
   "channelData": {},
   "renewals": [],
   "managerScores": {},
-  "schedule": {
-    "2026-08": {
-      "s1": {
-        "19": "morning"
-      },
-      "s2": {
-        "19": "morning"
-      }
-    }
-  },
+  "schedule": {},
   "scheduleTemplates": [],
   "pricePlans": [
     {
@@ -711,7 +702,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/20 14:31:51",
+    "lastSyncTime": "2026/8/20 14:32:00",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
