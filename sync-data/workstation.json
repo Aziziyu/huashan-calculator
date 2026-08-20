@@ -491,6 +491,9 @@
       "buildings": {
         "b1": {
           "rented": 275
+        },
+        "b2": {
+          "rented": 234
         }
       },
       "netAdd": 0
@@ -635,7 +638,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/20 13:55:23",
+    "lastSyncTime": "2026/8/20 13:55:30",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
