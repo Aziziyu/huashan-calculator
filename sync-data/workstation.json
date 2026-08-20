@@ -716,10 +716,18 @@
   "managerScores": {},
   "perfWeights": {
     "sales": 50,
-    "ops": 30,
-    "conversion": 25,
+    "ops": 55,
     "manager": 20
   },
+  "genericDiscounts": [
+    {
+      "id": "gdisc_1",
+      "name": "通用管理费折扣",
+      "value": 100,
+      "enabled": true,
+      "description": "适用于所有价格方案的管理费折扣，独立于各方案的租金折扣"
+    }
+  ],
   "signTargets": {
     "base": 10,
     "stretch": 15
@@ -1149,8 +1157,8 @@
     "estimatedMoveOut": 10
   },
   "currentPage": "operation",
-  "currentOperationGroup": "team",
-  "currentOperationTab": "performance",
+  "currentOperationGroup": "daily",
+  "currentOperationTab": "daily-data",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
