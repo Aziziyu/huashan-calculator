@@ -255,22 +255,6 @@
       "baseScore": 3,
       "threshold": "达标+3/-3",
       "description": "公客回收是否达标"
-    },
-    {
-      "id": "mt18je53xm0tj",
-      "name": "客户表扬",
-      "type": "plus",
-      "baseScore": 5,
-      "threshold": "±5",
-      "description": "收到客户书面表扬或者锦旗"
-    },
-    {
-      "id": "mt18k54qhb3ui",
-      "name": "组织客户活动",
-      "type": "plus",
-      "baseScore": 3,
-      "threshold": "±3",
-      "description": "完整组织一场社群活动"
     }
   ],
   "eventRecords": {
@@ -679,7 +663,7 @@
   "schedule": {
     "2026-08": {
       "s1": {
-        "1": "duty",
+        "1": "rest",
         "2": "evening",
         "3": "morning",
         "4": "evening",
@@ -1098,13 +1082,13 @@
     "estimatedMoveOut": 10
   },
   "currentPage": "operation",
-  "currentOperationGroup": "task",
-  "currentOperationTab": "reminder",
+  "currentOperationGroup": "team",
+  "currentOperationTab": "schedule",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/20 16:09:01",
+    "lastSyncTime": "2026/8/20 15:57:11",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
