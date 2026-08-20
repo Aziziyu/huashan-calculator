@@ -198,7 +198,7 @@
       "id": "t2",
       "name": "盘客",
       "targetCount": 5,
-      "period": "day"
+      "period": "week"
     },
     {
       "id": "t3",
@@ -207,7 +207,9 @@
       "period": "week"
     }
   ],
-  "taskProgress": {},
+  "taskProgress": {
+    "t1_s1_2026-W34": 0
+  },
   "posNegEvents": [
     {
       "id": "pe1",
@@ -375,7 +377,7 @@
       "customDays": 0,
       "deadline": "",
       "note": "",
-      "lastDone": "",
+      "lastDone": "2026-08-20",
       "weekDay": null,
       "monthDay": null,
       "time": ""
@@ -613,14 +615,14 @@
     "startRate": 72.7,
     "estimatedMoveOut": 10
   },
-  "currentPage": "calculator",
-  "currentOperationGroup": "daily",
-  "currentOperationTab": "daily-data",
+  "currentPage": "settings",
+  "currentOperationGroup": "team",
+  "currentOperationTab": "performance",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/20 10:34:18",
+    "lastSyncTime": "2026/8/20 10:23:59",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
