@@ -185,6 +185,72 @@
           "score": 0
         }
       ]
+    },
+    "leadToVisitRate": {
+      "type": "positive",
+      "label": "进线转带看率(%)",
+      "steps": [
+        {
+          "min": 50,
+          "score": 100
+        },
+        {
+          "min": 30,
+          "score": 80
+        },
+        {
+          "min": 20,
+          "score": 60
+        },
+        {
+          "min": 0,
+          "score": 40
+        }
+      ]
+    },
+    "visitToSignRate": {
+      "type": "positive",
+      "label": "带看转成交率(%)",
+      "steps": [
+        {
+          "min": 30,
+          "score": 100
+        },
+        {
+          "min": 20,
+          "score": 80
+        },
+        {
+          "min": 10,
+          "score": 60
+        },
+        {
+          "min": 0,
+          "score": 40
+        }
+      ]
+    },
+    "leadToSignRate": {
+      "type": "positive",
+      "label": "进线转成交率(%)",
+      "steps": [
+        {
+          "min": 20,
+          "score": 100
+        },
+        {
+          "min": 15,
+          "score": 80
+        },
+        {
+          "min": 10,
+          "score": 60
+        },
+        {
+          "min": 0,
+          "score": 40
+        }
+      ]
     }
   },
   "customTasks": [
@@ -651,6 +717,7 @@
   "perfWeights": {
     "sales": 50,
     "ops": 30,
+    "conversion": 25,
     "manager": 20
   },
   "signTargets": {
