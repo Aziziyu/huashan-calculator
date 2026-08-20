@@ -583,6 +583,24 @@
       "validTo": "2026-09-30",
       "note": "",
       "enabled": true
+    },
+    {
+      "id": "mt1498kpqivta",
+      "name": "G11 三人团折扣",
+      "buildingIds": [
+        "b2"
+      ],
+      "roomTypeIds": [],
+      "rentDiscount": 90,
+      "managementFeeDiscount": 100,
+      "leaseTerm": 12,
+      "oldBringNew": "",
+      "target": "",
+      "approval": "",
+      "validFrom": "2026-08-20",
+      "validTo": "2026-09-30",
+      "note": "",
+      "enabled": true
     }
   ],
   "calcHistory": [],
@@ -628,7 +646,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/20 14:05:01",
+    "lastSyncTime": "2026/8/20 14:05:08",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
