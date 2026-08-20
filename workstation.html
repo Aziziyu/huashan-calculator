@@ -3506,23 +3506,82 @@ function renderChannelMetricsTable() {
   const container = $('#channelMetricsTable');
   if (!container) return;
   const monthData = store.channelMonthlyData[monthKey] || {};
+  const metricKeys = ['shellReplyRate','shellAnswerRate','wecomReplyRate','wecomReplyTime','leadToVisitRate','visitToSignRate','leadToSignRate'];
+  const metricLabels = ['贝壳回复率(%)','贝壳接通率(%)','企微回复率(%)','企微回复时长(分钟)','进线转带看率(%)','带看转成交率(%)','进线转成交率(%)'];
+  const autoIndexes = [4, 5, 6];
 
-  let html = '<table class="data-table"><thead><tr><th>管家</th><th class="num">贝壳回复率(%)</th><th class="num">贝壳接通率(%)</th><th class="num">企微回复率(%)</th><th class="num">企微回复时长(分钟)</th><th class="num">渠道均分</th></tr></thead><tbody>';
-  store.staff.forEach(s => {
-    const sd = monthData[s.id] || {};
-    const ch = calcChannelScore(s.id, monthKey);
-    html += `
-      <tr>
-        <td>${s.name}</td>
-        <td class="num"><input type="number" min="0" max="100" class="form-control" style="width:80px;text-align:right;" data-staff="${s.id}" data-field="shellReplyRate" value="${sd.shellReplyRate ?? ''}" placeholder="-"></td>
-        <td class="num"><input type="number" min="0" max="100" class="form-control" style="width:80px;text-align:right;" data-staff="${s.id}" data-field="shellAnswerRate" value="${sd.shellAnswerRate ?? ''}" placeholder="-"></td>
-        <td class="num"><input type="number" min="0" max="100" class="form-control" style="width:80px;text-align:right;" data-staff="${s.id}" data-field="wecomReplyRate" value="${sd.wecomReplyRate ?? ''}" placeholder="-"></td>
-        <td class="num"><input type="number" min="0" class="form-control" style="width:80px;text-align:right;" data-staff="${s.id}" data-field="wecomReplyTime" value="${sd.wecomReplyTime ?? ''}" placeholder="-"></td>
-        <td class="num"><strong style="color:${ch.filled ? '#4A90D9' : '#999'}">${ch.filled ? ch.score.toFixed(1) : '未填报'}</strong></td>
-      </tr>
-    `;
+  // 计算每位管家的自动转化指标
+  const staffConv = {};
+  store.staff.forEach(s => { staffConv[s.id] = calcChannelStaffConversion(s.id, monthKey); });
+  // 门店平均：前4项为管家平均值，后3项为全店汇总转化率
+  const storeConv = calcChannelStoreConversion(monthKey);
+  const storeAvg = {};
+  metricKeys.forEach((k, idx) => {
+    if (idx < 4) {
+      let sum = 0, cnt = 0;
+      store.staff.forEach(s => {
+        const sd = monthData[s.id] || {};
+        if (sd[k] !== undefined && sd[k] !== null && sd[k] !== '') {
+          sum += parseFloat(sd[k]);
+          cnt++;
+        }
+      });
+      storeAvg[k] = cnt > 0 ? Math.round(sum / cnt * 10) / 10 : 0;
+    } else if (k === 'leadToVisitRate') storeAvg[k] = storeConv.leadToVisitRate;
+    else if (k === 'visitToSignRate') storeAvg[k] = storeConv.visitToSignRate;
+    else if (k === 'leadToSignRate') storeAvg[k] = storeConv.leadToSignRate;
   });
-  html += '</tbody></table>';
+
+  let html = '<table class="data-table" style="font-size:13px;">';
+  html += '<thead><tr><th rowspan="2" style="vertical-align:middle;">指标</th>';
+  store.staff.forEach(s => {
+    html += `<th colspan="2" style="text-align:center;">${s.name}</th>`;
+  });
+  html += '<th colspan="2" style="text-align:center;background:#EBF5FB;">门店平均</th></tr><tr>';
+  store.staff.forEach(() => { html += '<th>实际值</th><th>得分</th>'; });
+  html += '<th style="background:#EBF5FB;">实际值</th><th style="background:#EBF5FB;">得分</th></tr></thead><tbody>';
+
+  metricKeys.forEach((key, idx) => {
+    const isAuto = autoIndexes.indexOf(idx) !== -1;
+    const label = metricLabels[idx];
+    html += `<tr><td>${label}</td>`;
+    store.staff.forEach(s => {
+      const sd = monthData[s.id] || {};
+      let actual;
+      if (isAuto) {
+        if (key === 'leadToVisitRate') actual = staffConv[s.id].leadToVisitRate;
+        else if (key === 'visitToSignRate') actual = staffConv[s.id].visitToSignRate;
+        else actual = staffConv[s.id].leadToSignRate;
+      } else {
+        actual = sd[key];
+      }
+      const hasValue = actual !== undefined && actual !== null && actual !== '';
+      const score = hasValue ? calcStepScore(key, actual) : '-';
+      if (isAuto) {
+        html += `<td class="num" style="color:#666;background:#FAFAFA;">${hasValue ? actual : '-'}</td>`;
+      } else {
+        html += `<td class="num"><input type="number" class="form-control ch-metric-input" style="width:70px;text-align:right;" data-staff="${s.id}" data-field="${key}" value="${hasValue ? actual : ''}" placeholder="-"></td>`;
+      }
+      html += `<td class="num"><strong style="color:${hasValue ? '#4A90D9' : '#999'}">${score}</strong></td>`;
+    });
+    const sa = storeAvg[key];
+    const saScore = calcStepScore(key, sa);
+    html += `<td class="num" style="background:#EBF5FB;">${sa}</td><td class="num" style="background:#EBF5FB;"><strong>${saScore}</strong></td></tr>`;
+  });
+
+  // 均分行
+  html += '<tr style="font-weight:bold;background:#F5F7FA;"><td>均分</td>';
+  store.staff.forEach(s => {
+    const ch = calcChannelScore(s.id, monthKey);
+    html += `<td colspan="2" style="text-align:center;">${ch.filled ? ch.score.toFixed(1) : '未填报'}</td>`;
+  });
+  // 门店平均均分
+  let saTotal = 0;
+  metricKeys.forEach(k => { saTotal += calcStepScore(k, storeAvg[k]); });
+  const saAvg = saTotal / metricKeys.length;
+  html += `<td colspan="2" style="text-align:center;background:#EBF5FB;">${saAvg.toFixed(1)}</td>`;
+  html += '</tr></tbody></table>';
+
   container.innerHTML = html;
 }
 
