@@ -706,12 +706,12 @@
   },
   "currentPage": "operation",
   "currentOperationGroup": "team",
-  "currentOperationTab": "performance",
+  "currentOperationTab": "schedule",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/20 14:31:43",
+    "lastSyncTime": "2026/8/20 14:31:51",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
