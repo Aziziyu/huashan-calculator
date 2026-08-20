@@ -596,6 +596,24 @@ const defaultStore = {
       { max: 15, score: 80 },
       { max: 30, score: 60 },
       { max: 999, score: 40 }
+    ]},
+    leadToVisitRate: { type: 'positive', label: '进线转带看率(%)', steps: [
+      { min: 50, score: 100 },
+      { min: 30, score: 80 },
+      { min: 20, score: 60 },
+      { min: 0, score: 40 }
+    ]},
+    visitToSignRate: { type: 'positive', label: '带看转成交率(%)', steps: [
+      { min: 30, score: 100 },
+      { min: 20, score: 80 },
+      { min: 10, score: 60 },
+      { min: 0, score: 40 }
+    ]},
+    leadToSignRate: { type: 'positive', label: '进线转成交率(%)', steps: [
+      { min: 20, score: 100 },
+      { min: 15, score: 80 },
+      { min: 10, score: 60 },
+      { min: 0, score: 40 }
     ]}
   },
   // 自定义任务
@@ -649,7 +667,7 @@ const defaultStore = {
   // 团队绩效 - 店长打分 { staffId: score }
   managerScores: {},
   // 绩效权重配置
-  perfWeights: { sales: 50, ops: 30, manager: 20 },
+  perfWeights: { sales: 40, ops: 25, conversion: 25, manager: 10 },
   // 签约目标
   signTargets: { base: 10, stretch: 15 },
   // 自定义班次
@@ -1181,9 +1199,10 @@ function isMyTodoOverdue(todo) {
 }
 
 function renderDashboardMyTodos() {
-  const dueTodos = store.myTodos.filter(t => t.enabled && isMyTodoDue(t));
   const enabledCount = store.myTodos.filter(t => t.enabled).length;
   const today = new Date().toISOString().slice(0, 10);
+  // FIX: dueTodos = (items still due) + (items completed today), so completed items also show
+  const dueTodos = store.myTodos.filter(t => t.enabled && (isMyTodoDue(t) || t.lastDone === today));
 
   if (enabledCount === 0) {
     return '<div class="empty-state"><div class="empty-icon">📋</div>暂无待办，点击右上角设置</div>';
@@ -1192,7 +1211,6 @@ function renderDashboardMyTodos() {
   // 分离未完成和已完成，已完成的排底部
   const pending = dueTodos.filter(t => t.lastDone !== today);
   const completed = dueTodos.filter(t => t.lastDone === today);
-  // 已完成的排在列表底部
   const sortedTodos = [...pending, ...completed];
 
   let html = '';
@@ -1200,15 +1218,15 @@ function renderDashboardMyTodos() {
     const isDone = t.lastDone === today;
     const overdue = isMyTodoOverdue(t);
     html += `
-      <div class="todo-item ${isDone ? 'completed' : ''}" style="padding:10px 0;border-bottom:1px solid #F0F0F0;${isDone ? 'opacity:0.7;' : ''}">
+      <div class="todo-item ${isDone ? 'completed' : ''}" style="padding:10px 0;border-bottom:1px solid #F0F0F0;${isDone ? 'opacity:0.5;' : ''}">
         <div class="todo-check ${isDone ? 'done' : ''}" onclick="toggleMyTodoDone('${t.id}')">${isDone ? '✓' : ''}</div>
         <div class="todo-text" style="flex:1;${isDone ? 'text-decoration:line-through;color:#999;' : ''}">
           <span style="${overdue && !isDone ? 'color:#E74C3C;font-weight:500;' : ''}">${t.name}</span>
+          ${isDone ? '<span style="margin-left:4px;">✅</span>' : ''}
           <span style="font-size:12px;color:#999;margin-left:8px;">
             ${getCycleLabel(t.cycle, t.customDays, t)}
             ${t.deadline ? ' · 截止 ' + t.deadline : ''}
             ${overdue && !isDone ? ' · <span style="color:#E74C3C;">已过期</span>' : ''}
-            ${isDone ? ' · <span style="color:#27AE60;">已完成</span>' : ''}
           </span>
         </div>
         <button class="btn btn-sm" style="font-size:12px;" onclick="openMyTodoSetting('${t.id}')">⏰设置</button>
@@ -1248,6 +1266,51 @@ function toggleMyTodoDone(id) {
     if (card) card.innerHTML = renderDashboardMyTodos();
     showToast('已标记完成');
   }
+}
+
+function addMyTodoQuick() {
+  const html = `
+    <div class="form-group">
+      <label>待办名称 <span style="color:#E74C3C;">*</span></label>
+      <input type="text" class="form-control" id="quickTodoName" placeholder="请输入待办名称">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>提醒周期</label>
+        <select class="form-control" id="quickTodoCycle">
+          <option value="daily">每日</option>
+          <option value="weekly">每周</option>
+          <option value="monthly">每月</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>截止日期（选填）</label>
+        <input type="date" class="form-control" id="quickTodoDeadline">
+      </div>
+    </div>
+  `;
+  showModal('新增待办', html, () => {
+    const name = document.getElementById('quickTodoName').value.trim();
+    if (!name) { showToast('请输入待办名称'); return false; }
+    const cycle = document.getElementById('quickTodoCycle').value;
+    const deadline = document.getElementById('quickTodoDeadline').value;
+    const newTodo = {
+      id: 'mt' + Date.now(),
+      name: name,
+      enabled: true,
+      cycle: cycle,
+      customDays: 0,
+      deadline: deadline,
+      note: '',
+      lastDone: ''
+    };
+    store.myTodos.push(newTodo);
+    saveStore();
+    const card = document.getElementById('dashboardMyTodoList');
+    if (card) card.innerHTML = renderDashboardMyTodos();
+    showToast('待办已添加');
+    return true;
+  });
 }
 
 function openMyTodoSetting(id) {
@@ -1676,7 +1739,10 @@ function renderDashboard(area) {
     <div class="card">
       <div class="card-header">
         <h3>📋 我的待办</h3>
-        <span class="card-action" onclick="switchPage('settings');scrollToTodoSettings()">设置更多待办 →</span>
+        <div style="display:flex;gap:12px;align-items:center;">
+          <span class="card-action" onclick="addMyTodoQuick()">+ 新增待办</span>
+          <span class="card-action" onclick="switchPage('settings');scrollToTodoSettings()">设置更多待办 →</span>
+        </div>
       </div>
       <div class="card-body" id="dashboardMyTodoList">
         ${renderDashboardMyTodos()}
@@ -2606,6 +2672,45 @@ function renderChannelData(body) {
     </div>
   `;
 
+  // Per-staff conversion funnel cards
+  const funnelMonth = month;
+  const funnelData = {};
+  store.staff.forEach(s => { funnelData[s.id] = { leads: 0, showings: 0, newSign: 0 }; });
+  Object.entries(store.dailyData || {}).forEach(([date, d]) => {
+    if (date.startsWith(funnelMonth) && d.staff) {
+      store.staff.forEach(s => {
+        const sd = d.staff[s.id];
+        if (sd) {
+          funnelData[s.id].leads += (sd.leads || 0);
+          funnelData[s.id].showings += (sd.showings || 0);
+          funnelData[s.id].newSign += (sd.newSign || 0);
+        }
+      });
+    }
+  });
+
+  html += '<div class="card" style="margin-top:16px;"><div class="card-header"><h3>📈 管家个人转化漏斗（' + funnelMonth + '）</h3></div><div class="card-body">';
+  html += '<div class="grid-2">';
+  store.staff.forEach(s => {
+    const fd = funnelData[s.id];
+    const tL = fd.leads, tS = fd.showings, tN = fd.newSign;
+    const l2v = tL > 0 ? (tS / tL * 100).toFixed(1) : '0.0';
+    const v2n = tS > 0 ? (tN / tS * 100).toFixed(1) : '0.0';
+    const l2n = tL > 0 ? (tN / tL * 100).toFixed(1) : '0.0';
+    html += '<div style="border:1px solid #E8E8E8;border-radius:8px;padding:12px;margin-bottom:12px;">';
+    html += '<div style="font-weight:600;font-size:13px;margin-bottom:10px;color:#333;">' + s.name + ' | ' + funnelMonth + ' 转化漏斗</div>';
+    html += '<div class="funnel-card">';
+    html += '<div class="funnel-step"><div class="funnel-bar" style="background:#4A90D9;">' + tL + '</div><div class="funnel-label">总进线</div></div>';
+    html += '<div class="funnel-arrow">→<br><span style="font-size:11px;color:#4A90D9;">' + l2v + '%</span></div>';
+    html += '<div class="funnel-step"><div class="funnel-bar" style="background:#F39C12;">' + tS + '</div><div class="funnel-label">总带看</div></div>';
+    html += '<div class="funnel-arrow">→<br><span style="font-size:11px;color:#F39C12;">' + v2n + '%</span></div>';
+    html += '<div class="funnel-step"><div class="funnel-bar" style="background:#27AE60;">' + tN + '</div><div class="funnel-label">总签约</div></div>';
+    html += '</div>';
+    html += '<div style="text-align:center;margin-top:6px;font-size:12px;color:#666;">进线→成交率：<strong style="color:#4A90D9;">' + l2n + '%</strong></div>';
+    html += '</div>';
+  });
+  html += '</div></div></div>';
+
   body.innerHTML = html;
   drawChannelPieChart(sorted, totalLeads);
   drawChannelBarChart(sorted.slice(0, 8));
@@ -3074,6 +3179,35 @@ function calcDailyCompositeScore(staffId, monthKey) {
   return { taskScore, channelScore, eventNet, composite, channelFilled: ch.filled, channelItems: ch.items };
 }
 
+// ========== 转化漏斗得分计算 ==========
+function calcConversionScore(staffId, monthKey) {
+  let tL = 0, tS = 0, tN = 0;
+  Object.entries(store.dailyData || {}).forEach(([date, d]) => {
+    if (date.startsWith(monthKey) && d.staff && d.staff[staffId]) {
+      const sd = d.staff[staffId];
+      tL += (sd.leads || 0);
+      tS += (sd.showings || 0);
+      tN += (sd.newSign || 0);
+    }
+  });
+  const l2v = tL > 0 ? (tS / tL * 100) : 0;
+  const v2n = tS > 0 ? (tN / tS * 100) : 0;
+  const l2n = tL > 0 ? (tN / tL * 100) : 0;
+
+  const scoreLV = calcStepScore('leadToVisitRate', l2v);
+  const scoreVS = calcStepScore('visitToSignRate', v2n);
+  const scoreLN = calcStepScore('leadToSignRate', l2n);
+
+  const avg = (scoreLV + scoreVS + scoreLN) / 3;
+  return {
+    leadToVisitRate: Math.round(l2v * 10) / 10,
+    visitToSignRate: Math.round(v2n * 10) / 10,
+    leadToSignRate: Math.round(l2n * 10) / 10,
+    scoreLV, scoreVS, scoreLN,
+    conversionScore: Math.round(avg * 10) / 10
+  };
+}
+
 function renderPerformance(body) {
   const monthKey = fmtMonth(new Date());
   const [y, m] = monthKey.split('-').map(Number);
@@ -3143,14 +3277,19 @@ function renderPerformance(body) {
             <div class="weight-value" id="weightOps">${pw.ops}%</div>
           </div>
           <div class="weight-slider-item">
+            <label>转化漏斗权重 (%)</label>
+            <input type="range" min="0" max="100" value="${pw.conversion || 0}" oninput="updatePerfWeight('conversion', this.value)">
+            <div class="weight-value" id="weightConversion">${pw.conversion || 0}%</div>
+          </div>
+          <div class="weight-slider-item">
             <label>店长打分权重 (%)</label>
             <input type="range" min="0" max="100" value="${pw.manager}" oninput="updatePerfWeight('manager', this.value)">
             <div class="weight-value" id="weightManager">${pw.manager}%</div>
           </div>
         </div>
         <div style="margin-top:10px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-          <span style="font-size:13px;color:#666;">合计：<strong id="weightTotal" style="color:${pw.sales+pw.ops+pw.manager===100?'#27AE60':'#E74C3C'};">${pw.sales+pw.ops+pw.manager}%</strong></span>
-          <button class="btn btn-sm btn-primary" id="saveWeightBtn" onclick="savePerfWeights()" ${pw.sales+pw.ops+pw.manager!==100?'disabled style="opacity:0.5;"':''}>保存权重</button>
+          <span style="font-size:13px;color:#666;">合计：<strong id="weightTotal" style="color:${pw.sales+pw.ops+(pw.conversion||0)+pw.manager===100?'#27AE60':'#E74C3C'};">${pw.sales+pw.ops+(pw.conversion||0)+pw.manager}%</strong></span>
+          <button class="btn btn-sm btn-primary" id="saveWeightBtn" onclick="savePerfWeights()" ${pw.sales+pw.ops+(pw.conversion||0)+pw.manager!==100?'disabled style="opacity:0.5;"':''}>保存权重</button>
           <span style="font-size:12px;color:#999;">签约目标：基础 ${signTargets.base} 单/月，卓越 ${signTargets.stretch} 单/月</span>
           <button class="btn btn-sm" onclick="editSignTargets()">🎯 设置目标</button>
         </div>
@@ -3158,7 +3297,7 @@ function renderPerformance(body) {
     </div>
 
     <div style="margin-bottom:16px;padding:12px;background:#EBF3FC;border-radius:8px;font-size:13px;color:#2E6DA4;line-height:1.8;">
-      <strong>综合评分公式：</strong>月度签约得分 × ${pw.sales}% + 日常任务综合得分 × ${pw.ops}% + 店长打分 × ${pw.manager}%<br>
+      <strong>综合评分公式：</strong>月度签约得分 × ${pw.sales}% + 日常任务综合得分 × ${pw.ops}% + 转化漏斗得分 × ${pw.conversion || 0}% + 店长打分 × ${pw.manager}%<br>
       <strong>签约得分规则：</strong>签约数<基础目标(${signTargets.base})：得分=(签约数/基础目标)×60；基础≤签约<卓越(${signTargets.stretch})：得分=60+(签约-基础)/(卓越-基础)×40；≥卓越：100分<br>
       <strong>日常任务综合（3项等权）：</strong>任务完成率得分 + 渠道指标得分 + 正负事件净分<br>
       <span style="font-size:12px;">* 渠道指标需在下方"渠道指标月度填报"中录入，未填报默认0分计入日常综合</span>
@@ -3176,6 +3315,7 @@ function renderPerformance(body) {
               <th>管家</th>
               <th class="num">签约得分 (${pw.sales}%)</th>
               <th class="num">日常综合 (${pw.ops}%)</th>
+              <th class="num">转化得分 (${pw.conversion || 0}%)</th>
               <th class="num">店长打分 (${pw.manager}%)</th>
               <th class="num">最终得分</th>
               <th class="center">操作</th>
@@ -3188,6 +3328,7 @@ function renderPerformance(body) {
                 <td>${p.name}</td>
                 <td class="num">${p.signScore}</td>
                 <td class="num">${p.dailyComposite.toFixed(1)}</td>
+                <td class="num" title="进→带:${p.convDetail.leadToVisitRate}% 带→签:${p.convDetail.visitToSignRate}% 进→签:${p.convDetail.leadToSignRate}%">${p.conversionScore.toFixed(1)}</td>
                 <td class="num"><input type="number" min="0" max="100" value="${p.managerScore}" style="width:60px;text-align:right;" onchange="saveManagerScore('${p.id}', this.value)"></td>
                 <td class="num"><strong>${p.finalScore}</strong></td>
                 <td class="center">
@@ -3200,32 +3341,7 @@ function renderPerformance(body) {
       </div>
     </div>
 
-    <!-- v6.0 转化漏斗卡片 -->
-    ${(() => {
-      let tL = 0, tS = 0, tN = 0;
-      const sIds = store.staff.map(s => s.id);
-      Object.entries(store.dailyData || {}).forEach(([date, d]) => {
-        if (date.startsWith(monthKey) && d.staff) {
-          sIds.forEach(sid => {
-            const sd = d.staff[sid];
-            if (sd) { tL += (sd.leads || 0); tS += (sd.showings || 0); tN += (sd.newSign || 0); }
-          });
-        }
-      });
-      const l2v = tL > 0 ? (tS / tL * 100).toFixed(1) : '0.0';
-      const v2n = tS > 0 ? (tN / tS * 100).toFixed(1) : '0.0';
-      const l2n = tL > 0 ? (tN / tL * 100).toFixed(1) : '0.0';
-      return '<div class="card"><div class="card-header"><h3>📈 转化漏斗（${monthKey}）</h3></div><div class="card-body">' +
-        '<div class="funnel-card">' +
-        '<div class="funnel-step"><div class="funnel-bar" style="background:#4A90D9;">' + tL + '</div><div class="funnel-label">总进线</div></div>' +
-        '<div class="funnel-arrow">→<br><span style="font-size:11px;color:#4A90D9;">' + l2v + '%</span></div>' +
-        '<div class="funnel-step"><div class="funnel-bar" style="background:#F39C12;">' + tS + '</div><div class="funnel-label">总来访(带看)</div></div>' +
-        '<div class="funnel-arrow">→<br><span style="font-size:11px;color:#F39C12;">' + v2n + '%</span></div>' +
-        '<div class="funnel-step"><div class="funnel-bar" style="background:#27AE60;">' + tN + '</div><div class="funnel-label">总签约</div></div>' +
-        '</div>' +
-        '<div style="text-align:center;margin-top:8px;font-size:13px;color:#666;">进线→成交率：<strong style="color:#4A90D9;">' + l2n + '%</strong></div>' +
-        '</div></div>';
-    })()}
+    <!-- v6.0 全店漏斗已移至渠道数据Tab按管家维度展示 -->
 
     <div class="card">
       <div class="card-header">
@@ -3678,6 +3794,23 @@ function getShiftIcon(key) {
   return s ? s.icon : '';
 }
 
+function getShiftLabel(key) {
+  const shifts = getShifts();
+  const s = shifts.find(x => x.key === key);
+  return s ? s.label : '';
+}
+
+function getShiftCellStyle(key) {
+  const colorMap = {
+    'morning': 'background:#DBEEFF;color:#1A5276;',
+    'middle': 'background:#E8E0F0;color:#6C3483;',
+    'evening': 'background:#E8DAEF;color:#6C3483;',
+    'rest': 'background:#F0F0F0;color:#999;',
+    'duty': 'background:#D5F5E3;color:#1E8449;'
+  };
+  return colorMap[key] || 'background:#F8F9FA;color:#555;';
+}
+
 function nextShift(current) {
   const shifts = getShifts();
   const idx = shifts.findIndex(s => s.key === current);
@@ -3687,20 +3820,44 @@ function nextShift(current) {
 function manageShifts() {
   const shifts = getShifts();
   let html = '<div style="margin-bottom:12px;"><button class="btn btn-sm btn-primary" onclick="addCustomShift()">+ 新增班次</button></div>';
-  html += '<div style="font-size:12px;color:#999;margin-bottom:8px;">默认班次不可删除，仅可自定义新增：</div>';
+  html += '<div style="font-size:12px;color:#999;margin-bottom:8px;">所有班次均可删除，但须至少保留1个班次：</div>';
   shifts.forEach((s, i) => {
     const isDefault = i < DEFAULT_SHIFTS.length;
+    const isLast = shifts.length <= 1;
     html += '<div class="shift-manage-item">' +
       '<div class="shift-icon">' + s.icon + '</div>' +
       '<div class="shift-name">' + s.label + ' <span style="font-size:11px;color:#999;">(' + s.key + ')</span></div>' +
+      '<div style="display:flex;gap:4px;align-items:center;">' +
       (isDefault ? '<span class="badge badge-gray">默认</span>' :
-        '<div style="display:flex;gap:4px;">' +
         '<span class="badge ' + (s.type === 'morning' ? 'badge-blue' : s.type === 'evening' ? 'badge-orange' : 'badge-gray') + '">' +
-        (s.type === 'morning' ? '早班' : s.type === 'evening' ? '晚班' : '其他') + '</span>' +
-        '<button class="btn btn-sm btn-danger" onclick="deleteCustomShift(' + i + ')">删除</button></div>') +
-      '</div>';
+        (s.type === 'morning' ? '早班' : s.type === 'evening' ? '晚班' : '其他') + '</span>') +
+      (isLast ? '<span style="font-size:11px;color:#E74C3C;">最后1个不可删</span>' :
+        '<button class="btn btn-sm btn-danger" onclick="deleteShiftAny(' + i + ')">删除</button>') +
+      '</div></div>';
   });
   showModal('班次管理', html, '<button class="btn btn-primary" onclick="closeModal()">关闭</button>');
+}
+
+function deleteShiftAny(idx) {
+  const shifts = getShifts();
+  if (shifts.length <= 1) { showToast('至少保留1个班次'); return; }
+  const s = shifts[idx];
+  if (!confirm('确定删除班次「' + s.label + '」？排班中使用该班次的数据不会被自动清除。')) return;
+  if (idx < DEFAULT_SHIFTS.length) {
+    // It's a default shift - move it to a "deleted defaults" list
+    if (!store.deletedDefaultShifts) store.deletedDefaultShifts = [];
+    store.deletedDefaultShifts.push(DEFAULT_SHIFTS[idx].key);
+    DEFAULT_SHIFTS.splice(idx, 1);
+  } else {
+    const custom = store.customShifts || [];
+    const realIdx = idx - DEFAULT_SHIFTS.length;
+    if (realIdx >= 0 && realIdx < custom.length) {
+      custom.splice(realIdx, 1);
+    }
+  }
+  saveStore();
+  manageShifts();
+  renderOpTabBody();
 }
 
 function addCustomShift() {
@@ -3721,15 +3878,7 @@ function addCustomShift() {
 }
 
 function deleteCustomShift(idx) {
-  if (!confirm('确定删除此班次？')) return;
-  const custom = store.customShifts || [];
-  const realIdx = idx - DEFAULT_SHIFTS.length;
-  if (realIdx >= 0 && realIdx < custom.length) {
-    custom.splice(realIdx, 1);
-    saveStore();
-    manageShifts();
-    renderOpTabBody();
-  }
+  deleteShiftAny(idx);
 }
 
 function renderSchedule(body) {
@@ -3847,9 +3996,11 @@ function renderSchedule(body) {
       const isToday = isCurrentMonth && d === todayDate.getDate();
       const shift = staffData[d] || '';
       if (shift === 'rest') restCount++;
+      const shiftLabel = getShiftLabel(shift);
+      const shiftStyle = shift ? getShiftCellStyle(shift) : '';
       html += `<td class="shift-cell ${isWeekend ? 'weekend' : ''} ${isToday ? 'today' : ''}"
         onclick="setShift('${s.id}', ${d})"
-        title="${s.name} ${d}日">${getShiftIcon(shift)}</td>`;
+        title="${s.name} ${d}日" style="font-size:11px;${shiftStyle}">${shiftLabel || ''}</td>`;
     }
     html += `<td style="background:#F0F7FF;font-weight:500;">${restCount} 天</td></tr>`;
   });
@@ -4067,7 +4218,12 @@ function renderPriceList(body) {
           <div class="pc-header">
             <div>
               <span class="drag-handle" title="拖拽排序">⋮⋮</span>
-              <span class="pc-name">${p.name}</span>
+              <span class="pc-name">${(() => {
+                const roomTypes = p.roomTypeIds.map(id => { const r = store.roomTypes.find(x => x.id === id); return r ? r.name : ''; }).filter(Boolean);
+                const discountLabel = p.rentDiscount && p.rentDiscount < 100 ? p.rentDiscount + '折' : '标准价';
+                const typeLabel = roomTypes.length > 0 ? roomTypes.join('/') : '全户型';
+                return typeLabel + ' · ' + discountLabel;
+              })()}</span>
               ${p.enabled === false ? '<span class="badge badge-gray">已停用</span>' : '<span class="badge badge-green">启用中</span>'}
             </div>
             <div class="pc-price">${p.rentDiscount ? p.rentDiscount + '折' : '标准价'}</div>
@@ -4081,6 +4237,11 @@ function renderPriceList(body) {
             ${p.approval ? '<span>📝 ' + p.approval + '</span>' : ''}
           </div>
           ${p.note ? `<div style="font-size:12px;color:#888;margin-bottom:10px;">📝 ${p.note}</div>` : ''}
+          <div style="background:#F8F9FA;border-top:1px solid #E8E8E8;border-radius:0 0 8px 8px;padding:8px 12px;display:flex;gap:16px;font-size:12px;color:#888;flex-wrap:wrap;">
+            <span>通用折扣：<strong style="color:#555;">${p.managementFeeDiscount || 100}%</strong></span>
+            <span>租金折扣：<strong style="color:#555;">${p.rentDiscount || 100}%</strong></span>
+            ${p.oldBringNew ? '<span>老带新优惠：<strong style="color:#555;">' + p.oldBringNew + '</strong></span>' : ''}
+          </div>
           <div class="pc-actions">
             <button class="btn btn-sm" onclick="duplicatePlan('${p.id}')">复制</button>
             <button class="btn btn-sm" onclick="togglePlan('${p.id}')">${p.enabled === false ? '启用' : '停用'}</button>
@@ -5574,7 +5735,7 @@ function renderSettings(area) {
     <div class="card">
       <div class="card-header"><h3>📊 阶梯评分标准设置</h3></div>
       <div class="card-body">
-        <p style="font-size:13px;color:#666;margin-bottom:12px;">设置4项渠道响应指标的评分阶梯，用于团队绩效的"日常动作均分"计算。</p>
+        <p style="font-size:13px;color:#666;margin-bottom:12px;">设置渠道响应指标及转化漏斗指标的评分阶梯，用于团队绩效计算。共7项指标：4项日常渠道指标 + 3项转化指标。</p>
         <div class="grid-2">
           ${Object.entries(store.scoringSteps).map(([key, cfg]) => `
             <div style="border:1px solid #E8E8E8;border-radius:8px;padding:12px;">
