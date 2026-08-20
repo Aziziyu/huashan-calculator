@@ -573,7 +573,7 @@
         "rt2",
         "rt3"
       ],
-      "rentDiscount": 100,
+      "rentDiscount": 93,
       "managementFeeDiscount": 100,
       "leaseTerm": 12,
       "oldBringNew": "",
@@ -628,7 +628,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/20 14:04:37",
+    "lastSyncTime": "2026/8/20 14:04:44",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
