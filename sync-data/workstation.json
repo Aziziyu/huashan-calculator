@@ -536,7 +536,7 @@
       "customDays": 0,
       "deadline": "",
       "note": "",
-      "lastDone": "",
+      "lastDone": "2026-08-20",
       "weekDay": null,
       "monthDay": null,
       "time": ""
@@ -1081,7 +1081,7 @@
     "startRate": 72.7,
     "estimatedMoveOut": 10
   },
-  "currentPage": "dashboard",
+  "currentPage": "settings",
   "currentOperationGroup": "daily",
   "currentOperationTab": "daily-data",
   "currentPriceTab": "list",
