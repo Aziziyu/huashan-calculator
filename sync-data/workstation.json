@@ -1150,12 +1150,12 @@
   },
   "currentPage": "operation",
   "currentOperationGroup": "team",
-  "currentOperationTab": "performance",
+  "currentOperationTab": "schedule",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/20 17:43:46",
+    "lastSyncTime": "2026/8/20 17:43:54",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
