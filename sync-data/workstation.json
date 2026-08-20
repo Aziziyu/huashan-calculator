@@ -601,6 +601,26 @@
       "validTo": "2026-09-30",
       "note": "",
       "enabled": true
+    },
+    {
+      "id": "mt14bnsuhmwjg",
+      "name": "G10小户型折扣 01,02,05,08,09",
+      "buildingIds": [
+        "b1"
+      ],
+      "roomTypeIds": [
+        "rt1"
+      ],
+      "rentDiscount": 90,
+      "managementFeeDiscount": 100,
+      "leaseTerm": 12,
+      "oldBringNew": "",
+      "target": "",
+      "approval": "",
+      "validFrom": "2026-08-20",
+      "validTo": "2026-09-30",
+      "note": "",
+      "enabled": true
     }
   ],
   "calcHistory": [],
@@ -646,7 +666,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/20 14:07:01",
+    "lastSyncTime": "2026/8/20 14:07:09",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
