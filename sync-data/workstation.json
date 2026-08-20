@@ -657,14 +657,14 @@
     "startRate": 72.7,
     "estimatedMoveOut": 10
   },
-  "currentPage": "ka",
+  "currentPage": "price",
   "currentOperationGroup": "team",
   "currentOperationTab": "performance",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/20 14:00:38",
+    "lastSyncTime": "2026/8/20 14:00:47",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
