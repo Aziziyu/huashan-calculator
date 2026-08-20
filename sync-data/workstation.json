@@ -214,7 +214,22 @@
     }
   ],
   "taskProgress": {
-    "t1_s1_2026-W34": 0
+    "t1_s1_2026-W34": 2,
+    "t1_s2_2026-W34": 2,
+    "t1_s3_2026-W34": 3,
+    "t1_s4_2026-W34": 3,
+    "t2_s1_2026-W34": 4,
+    "t2_s2_2026-W34": 3,
+    "t2_s3_2026-W34": 3,
+    "t2_s4_2026-W34": 2,
+    "t3_s1_2026-W34": 1,
+    "t3_s2_2026-W34": 1,
+    "t3_s3_2026-W34": 1,
+    "t3_s4_2026-W34": 1,
+    "mt141hrgcg65p_s1_2026-W34": 1,
+    "mt141hrgcg65p_s2_2026-W34": 1,
+    "mt141hrgcg65p_s3_2026-W34": 1,
+    "mt141hrgcg65p_s4_2026-W34": 2
   },
   "posNegEvents": [
     {
@@ -976,7 +991,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/20 14:39:03",
+    "lastSyncTime": "2026/8/20 14:39:12",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
