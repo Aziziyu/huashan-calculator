@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>店长工作台 v5.7</title>
+<title>店长工作台 v6.0</title>
 <style>
 /* ===== CSS Reset & Base ===== */
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -407,6 +407,43 @@ textarea.form-control { resize: vertical; min-height: 60px; }
 .query-price-row .q-label{color:#666}
 .query-price-row .q-value{font-weight:600;color:#1a2b4a}
 
+/* ===== v6.0 Card Layout Enhancements ===== */
+.card-draggable { transition: transform 0.15s, box-shadow 0.15s; }
+.card-draggable.drag-over { border: 2px dashed #4A90D9; background: #F0F7FF; }
+.card-draggable.dragging { opacity: 0.4; }
+.card-drag-handle { cursor: grab; color: #CCC; margin-right: 8px; font-size: 16px; user-select: none; display: inline-flex; align-items: center; }
+.card-drag-handle:hover { color: #888; }
+.card-drag-handle:active { cursor: grabbing; }
+.card-editable-title { cursor: text; border-bottom: 1px dashed transparent; padding-bottom: 1px; }
+.card-editable-title:hover { border-bottom-color: #CCC; }
+.card-editable-title-input { border: 1px solid #4A90D9; border-radius: 4px; padding: 2px 6px; font-size: 15px; font-weight: 600; color: #333; outline: none; width: 200px; }
+.card-resize-handle { height: 6px; cursor: ns-resize; background: linear-gradient(to bottom, transparent, #E8E8E8); border-radius: 0 0 8px 8px; margin-top: -1px; display: flex; align-items: center; justify-content: center; }
+.card-resize-handle:hover { background: linear-gradient(to bottom, transparent, #4A90D9); }
+.card-resize-handle::after { content: "\22EF"; color: #CCC; font-size: 10px; letter-spacing: 2px; }
+
+/* ===== v6.0 Funnel Card ===== */
+.funnel-card { display: flex; align-items: center; justify-content: center; gap: 0; padding: 16px 0; }
+.funnel-step { text-align: center; flex: 1; position: relative; }
+.funnel-step .funnel-bar { height: 40px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 600; font-size: 14px; }
+.funnel-step .funnel-label { font-size: 12px; color: #666; margin-top: 6px; }
+.funnel-arrow { font-size: 18px; color: #999; padding: 0 4px; }
+
+/* ===== v6.0 Todo Enhancements ===== */
+.todo-item.completed .todo-text { text-decoration: line-through; color: #999; }
+.todo-item.completed .todo-check { background: #27AE60; border-color: #27AE60; color: #fff; }
+
+/* ===== v6.0 Perf Weight Config ===== */
+.weight-slider-group { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+.weight-slider-item { flex: 1; min-width: 120px; }
+.weight-slider-item label { font-size: 12px; color: #666; display: block; margin-bottom: 4px; }
+.weight-slider-item input[type="range"] { width: 100%; }
+.weight-slider-item .weight-value { font-size: 14px; font-weight: 600; color: #333; text-align: center; }
+
+/* ===== v6.0 Shift Management ===== */
+.shift-manage-item { display: flex; align-items: center; gap: 8px; padding: 8px; border: 1px solid #E8E8E8; border-radius: 6px; margin-bottom: 6px; background: #fff; }
+.shift-manage-item .shift-icon { font-size: 20px; width: 30px; text-align: center; }
+.shift-manage-item .shift-name { flex: 1; font-size: 14px; }
+
 </style>
 </head>
 <body>
@@ -425,7 +462,7 @@ textarea.form-control { resize: vertical; min-height: 60px; }
       <div class="nav-item" data-page="ka"><span class="nav-icon">🏢</span>企业客户KA</div>
       <div class="nav-item" data-page="settings"><span class="nav-icon">⚙️</span>设置</div>
     </nav>
-    <div class="sidebar-footer">v5.7 · GitHub 自动同步</div>
+    <div class="sidebar-footer">v6.0 · GitHub 自动同步</div>
   </aside>
 
   <!-- Main Content -->
@@ -488,12 +525,13 @@ textarea.form-control { resize: vertical; min-height: 60px; }
 // ============================================================
 // Data Store & LocalStorage
 // ============================================================
-const STORAGE_KEY = 'boyu_workstation_v5_5';
+const STORAGE_KEY = 'boyu_workstation_v6_0';
 const OLD_STORAGE_KEY = 'workstation_v5_data';
 const V51_STORAGE_KEY = 'boyu_workstation_v5_1';
 const V52_STORAGE_KEY = 'boyu_workstation_v5_2';
 const V53_STORAGE_KEY = 'boyu_workstation_v5_3';
 const V54_STORAGE_KEY = 'boyu_workstation_v5_4';
+const V55_STORAGE_KEY = 'boyu_workstation_v5_5';
 
 const defaultStore = {
   // 门店信息
@@ -610,6 +648,16 @@ const defaultStore = {
   renewals: [],
   // 团队绩效 - 店长打分 { staffId: score }
   managerScores: {},
+  // 绩效权重配置
+  perfWeights: { sales: 50, ops: 30, manager: 20 },
+  // 签约目标
+  signTargets: { base: 10, stretch: 15 },
+  // 自定义班次
+  customShifts: [],
+  // 卡片布局排序 { tabId: [cardId, ...] }
+  layoutOrder: {},
+  // 卡片尺寸 { cardId: { height: 200 } }
+  layoutSizes: {},
   // 排班数据 { 'YYYY-MM': { staffId: { '1': shift, '2': shift, ... } } }
   schedule: {},
   // 排班模板
@@ -706,6 +754,17 @@ let store = loadStore();
 
 function loadStore() {
   try {
+    // v6.0 迁移：从 v5.5 key 迁移数据
+    const v55Raw = localStorage.getItem(V55_STORAGE_KEY);
+    if (v55Raw && !localStorage.getItem(STORAGE_KEY)) {
+      try {
+        const v55Data = JSON.parse(v55Raw);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(v55Data));
+        console.log('✅ 数据已从 v5.5 迁移到 v6.0');
+      } catch (e) {
+        console.error('Migration v5.5->v6.0 error:', e);
+      }
+    }
     // v5.5 迁移：从 v5_4 key 迁移数据（飞书→GitHub云同步升级）
     const v54Raw = localStorage.getItem(V54_STORAGE_KEY);
     if (v54Raw && !localStorage.getItem(STORAGE_KEY)) {
@@ -1124,23 +1183,32 @@ function isMyTodoOverdue(todo) {
 function renderDashboardMyTodos() {
   const dueTodos = store.myTodos.filter(t => t.enabled && isMyTodoDue(t));
   const enabledCount = store.myTodos.filter(t => t.enabled).length;
+  const today = new Date().toISOString().slice(0, 10);
 
   if (enabledCount === 0) {
     return '<div class="empty-state"><div class="empty-icon">📋</div>暂无待办，点击右上角设置</div>';
   }
 
+  // 分离未完成和已完成，已完成的排底部
+  const pending = dueTodos.filter(t => t.lastDone !== today);
+  const completed = dueTodos.filter(t => t.lastDone === today);
+  // 已完成的排在列表底部
+  const sortedTodos = [...pending, ...completed];
+
   let html = '';
-  dueTodos.forEach(t => {
+  sortedTodos.forEach(t => {
+    const isDone = t.lastDone === today;
     const overdue = isMyTodoOverdue(t);
     html += `
-      <div class="todo-item" style="padding:10px 0;border-bottom:1px solid #F0F0F0;">
-        <div class="todo-check" onclick="toggleMyTodoDone('${t.id}')"></div>
-        <div class="todo-text" style="flex:1;">
-          <span style="${overdue ? 'color:#E74C3C;font-weight:500;' : ''}">${t.name}</span>
+      <div class="todo-item ${isDone ? 'completed' : ''}" style="padding:10px 0;border-bottom:1px solid #F0F0F0;${isDone ? 'opacity:0.7;' : ''}">
+        <div class="todo-check ${isDone ? 'done' : ''}" onclick="toggleMyTodoDone('${t.id}')">${isDone ? '✓' : ''}</div>
+        <div class="todo-text" style="flex:1;${isDone ? 'text-decoration:line-through;color:#999;' : ''}">
+          <span style="${overdue && !isDone ? 'color:#E74C3C;font-weight:500;' : ''}">${t.name}</span>
           <span style="font-size:12px;color:#999;margin-left:8px;">
             ${getCycleLabel(t.cycle, t.customDays, t)}
             ${t.deadline ? ' · 截止 ' + t.deadline : ''}
-            ${overdue ? ' · <span style="color:#E74C3C;">已过期</span>' : ''}
+            ${overdue && !isDone ? ' · <span style="color:#E74C3C;">已过期</span>' : ''}
+            ${isDone ? ' · <span style="color:#27AE60;">已完成</span>' : ''}
           </span>
         </div>
         <button class="btn btn-sm" style="font-size:12px;" onclick="openMyTodoSetting('${t.id}')">⏰设置</button>
@@ -1148,13 +1216,13 @@ function renderDashboardMyTodos() {
     `;
   });
 
-  if (dueTodos.length === 0) {
+  if (pending.length === 0 && completed.length === 0) {
     html = '<div class="empty-state" style="padding:20px 0;"><div class="empty-icon">✅</div>今日待办已全部完成</div>';
   }
 
   html += `
     <div style="text-align:center;margin-top:12px;font-size:13px;color:#666;">
-      今日待完成 <strong style="color:${dueTodos.length > 0 ? '#E74C3C' : '#27AE60'};">${dueTodos.length}</strong> / 共 ${enabledCount} 项
+      今日待完成 <strong style="color:${pending.length > 0 ? '#E74C3C' : '#27AE60'};">${pending.length}</strong> / 共 ${enabledCount} 项
     </div>
   `;
 
@@ -1165,11 +1233,21 @@ function toggleMyTodoDone(id) {
   const t = store.myTodos.find(x => x.id === id);
   if (!t) return;
   const today = new Date().toISOString().slice(0, 10);
-  t.lastDone = today;
-  saveStore();
-  const card = document.getElementById('dashboardMyTodoList');
-  if (card) card.innerHTML = renderDashboardMyTodos();
-  showToast('已标记完成');
+  if (t.lastDone === today) {
+    // 取消完成
+    t.lastDone = '';
+    saveStore();
+    const card = document.getElementById('dashboardMyTodoList');
+    if (card) card.innerHTML = renderDashboardMyTodos();
+    showToast('已取消完成');
+  } else {
+    // 标记完成
+    t.lastDone = today;
+    saveStore();
+    const card = document.getElementById('dashboardMyTodoList');
+    if (card) card.innerHTML = renderDashboardMyTodos();
+    showToast('已标记完成');
+  }
 }
 
 function openMyTodoSetting(id) {
@@ -2121,8 +2199,10 @@ let dailyDataDate = todayStr();
 function renderDailyData(body) {
   const date = dailyDataDate;
   const data = store.dailyData[date] || { newSign: 0, checkOut: 0, leads: 0, showings: 0, staff: {}, buildings: {} };
-  // 实时从管家数据汇总计算新签
+  // 实时从管家数据汇总计算新签、进线、带看
   data.newSign = calcStaffNewSignTotal(data);
+  data.leads = calcStaffLeadsTotal(data);
+  data.showings = calcStaffShowingsTotal(data);
   data.netAdd = (data.newSign || 0) - (data.checkOut || 0);
   const occ = calcOccupancy();
 
@@ -2176,12 +2256,12 @@ function renderDailyData(body) {
             <input type="number" class="form-control" value="${data.checkOut || 0}" onchange="saveDailyField('checkOut', this.value)">
           </div>
           <div class="form-group">
-            <label>进线</label>
-            <input type="number" class="form-control" value="${data.leads || 0}" onchange="saveDailyField('leads', this.value)">
+            <label>进线（管家汇总）</label>
+            <input type="number" class="form-control" value="${calcStaffLeadsTotal(data)}" readonly style="background:#F0F5FA;color:#1A5276;font-weight:600;">
           </div>
           <div class="form-group">
-            <label>带看</label>
-            <input type="number" class="form-control" value="${data.showings || 0}" onchange="saveDailyField('showings', this.value)">
+            <label>带看（管家汇总）</label>
+            <input type="number" class="form-control" value="${calcStaffShowingsTotal(data)}" readonly style="background:#F0F5FA;color:#1A5276;font-weight:600;">
           </div>
         </div>
       </div>
@@ -2294,6 +2374,30 @@ function calcStaffNewSignTotal(data) {
   return total;
 }
 
+// 汇总所有管家的当日进线数
+function calcStaffLeadsTotal(data) {
+  let total = 0;
+  if (data.staff) {
+    store.staff.forEach(s => {
+      const sd = data.staff[s.id];
+      if (sd && sd.leads) total += sd.leads;
+    });
+  }
+  return total;
+}
+
+// 汇总所有管家的当日带看数
+function calcStaffShowingsTotal(data) {
+  let total = 0;
+  if (data.staff) {
+    store.staff.forEach(s => {
+      const sd = data.staff[s.id];
+      if (sd && sd.showings) total += sd.showings;
+    });
+  }
+  return total;
+}
+
 function saveStaffDaily(staffId, field, value) {
   const d = ensureDailyData(dailyDataDate);
   if (!d.staff[staffId]) d.staff[staffId] = { newSign: 0, showings: 0, leads: 0, remark: '' };
@@ -2302,8 +2406,10 @@ function saveStaffDaily(staffId, field, value) {
   } else {
     d.staff[staffId][field] = parseInt(value) || 0;
   }
-  // 自动汇总新签到全店数据
+  // 自动汇总新签、进线、带看到全店数据
   d.newSign = calcStaffNewSignTotal(d);
+  d.leads = calcStaffLeadsTotal(d);
+  d.showings = calcStaffShowingsTotal(d);
   d.netAdd = (d.newSign || 0) - (d.checkOut || 0);
   saveStore();
   renderOpTabBody();
@@ -2983,14 +3089,28 @@ function renderPerformance(body) {
       });
     }
   });
-  const maxSign = Math.max(1, ...Object.values(staffSigns));
+  // 签约目标得分（绝对值制）
+  const signTargets = store.signTargets || { base: 10, stretch: 15 };
+  const pw = store.perfWeights || { sales: 50, ops: 30, manager: 20 };
 
   // 每个管家的综合绩效
   const perfData = store.staff.map(s => {
-    const signScore = Math.round((staffSigns[s.id] / maxSign) * 100 * 10) / 10;
+    let signScore;
+    const signs = staffSigns[s.id];
+    if (signs >= signTargets.stretch) {
+      signScore = 100;
+    } else if (signs >= signTargets.base) {
+      signScore = 60 + ((signs - signTargets.base) / (signTargets.stretch - signTargets.base)) * 40;
+    } else {
+      signScore = (signs / signTargets.base) * 60;
+    }
+    signScore = Math.round(signScore * 10) / 10;
     const daily = calcDailyCompositeScore(s.id, monthKey);
     const managerScore = store.managerScores[s.id] !== undefined ? store.managerScores[s.id] : 80;
-    const finalScore = Math.round((signScore * 0.5 + daily.composite * 0.3 + managerScore * 0.2) * 10) / 10;
+    const wSales = pw.sales / 100;
+    const wOps = pw.ops / 100;
+    const wMgr = pw.manager / 100;
+    const finalScore = Math.round((signScore * wSales + daily.composite * wOps + managerScore * wMgr) * 10) / 10;
     return {
       id: s.id,
       name: s.name,
@@ -3007,8 +3127,39 @@ function renderPerformance(body) {
   }).sort((a, b) => b.finalScore - a.finalScore);
 
   let html = `
+    <!-- v6.0 权重配置面板 -->
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-header"><h3>⚖️ 绩效权重配置</h3></div>
+      <div class="card-body">
+        <div class="weight-slider-group">
+          <div class="weight-slider-item">
+            <label>销售权重 (%)</label>
+            <input type="range" min="0" max="100" value="${pw.sales}" oninput="updatePerfWeight('sales', this.value)">
+            <div class="weight-value" id="weightSales">${pw.sales}%</div>
+          </div>
+          <div class="weight-slider-item">
+            <label>日常运营权重 (%)</label>
+            <input type="range" min="0" max="100" value="${pw.ops}" oninput="updatePerfWeight('ops', this.value)">
+            <div class="weight-value" id="weightOps">${pw.ops}%</div>
+          </div>
+          <div class="weight-slider-item">
+            <label>店长打分权重 (%)</label>
+            <input type="range" min="0" max="100" value="${pw.manager}" oninput="updatePerfWeight('manager', this.value)">
+            <div class="weight-value" id="weightManager">${pw.manager}%</div>
+          </div>
+        </div>
+        <div style="margin-top:10px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <span style="font-size:13px;color:#666;">合计：<strong id="weightTotal" style="color:${pw.sales+pw.ops+pw.manager===100?'#27AE60':'#E74C3C'};">${pw.sales+pw.ops+pw.manager}%</strong></span>
+          <button class="btn btn-sm btn-primary" id="saveWeightBtn" onclick="savePerfWeights()" ${pw.sales+pw.ops+pw.manager!==100?'disabled style="opacity:0.5;"':''}>保存权重</button>
+          <span style="font-size:12px;color:#999;">签约目标：基础 ${signTargets.base} 单/月，卓越 ${signTargets.stretch} 单/月</span>
+          <button class="btn btn-sm" onclick="editSignTargets()">🎯 设置目标</button>
+        </div>
+      </div>
+    </div>
+
     <div style="margin-bottom:16px;padding:12px;background:#EBF3FC;border-radius:8px;font-size:13px;color:#2E6DA4;line-height:1.8;">
-      <strong>综合评分公式：</strong>月度签约得分 × 50% + 日常任务综合得分 × 30% + 店长打分 × 20%<br>
+      <strong>综合评分公式：</strong>月度签约得分 × ${pw.sales}% + 日常任务综合得分 × ${pw.ops}% + 店长打分 × ${pw.manager}%<br>
+      <strong>签约得分规则：</strong>签约数<基础目标(${signTargets.base})：得分=(签约数/基础目标)×60；基础≤签约<卓越(${signTargets.stretch})：得分=60+(签约-基础)/(卓越-基础)×40；≥卓越：100分<br>
       <strong>日常任务综合（3项等权）：</strong>任务完成率得分 + 渠道指标得分 + 正负事件净分<br>
       <span style="font-size:12px;">* 渠道指标需在下方"渠道指标月度填报"中录入，未填报默认0分计入日常综合</span>
     </div>
@@ -3023,9 +3174,9 @@ function renderPerformance(body) {
             <tr>
               <th>排名</th>
               <th>管家</th>
-              <th class="num">签约得分 (50%)</th>
-              <th class="num">日常综合 (30%)</th>
-              <th class="num">店长打分 (20%)</th>
+              <th class="num">签约得分 (${pw.sales}%)</th>
+              <th class="num">日常综合 (${pw.ops}%)</th>
+              <th class="num">店长打分 (${pw.manager}%)</th>
               <th class="num">最终得分</th>
               <th class="center">操作</th>
             </tr>
@@ -3049,6 +3200,32 @@ function renderPerformance(body) {
       </div>
     </div>
 
+    <!-- v6.0 转化漏斗卡片 -->
+    ${(() => {
+      let tL = 0, tS = 0, tN = 0;
+      const sIds = store.staff.map(s => s.id);
+      Object.entries(store.dailyData || {}).forEach(([date, d]) => {
+        if (date.startsWith(monthKey) && d.staff) {
+          sIds.forEach(sid => {
+            const sd = d.staff[sid];
+            if (sd) { tL += (sd.leads || 0); tS += (sd.showings || 0); tN += (sd.newSign || 0); }
+          });
+        }
+      });
+      const l2v = tL > 0 ? (tS / tL * 100).toFixed(1) : '0.0';
+      const v2n = tS > 0 ? (tN / tS * 100).toFixed(1) : '0.0';
+      const l2n = tL > 0 ? (tN / tL * 100).toFixed(1) : '0.0';
+      return '<div class="card"><div class="card-header"><h3>📈 转化漏斗（${monthKey}）</h3></div><div class="card-body">' +
+        '<div class="funnel-card">' +
+        '<div class="funnel-step"><div class="funnel-bar" style="background:#4A90D9;">' + tL + '</div><div class="funnel-label">总进线</div></div>' +
+        '<div class="funnel-arrow">→<br><span style="font-size:11px;color:#4A90D9;">' + l2v + '%</span></div>' +
+        '<div class="funnel-step"><div class="funnel-bar" style="background:#F39C12;">' + tS + '</div><div class="funnel-label">总来访(带看)</div></div>' +
+        '<div class="funnel-arrow">→<br><span style="font-size:11px;color:#F39C12;">' + v2n + '%</span></div>' +
+        '<div class="funnel-step"><div class="funnel-bar" style="background:#27AE60;">' + tN + '</div><div class="funnel-label">总签约</div></div>' +
+        '</div>' +
+        '<div style="text-align:center;margin-top:8px;font-size:13px;color:#666;">进线→成交率：<strong style="color:#4A90D9;">' + l2n + '%</strong></div>' +
+        '</div></div>';
+    })()}
 
     <div class="card">
       <div class="card-header">
@@ -3481,23 +3658,78 @@ function saveManagerScore(staffId, val) {
 
 // ---------- 排班管理 ----------
 let scheduleMonth = fmtMonth(new Date());
-const SHIFTS = [
-  { key: '', icon: '', label: '未排' },
-  { key: 'morning', icon: '🟢', label: '早班' },
-  { key: 'middle', icon: '🔵', label: '中班' },
-  { key: 'evening', icon: '🟣', label: '晚班' },
-  { key: 'rest', icon: '⚪', label: '休息' },
-  { key: 'duty', icon: '🟡', label: '值班' }
+const DEFAULT_SHIFTS = [
+  { key: '', icon: '', label: '未排', type: 'none' },
+  { key: 'morning', icon: '🟢', label: '早班', type: 'morning' },
+  { key: 'middle', icon: '🔵', label: '中班', type: 'other' },
+  { key: 'evening', icon: '🟣', label: '晚班', type: 'evening' },
+  { key: 'rest', icon: '⚪', label: '休息', type: 'none' },
+  { key: 'duty', icon: '🟡', label: '值班', type: 'evening' }
 ];
 
+function getShifts() {
+  const custom = store.customShifts || [];
+  return [...DEFAULT_SHIFTS, ...custom];
+}
+
 function getShiftIcon(key) {
-  const s = SHIFTS.find(x => x.key === key);
+  const shifts = getShifts();
+  const s = shifts.find(x => x.key === key);
   return s ? s.icon : '';
 }
 
 function nextShift(current) {
-  const idx = SHIFTS.findIndex(s => s.key === current);
-  return SHIFTS[(idx + 1) % SHIFTS.length].key;
+  const shifts = getShifts();
+  const idx = shifts.findIndex(s => s.key === current);
+  return shifts[(idx + 1) % shifts.length].key;
+}
+
+function manageShifts() {
+  const shifts = getShifts();
+  let html = '<div style="margin-bottom:12px;"><button class="btn btn-sm btn-primary" onclick="addCustomShift()">+ 新增班次</button></div>';
+  html += '<div style="font-size:12px;color:#999;margin-bottom:8px;">默认班次不可删除，仅可自定义新增：</div>';
+  shifts.forEach((s, i) => {
+    const isDefault = i < DEFAULT_SHIFTS.length;
+    html += '<div class="shift-manage-item">' +
+      '<div class="shift-icon">' + s.icon + '</div>' +
+      '<div class="shift-name">' + s.label + ' <span style="font-size:11px;color:#999;">(' + s.key + ')</span></div>' +
+      (isDefault ? '<span class="badge badge-gray">默认</span>' :
+        '<div style="display:flex;gap:4px;">' +
+        '<span class="badge ' + (s.type === 'morning' ? 'badge-blue' : s.type === 'evening' ? 'badge-orange' : 'badge-gray') + '">' +
+        (s.type === 'morning' ? '早班' : s.type === 'evening' ? '晚班' : '其他') + '</span>' +
+        '<button class="btn btn-sm btn-danger" onclick="deleteCustomShift(' + i + ')">删除</button></div>') +
+      '</div>';
+  });
+  showModal('班次管理', html, '<button class="btn btn-primary" onclick="closeModal()">关闭</button>');
+}
+
+function addCustomShift() {
+  const name = prompt('班次名称：');
+  if (!name) return;
+  const icon = prompt('班次图标（emoji）：', '🔶') || '🔶';
+  const type = prompt('班次类型（morning/evening/other）：', 'other') || 'other';
+  if (!store.customShifts) store.customShifts = [];
+  store.customShifts.push({
+    key: 'custom_' + Date.now(),
+    icon: icon,
+    label: name,
+    type: type
+  });
+  saveStore();
+  manageShifts();
+  renderOpTabBody();
+}
+
+function deleteCustomShift(idx) {
+  if (!confirm('确定删除此班次？')) return;
+  const custom = store.customShifts || [];
+  const realIdx = idx - DEFAULT_SHIFTS.length;
+  if (realIdx >= 0 && realIdx < custom.length) {
+    custom.splice(realIdx, 1);
+    saveStore();
+    manageShifts();
+    renderOpTabBody();
+  }
 }
 
 function renderSchedule(body) {
@@ -3529,7 +3761,7 @@ function renderSchedule(body) {
         <div style="font-size:14px;font-weight:600;margin-bottom:10px;">📅 今日值班（${today}）</div>
         <div class="grid-4">
           ${['morning','middle','evening','duty'].map(sk => {
-            const s = SHIFTS.find(x => x.key === sk);
+            const s = getShifts().find(x => x.key === sk);
             const ppl = todayInfo.filter(i => i.shift === sk);
             return `
               <div style="background:#fff;border-radius:6px;padding:10px;text-align:center;">
@@ -3546,6 +3778,26 @@ function renderSchedule(body) {
     </div>
     ` : ''}
 
+    ${isCurrentMonth ? (() => {
+      const dayNum = todayDate.getDate();
+      const shifts = getShifts();
+      const morningShifts = shifts.filter(s => s.type === 'morning');
+      const eveningShifts = shifts.filter(s => s.type === 'evening');
+      const dutyShifts = shifts.filter(s => s.key === 'duty');
+      let morningCount = 0, eveningCount = 0, dutyCount = 0;
+      store.staff.forEach(s => {
+        const sk = data[s.id]?.[dayNum] || '';
+        if (morningShifts.some(m => m.key === sk)) morningCount++;
+        if (eveningShifts.some(m => m.key === sk)) eveningCount++;
+        if (dutyShifts.some(m => m.key === sk)) dutyCount++;
+      });
+      return '<div class="stat-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:16px;">' +
+        '<div class="stat-card"><div class="stat-label">🟢 当日早班</div><div class="stat-value blue">' + morningCount + ' 人</div></div>' +
+        '<div class="stat-card"><div class="stat-label">🟣 当日晚班</div><div class="stat-value orange">' + eveningCount + ' 人</div></div>' +
+        '<div class="stat-card"><div class="stat-label">🟡 当日值班(查晚报)</div><div class="stat-value green">' + dutyCount + ' 人</div></div>' +
+        '</div>';
+    })() : ''}
+
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
         <button class="btn btn-sm" onclick="changeScheduleMonth(-1)">← 上月</button>
@@ -3553,6 +3805,7 @@ function renderSchedule(body) {
         <button class="btn btn-sm" onclick="changeScheduleMonth(1)">下月 →</button>
       </div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="btn btn-sm" onclick="manageShifts()">⚙️ 班次管理</button>
         <button class="btn btn-sm" onclick="pasteSchedule()">📋 粘贴导入</button>
         <button class="btn btn-sm" onclick="saveScheduleTpl()">💾 保存模板</button>
         <button class="btn btn-sm" onclick="applyScheduleTpl()">📋 应用模板</button>
@@ -3561,7 +3814,7 @@ function renderSchedule(body) {
     </div>
 
     <div class="schedule-legend">
-      ${SHIFTS.slice(1).map(s => `<span>${s.icon} ${s.label}</span>`).join('')}
+      ${getShifts().slice(1).map(s => `<span>${s.icon} ${s.label}</span>`).join('')}
       <span style="color:#999;">点击格子循环切换班次</span>
     </div>
   `;
@@ -5403,7 +5656,7 @@ function renderSettings(area) {
     </div>
 
     <div style="text-align:center;color:#BBB;font-size:12px;padding:20px 0;">
-      店长工作台 v5.7 · GitHub 自动同步版 · 数据安全由您保管
+      店长工作台 v6.0 · GitHub 自动同步版 · 数据安全由您保管
     </div>
   `;
 
@@ -6299,6 +6552,101 @@ window.doApplyTpl = doApplyTpl;
 window.deleteTpl = deleteTpl;
 window.pasteSchedule = pasteSchedule;
 
+// v6.0 绩效权重操作
+function updatePerfWeight(key, val) {
+  if (!store.perfWeights) store.perfWeights = { sales: 50, ops: 30, manager: 20 };
+  store.perfWeights[key] = parseInt(val) || 0;
+  var total = store.perfWeights.sales + store.perfWeights.ops + store.perfWeights.manager;
+  var ws = document.getElementById('weightSales');
+  var wo = document.getElementById('weightOps');
+  var wm = document.getElementById('weightManager');
+  var wt = document.getElementById('weightTotal');
+  var btn = document.getElementById('saveWeightBtn');
+  if (ws) ws.textContent = store.perfWeights.sales + '%';
+  if (wo) wo.textContent = store.perfWeights.ops + '%';
+  if (wm) wm.textContent = store.perfWeights.manager + '%';
+  if (wt) {
+    wt.textContent = total + '%';
+    wt.style.color = total === 100 ? '#27AE60' : '#E74C3C';
+  }
+  if (btn) {
+    btn.disabled = total !== 100;
+    btn.style.opacity = total !== 100 ? '0.5' : '1';
+  }
+}
+
+function savePerfWeights() {
+  if (!store.perfWeights) return;
+  var total = store.perfWeights.sales + store.perfWeights.ops + store.perfWeights.manager;
+  if (total !== 100) { showToast('权重合计必须等于100%'); return; }
+  saveStore();
+  showToast('权重已保存');
+  renderOpTabBody();
+}
+
+function editSignTargets() {
+  var targets = store.signTargets || { base: 10, stretch: 15 };
+  var html = '<div class="form-group"><label>基础目标（单/月）</label>' +
+    '<input type="number" class="form-control" id="signTargetBase" value="' + targets.base + '"></div>' +
+    '<div class="form-group"><label>卓越目标（单/月）</label>' +
+    '<input type="number" class="form-control" id="signTargetStretch" value="' + targets.stretch + '"></div>';
+  showModal('签约目标设置', html,
+    '<button class="btn" onclick="closeModal()">取消</button>' +
+    '<button class="btn btn-primary" onclick="saveSignTargets()">保存</button>');
+}
+
+function saveSignTargets() {
+  var base = parseInt(document.getElementById('signTargetBase').value) || 10;
+  var stretch = parseInt(document.getElementById('signTargetStretch').value) || 15;
+  if (stretch <= base) { showToast('卓越目标必须大于基础目标'); return; }
+  store.signTargets = { base: base, stretch: stretch };
+  saveStore();
+  closeModal();
+  showToast('目标已保存');
+  renderOpTabBody();
+}
+
+// v6.0 Card drag/resize/edit support (initialized on page load)
+function initCardLayoutEnhancements() {
+  // Double-click to edit card titles
+  document.addEventListener('dblclick', function(e) {
+    var h3 = e.target.closest('.card-header h3');
+    if (!h3 || h3.querySelector('input')) return;
+    var orig = h3.textContent.trim();
+    var input = document.createElement('input');
+    input.className = 'card-editable-title-input';
+    input.value = orig;
+    h3.textContent = '';
+    h3.appendChild(input);
+    input.focus();
+    input.select();
+    function save() {
+      h3.textContent = input.value || orig;
+      // Save custom title
+      var card = h3.closest('.card');
+      if (card && card.dataset.cardId) {
+        if (!store.cardTitles) store.cardTitles = {};
+        store.cardTitles[card.dataset.cardId] = input.value;
+        saveStore();
+      }
+    }
+    input.addEventListener('blur', save);
+    input.addEventListener('keydown', function(ev) {
+      if (ev.key === 'Enter') { ev.preventDefault(); save(); }
+      if (ev.key === 'Escape') { h3.textContent = orig; }
+    });
+  });
+}
+
+// Price
+window.updatePerfWeight = updatePerfWeight;
+window.savePerfWeights = savePerfWeights;
+window.editSignTargets = editSignTargets;
+window.saveSignTargets = saveSignTargets;
+window.manageShifts = manageShifts;
+window.addCustomShift = addCustomShift;
+window.deleteCustomShift = deleteCustomShift;
+
 // 价格方案
 window.addPricePlan = addPricePlan;
 window.editPricePlan = editPricePlan;
@@ -6362,6 +6710,9 @@ window.removeStep = removeStep;
 window.exportData = exportData;
 window.importData = importData;
 window.resetData = resetData;
+
+// v6.0 初始化卡片增强
+setTimeout(initCardLayoutEnhancements, 100);
 
 })(); // end IIFE
 </script>
