@@ -207,7 +207,9 @@
       "period": "week"
     }
   ],
-  "taskProgress": {},
+  "taskProgress": {
+    "t1_s1_2026-W34": 0
+  },
   "posNegEvents": [
     {
       "id": "pe1",
@@ -620,7 +622,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/20 10:07:03",
+    "lastSyncTime": "2026/8/20 10:07:13",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
