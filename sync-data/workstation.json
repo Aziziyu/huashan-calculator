@@ -1149,13 +1149,13 @@
     "estimatedMoveOut": 10
   },
   "currentPage": "operation",
-  "currentOperationGroup": "task",
-  "currentOperationTab": "task-exec",
+  "currentOperationGroup": "team",
+  "currentOperationTab": "performance",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/20 17:44:10",
+    "lastSyncTime": "2026/8/20 17:44:20",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
