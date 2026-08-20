@@ -1081,14 +1081,14 @@
     "startRate": 72.7,
     "estimatedMoveOut": 10
   },
-  "currentPage": "operation",
+  "currentPage": "settings",
   "currentOperationGroup": "team",
   "currentOperationTab": "schedule",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/20 16:10:28",
+    "lastSyncTime": "2026/8/20 16:10:36",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
