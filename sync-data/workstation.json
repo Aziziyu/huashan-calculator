@@ -648,6 +648,18 @@
   "channelData": {},
   "renewals": [],
   "managerScores": {},
+  "perfWeights": {
+    "sales": 50,
+    "ops": 30,
+    "manager": 20
+  },
+  "signTargets": {
+    "base": 10,
+    "stretch": 15
+  },
+  "customShifts": [],
+  "layoutOrder": {},
+  "layoutSizes": {},
   "schedule": {
     "2026-08": {
       "s1": {
@@ -1070,8 +1082,8 @@
     "estimatedMoveOut": 10
   },
   "currentPage": "operation",
-  "currentOperationGroup": "team",
-  "currentOperationTab": "performance",
+  "currentOperationGroup": "daily",
+  "currentOperationTab": "daily-data",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
