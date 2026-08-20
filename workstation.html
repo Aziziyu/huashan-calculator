@@ -667,7 +667,11 @@ const defaultStore = {
   // 团队绩效 - 店长打分 { staffId: score }
   managerScores: {},
   // 绩效权重配置
-  perfWeights: { sales: 40, ops: 25, conversion: 25, manager: 10 },
+  perfWeights: { sales: 40, ops: 50, manager: 10 },
+  // 通用折扣列表
+  genericDiscounts: [
+    { id: 'gdisc_1', name: '通用管理费折扣', value: 100, enabled: true, description: '适用于所有价格方案的管理费折扣，独立于各方案的租金折扣' }
+  ],
   // 签约目标
   signTargets: { base: 10, stretch: 15 },
   // 自定义班次
@@ -876,6 +880,17 @@ function loadStore() {
         console.log('✅ 数据已从 v5.5 githubConfig 迁移到 v5.7 cloudSync');
       }
       // Merge with defaults to handle new fields
+      // 通用折扣数据迁移：旧 globalManagementFeeDiscount → genericDiscounts 数组
+      if (!parsed.genericDiscounts && parsed.globalManagementFeeDiscount !== undefined) {
+        parsed.genericDiscounts = [{
+          id: 'gdisc_1',
+          name: '通用管理费折扣',
+          value: parsed.globalManagementFeeDiscount,
+          enabled: true,
+          description: ''
+        }];
+        console.log('✅ 数据已迁移：globalManagementFeeDiscount → genericDiscounts');
+      }
       return deepMerge(defaultStore, parsed);
     }
   } catch (e) {
@@ -2711,6 +2726,30 @@ function renderChannelData(body) {
   });
   html += '</div></div></div>';
 
+  // 门店平均计算
+  let totalLeads_avg = 0, totalShowings_avg = 0, totalNewSign_avg = 0;
+  store.staff.forEach(s => {
+    const fd = funnelData[s.id];
+    totalLeads_avg += fd.leads;
+    totalShowings_avg += fd.showings;
+    totalNewSign_avg += fd.newSign;
+  });
+  const avgLeads = store.staff.length > 0 ? (totalLeads_avg / store.staff.length).toFixed(1) : 0;
+  const avgShowings = store.staff.length > 0 ? (totalShowings_avg / store.staff.length).toFixed(1) : 0;
+  const avgNewSign = store.staff.length > 0 ? (totalNewSign_avg / store.staff.length).toFixed(1) : 0;
+  const avgL2V = totalLeads_avg > 0 ? Math.round((totalShowings_avg / totalLeads_avg) * 1000) / 10 : 0;
+  const avgV2N = totalShowings_avg > 0 ? Math.round((totalNewSign_avg / totalShowings_avg) * 1000) / 10 : 0;
+  const avgL2N = totalLeads_avg > 0 ? Math.round((totalNewSign_avg / totalLeads_avg) * 1000) / 10 : 0;
+  html += '<div class="card" style="margin-top:16px;"><div class="card-header"><h3>📊 门店平均数据</h3></div><div class="card-body">';
+  html += '<div style="display:flex;gap:16px;flex-wrap:wrap;">';
+  html += '<div style="flex:1;min-width:150px;padding:12px;background:#EBF5FB;border-radius:8px;text-align:center;"><div style="font-size:12px;color:#666;margin-bottom:4px;">平均进线</div><div style="font-size:20px;font-weight:bold;color:#2E86C1;">' + avgLeads + '</div></div>';
+  html += '<div style="flex:1;min-width:150px;padding:12px;background:#EBF5FB;border-radius:8px;text-align:center;"><div style="font-size:12px;color:#666;margin-bottom:4px;">平均带看</div><div style="font-size:20px;font-weight:bold;color:#2E86C1;">' + avgShowings + '</div></div>';
+  html += '<div style="flex:1;min-width:150px;padding:12px;background:#EBF5FB;border-radius:8px;text-align:center;"><div style="font-size:12px;color:#666;margin-bottom:4px;">平均新签</div><div style="font-size:20px;font-weight:bold;color:#2E86C1;">' + avgNewSign + '</div></div>';
+  html += '<div style="flex:1;min-width:150px;padding:12px;background:#EBF5FB;border-radius:8px;text-align:center;"><div style="font-size:12px;color:#666;margin-bottom:4px;">平均进线转来访</div><div style="font-size:20px;font-weight:bold;color:#2E86C1;">' + avgL2V + '%</div></div>';
+  html += '<div style="flex:1;min-width:150px;padding:12px;background:#EBF5FB;border-radius:8px;text-align:center;"><div style="font-size:12px;color:#666;margin-bottom:4px;">平均来访转成交</div><div style="font-size:20px;font-weight:bold;color:#2E86C1;">' + avgV2N + '%</div></div>';
+  html += '<div style="flex:1;min-width:150px;padding:12px;background:#EBF5FB;border-radius:8px;text-align:center;"><div style="font-size:12px;color:#666;margin-bottom:4px;">平均进线转成交</div><div style="font-size:20px;font-weight:bold;color:#2E86C1;">' + avgL2N + '%</div></div>';
+  html += '</div></div></div>';
+
   body.innerHTML = html;
   drawChannelPieChart(sorted, totalLeads);
   drawChannelBarChart(sorted.slice(0, 8));
@@ -3225,7 +3264,12 @@ function renderPerformance(body) {
   });
   // 签约目标得分（绝对值制）
   const signTargets = store.signTargets || { base: 10, stretch: 15 };
-  const pw = store.perfWeights || { sales: 50, ops: 30, manager: 20 };
+  const pw = store.perfWeights || { sales: 50, ops: 50, manager: 0 };
+  // 迁移：如果旧数据有conversion权重，合入ops
+  if (pw.conversion !== undefined) {
+    pw.ops = (pw.ops || 0) + (pw.conversion || 0);
+    delete pw.conversion;
+  }
 
   // 每个管家的综合绩效
   const perfData = store.staff.map(s => {
@@ -3242,11 +3286,12 @@ function renderPerformance(body) {
     const daily = calcDailyCompositeScore(s.id, monthKey);
     const conv = calcConversionScore(s.id, monthKey);
     const managerScore = store.managerScores[s.id] !== undefined ? store.managerScores[s.id] : 80;
+    // 将转化得分按一定比例合入日常综合得分
+    const opsComposite = (daily.composite + conv.conversionScore) / 2;
     const wSales = pw.sales / 100;
     const wOps = pw.ops / 100;
-    const wConv = (pw.conversion || 0) / 100;
     const wMgr = pw.manager / 100;
-    const finalScore = Math.round((signScore * wSales + daily.composite * wOps + conv.conversionScore * wConv + managerScore * wMgr) * 10) / 10;
+    const finalScore = Math.round((signScore * wSales + opsComposite * wOps + managerScore * wMgr) * 10) / 10;
     return {
       id: s.id,
       name: s.name,
@@ -3281,19 +3326,14 @@ function renderPerformance(body) {
             <div class="weight-value" id="weightOps">${pw.ops}%</div>
           </div>
           <div class="weight-slider-item">
-            <label>转化漏斗权重 (%)</label>
-            <input type="range" min="0" max="100" value="${pw.conversion || 0}" oninput="updatePerfWeight('conversion', this.value)">
-            <div class="weight-value" id="weightConversion">${pw.conversion || 0}%</div>
-          </div>
-          <div class="weight-slider-item">
             <label>店长打分权重 (%)</label>
             <input type="range" min="0" max="100" value="${pw.manager}" oninput="updatePerfWeight('manager', this.value)">
             <div class="weight-value" id="weightManager">${pw.manager}%</div>
           </div>
         </div>
         <div style="margin-top:10px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-          <span style="font-size:13px;color:#666;">合计：<strong id="weightTotal" style="color:${pw.sales+pw.ops+(pw.conversion||0)+pw.manager===100?'#27AE60':'#E74C3C'};">${pw.sales+pw.ops+(pw.conversion||0)+pw.manager}%</strong></span>
-          <button class="btn btn-sm btn-primary" id="saveWeightBtn" onclick="savePerfWeights()" ${pw.sales+pw.ops+(pw.conversion||0)+pw.manager!==100?'disabled style="opacity:0.5;"':''}>保存权重</button>
+          <span style="font-size:13px;color:#666;">合计：<strong id="weightTotal" style="color:${pw.sales+pw.ops+pw.manager===100?'#27AE60':'#E74C3C'};">${pw.sales+pw.ops+pw.manager}%</strong></span>
+          <button class="btn btn-sm btn-primary" id="saveWeightBtn" onclick="savePerfWeights()" ${pw.sales+pw.ops+pw.manager!==100?'disabled style="opacity:0.5;"':''}>保存权重</button>
           <span style="font-size:12px;color:#999;">签约目标：基础 ${signTargets.base} 单/月，卓越 ${signTargets.stretch} 单/月</span>
           <button class="btn btn-sm" onclick="editSignTargets()">🎯 设置目标</button>
         </div>
@@ -3301,9 +3341,9 @@ function renderPerformance(body) {
     </div>
 
     <div style="margin-bottom:16px;padding:12px;background:#EBF3FC;border-radius:8px;font-size:13px;color:#2E6DA4;line-height:1.8;">
-      <strong>综合评分公式：</strong>月度签约得分 × ${pw.sales}% + 日常任务综合得分 × ${pw.ops}% + 转化漏斗得分 × ${pw.conversion || 0}% + 店长打分 × ${pw.manager}%<br>
+      <strong>综合评分公式：</strong>月度签约得分 × ${pw.sales}% + 日常任务综合（含转化得分） × ${pw.ops}% + 店长打分 × ${pw.manager}%<br>
       <strong>签约得分规则：</strong>签约数<基础目标(${signTargets.base})：得分=(签约数/基础目标)×60；基础≤签约<卓越(${signTargets.stretch})：得分=60+(签约-基础)/(卓越-基础)×40；≥卓越：100分<br>
-      <strong>日常任务综合（3项等权）：</strong>任务完成率得分 + 渠道指标得分 + 正负事件净分<br>
+      <strong>日常任务综合（含转化，2项等权）：</strong>日常综合得分 + 转化漏斗得分<br>
       <span style="font-size:12px;">* 渠道指标需在下方"渠道指标月度填报"中录入，未填报默认0分计入日常综合</span>
     </div>
 
@@ -3319,7 +3359,7 @@ function renderPerformance(body) {
               <th>管家</th>
               <th class="num">签约得分 (${pw.sales}%)</th>
               <th class="num">日常综合 (${pw.ops}%)</th>
-              <th class="num">转化得分 (${pw.conversion || 0}%)</th>
+              <th class="num">转化得分</th>
               <th class="num">店长打分 (${pw.manager}%)</th>
               <th class="num">最终得分</th>
               <th class="center">操作</th>
@@ -4202,17 +4242,83 @@ function saveGlobalMgtDiscount(val) {
   renderPriceList($('#priceBody'));
 }
 
+function renderGenericDiscounts() {
+  const list = $('#genericDiscountList');
+  if (!list) return;
+  if (!store.genericDiscounts || store.genericDiscounts.length === 0) {
+    list.innerHTML = '<div style="text-align:center;color:#999;font-size:13px;padding:20px 0;">暂无折扣项</div>';
+    return;
+  }
+  let html = '';
+  store.genericDiscounts.forEach(d => {
+    const disabledStyle = d.enabled ? '' : 'opacity:0.5;';
+    const btnText = d.enabled ? '启用' : '停用';
+    const btnClass = d.enabled ? 'btn-success' : 'btn-secondary';
+    html += `
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#F8FAFE;border:1px solid #E1E8F0;border-radius:6px;margin-bottom:8px;${disabledStyle}">
+        <span style="flex:1;font-size:13px;font-weight:500;color:#2E6DA4;">${d.name}</span>
+        <input type="number" min="0" max="100" value="${d.value}" style="width:60px;text-align:center;border:1px solid #D0D7DE;border-radius:4px;padding:3px 6px;font-size:13px;" onchange="updateGenericDiscount('${d.id}', 'value', this.value)">
+        <span style="font-size:14px;font-weight:bold;color:#2E86C1;min-width:40px;">${d.value}%</span>
+        <button class="btn btn-sm ${btnClass}" onclick="toggleGenericDiscount('${d.id}')" title="启用/停用">${btnText}</button>
+        <button class="btn btn-sm btn-link" onclick="editGenericDiscount('${d.id}')" title="编辑名称">编辑</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteGenericDiscount('${d.id}')" title="删除">删除</button>
+      </div>
+    `;
+  });
+  list.innerHTML = html;
+}
+
+function addGenericDiscount() {
+  const name = prompt('折扣名称：', '新折扣');
+  if (!name) return;
+  const id = 'gdisc_' + Date.now();
+  store.genericDiscounts.push({
+    id, name, value: 100, enabled: true, description: ''
+  });
+  saveStore();
+  renderGenericDiscounts();
+}
+
+function updateGenericDiscount(id, key, val) {
+  const d = store.genericDiscounts.find(x => x.id === id);
+  if (!d) return;
+  if (key === 'value') d.value = parseFloat(val) || 0;
+  saveStore();
+  renderGenericDiscounts();
+}
+
+function toggleGenericDiscount(id) {
+  const d = store.genericDiscounts.find(x => x.id === id);
+  if (!d) return;
+  d.enabled = !d.enabled;
+  saveStore();
+  renderGenericDiscounts();
+}
+
+function editGenericDiscount(id) {
+  const d = store.genericDiscounts.find(x => x.id === id);
+  if (!d) return;
+  const name = prompt('折扣名称：', d.name);
+  if (name) { d.name = name; saveStore(); renderGenericDiscounts(); }
+}
+
+function deleteGenericDiscount(id) {
+  if (store.genericDiscounts.length <= 1) { showToast('至少保留1个折扣项'); return; }
+  if (!confirm('确定删除该折扣项？')) return;
+  store.genericDiscounts = store.genericDiscounts.filter(x => x.id !== id);
+  saveStore();
+  renderGenericDiscounts();
+}
+
 function renderPriceList(body) {
   let html = `
     <div class="card" style="margin-bottom:16px;">
-      <div class="card-header"><h3>🏷️ 通用折扣设置</h3></div>
+      <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
+        <h3>🏷️ 通用折扣管理</h3>
+        <button class="btn btn-sm btn-primary" onclick="addGenericDiscount()">+ 新增折扣</button>
+      </div>
       <div class="card-body">
-        <p style="font-size:13px;color:#666;margin-bottom:12px;">通用折扣适用于所有价格方案的管理费折扣，独立于各方案的租金折扣。</p>
-        <div style="display:flex;align-items:center;gap:12px;">
-          <label style="font-size:14px;">通用管理费折扣：</label>
-          <input type="number" class="form-control" id="globalMgtDiscount" value="${store.globalManagementFeeDiscount || 100}" min="0" max="100" style="width:80px;text-align:center;" onchange="saveGlobalMgtDiscount(this.value)">
-          <span style="font-size:14px;font-weight:bold;color:#2E86C1;">${store.globalManagementFeeDiscount || 100}%</span>
-        </div>
+        <div id="genericDiscountList"></div>
       </div>
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
@@ -4276,6 +4382,7 @@ function renderPriceList(body) {
 
   html += '</div>';
   body.innerHTML = html;
+  renderGenericDiscounts();
   setupPriceDrag();
 }
 
@@ -6736,7 +6843,12 @@ window.pasteSchedule = pasteSchedule;
 
 // v6.0 绩效权重操作
 function updatePerfWeight(key, val) {
-  if (!store.perfWeights) store.perfWeights = { sales: 50, ops: 30, manager: 20 };
+  if (!store.perfWeights) store.perfWeights = { sales: 50, ops: 50, manager: 0 };
+  // 迁移：如果旧数据有conversion权重，合入ops
+  if (store.perfWeights.conversion !== undefined) {
+    store.perfWeights.ops = (store.perfWeights.ops || 0) + (store.perfWeights.conversion || 0);
+    delete store.perfWeights.conversion;
+  }
   store.perfWeights[key] = parseInt(val) || 0;
   var total = store.perfWeights.sales + store.perfWeights.ops + store.perfWeights.manager;
   var ws = document.getElementById('weightSales');
