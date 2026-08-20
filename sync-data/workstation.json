@@ -262,7 +262,7 @@
       "type": "plus",
       "baseScore": 5,
       "threshold": "±5",
-      "description": ""
+      "description": "收到客户书面表扬或者锦旗"
     }
   ],
   "eventRecords": {
@@ -1096,7 +1096,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/20 16:05:05",
+    "lastSyncTime": "2026/8/20 16:05:14",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
