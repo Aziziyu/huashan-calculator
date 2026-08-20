@@ -205,6 +205,12 @@
       "name": "短视频",
       "targetCount": 1,
       "period": "week"
+    },
+    {
+      "id": "mt141hrgcg65p",
+      "name": "营销朋友圈发布",
+      "targetCount": 2,
+      "period": "week"
     }
   ],
   "taskProgress": {
@@ -658,7 +664,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/20 13:59:01",
+    "lastSyncTime": "2026/8/20 13:59:09",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
