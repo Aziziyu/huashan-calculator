@@ -490,7 +490,7 @@
       "customDays": 0,
       "deadline": "",
       "note": "",
-      "lastDone": ""
+      "lastDone": "2026-08-20"
     },
     {
       "id": "mt3",
@@ -1088,7 +1088,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/20 15:45:25",
+    "lastSyncTime": "2026/8/20 15:45:33",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
