@@ -539,88 +539,7 @@
     }
   },
   "scheduleTemplates": [],
-  "pricePlans": [
-    {
-      "id": "pp1",
-      "name": "原价不打折",
-      "rentDiscount": 100,
-      "managementFeeDiscount": 100,
-      "leaseTerm": 12,
-      "buildingIds": [],
-      "roomTypeIds": [],
-      "enabled": true,
-      "target": "所有客户",
-      "approval": "店长",
-      "note": "挂牌原价，无折扣",
-      "validFrom": "",
-      "validTo": "",
-      "oldBringNew": ""
-    },
-    {
-      "id": "pp2",
-      "name": "96折长租折扣",
-      "rentDiscount": 96,
-      "managementFeeDiscount": 96,
-      "leaseTerm": 12,
-      "buildingIds": [],
-      "roomTypeIds": [],
-      "enabled": true,
-      "target": "长租客户",
-      "approval": "店长",
-      "note": "长租一年以上享受",
-      "validFrom": "",
-      "validTo": "",
-      "oldBringNew": ""
-    },
-    {
-      "id": "pp3",
-      "name": "94折特殊",
-      "rentDiscount": 94,
-      "managementFeeDiscount": 94,
-      "leaseTerm": 12,
-      "buildingIds": [],
-      "roomTypeIds": [],
-      "enabled": true,
-      "target": "特殊渠道",
-      "approval": "区域经理",
-      "note": "特殊审批折扣",
-      "validFrom": "",
-      "validTo": "",
-      "oldBringNew": ""
-    },
-    {
-      "id": "pp4",
-      "name": "93折2人团",
-      "rentDiscount": 93,
-      "managementFeeDiscount": 93,
-      "leaseTerm": 12,
-      "buildingIds": [],
-      "roomTypeIds": [],
-      "enabled": true,
-      "target": "2人及以上团租",
-      "approval": "店长",
-      "note": "2人成团享93折",
-      "validFrom": "",
-      "validTo": "",
-      "oldBringNew": ""
-    },
-    {
-      "id": "pp5",
-      "name": "88折3人团",
-      "rentDiscount": 88,
-      "managementFeeDiscount": 88,
-      "leaseTerm": 12,
-      "buildingIds": [],
-      "roomTypeIds": [],
-      "enabled": true,
-      "target": "3人及以上团租",
-      "approval": "区域经理",
-      "note": "3人成团享88折",
-      "validFrom": "",
-      "validTo": "",
-      "oldBringNew": ""
-    }
-  ],
+  "pricePlans": [],
   "calcHistory": [],
   "kaCustomers": [
     {
@@ -664,7 +583,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/20 14:03:12",
+    "lastSyncTime": "2026/8/20 14:03:19",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
