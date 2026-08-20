@@ -615,12 +615,12 @@
   },
   "currentPage": "operation",
   "currentOperationGroup": "daily",
-  "currentOperationTab": "daily-data",
+  "currentOperationTab": "channel-data",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/20 09:35:25",
+    "lastSyncTime": "2026/8/20 09:35:36",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
