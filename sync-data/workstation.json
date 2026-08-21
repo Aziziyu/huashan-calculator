@@ -812,6 +812,11 @@
         "leads": 24,
         "visits": 12,
         "signings": 6
+      },
+      "mszw4rtannz8i": {
+        "leads": 18,
+        "visits": 23,
+        "signings": 9
       }
     }
   },
@@ -1266,7 +1271,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/21 10:14:37",
+    "lastSyncTime": "2026/8/21 10:14:45",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
