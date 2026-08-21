@@ -326,7 +326,7 @@
   "eventRecords": {
     "s1_2026-08_pe1": {
       "plus": 6,
-      "minus": 5,
+      "minus": 6,
       "entries": [
         {
           "type": "plus",
@@ -381,13 +381,18 @@
         {
           "type": "plus",
           "date": "2026-08-20",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-21",
           "note": ""
         }
       ]
     },
     "s1_2026-08_pe3": {
-      "plus": 4,
-      "minus": 3,
+      "plus": 6,
+      "minus": 8,
       "entries": [
         {
           "type": "minus",
@@ -422,6 +427,41 @@
         {
           "type": "plus",
           "date": "2026-08-20",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-21",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-21",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-21",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-21",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-21",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-21",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-21",
           "note": ""
         }
       ]
@@ -449,7 +489,7 @@
       ]
     },
     "s1_2026-08_pe2": {
-      "plus": 1,
+      "plus": 2,
       "minus": 2,
       "entries": [
         {
@@ -465,6 +505,11 @@
         {
           "type": "minus",
           "date": "2026-08-20",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-21",
           "note": ""
         }
       ]
@@ -1387,7 +1432,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/21 14:15:18",
+    "lastSyncTime": "2026/8/21 14:15:25",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
