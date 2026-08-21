@@ -235,7 +235,7 @@
       "label": "进线转成交率(%)",
       "steps": [
         {
-          "min": 20,
+          "min": 0,
           "score": 100
         },
         {
@@ -1191,7 +1191,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/21 10:04:26",
+    "lastSyncTime": "2026/8/21 10:04:47",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
