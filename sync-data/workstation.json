@@ -1,6 +1,6 @@
 {
   "storeInfo": {
-    "name": "长租公寓门店",
+    "name": "交投|泊寓·花山河店",
     "managerName": "于洋"
   },
   "buildings": [
@@ -1472,7 +1472,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/21 14:24:03",
+    "lastSyncTime": "2026/8/21 14:24:11",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
