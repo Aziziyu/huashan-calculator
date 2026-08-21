@@ -3562,8 +3562,8 @@ function renderChannelMetricsTable() {
     html += `<th colspan="2" style="text-align:center;">${s.name}</th>`;
   });
   html += '<th colspan="2" style="text-align:center;background:#EBF5FB;">门店平均</th></tr><tr>';
-  store.staff.forEach(() => { html += '<th>实际值</th><th>得分</th>'; });
-  html += '<th style="background:#EBF5FB;">实际值</th><th style="background:#EBF5FB;">得分</th></tr></thead><tbody>';
+  store.staff.forEach(() => { html += '<th style="text-align:center;">实际值</th><th style="text-align:center;">得分</th>'; });
+  html += '<th style="text-align:center;background:#EBF5FB;">实际值</th><th style="text-align:center;background:#EBF5FB;">得分</th></tr></thead><tbody>';
 
   metricKeys.forEach((key, idx) => {
     const isAuto = autoIndexes.indexOf(idx) !== -1;
@@ -3582,28 +3582,28 @@ function renderChannelMetricsTable() {
       const hasValue = actual !== undefined && actual !== null && actual !== '';
       const score = hasValue ? calcStepScore(key, actual) : '-';
       if (isAuto) {
-        html += `<td class="num" style="text-align:center;color:#666;background:#FAFAFA;">${hasValue ? actual : '-'}</td>`;
+        html += `<td class="num" style="text-align:center!important;color:#666;background:#FAFAFA;">${hasValue ? actual : '-'}</td>`;
       } else {
-        html += `<td class="num" style="text-align:center;"><input type="number" class="form-control ch-metric-input" style="width:70px;text-align:center;" data-staff="${s.id}" data-field="${key}" value="${hasValue ? actual : ''}" placeholder="-"></td>`;
+        html += `<td class="num" style="text-align:center!important;"><input type="number" class="form-control ch-metric-input" style="width:70px;text-align:center;" data-staff="${s.id}" data-field="${key}" value="${hasValue ? actual : ''}" placeholder="-"></td>`;
       }
-      html += `<td class="num" style="text-align:center;"><strong style="color:${hasValue ? '#4A90D9' : '#999'}">${score}</strong></td>`;
+      html += `<td class="num" style="text-align:center!important;"><strong style="color:${hasValue ? '#4A90D9' : '#999'}">${score}</strong></td>`;
     });
     const sa = storeAvg[key];
     const saScore = calcStepScore(key, sa);
-    html += `<td class="num" style="text-align:center;background:#EBF5FB;">${sa}</td><td class="num" style="text-align:center;background:#EBF5FB;"><strong>${saScore}</strong></td></tr>`;
+    html += `<td class="num" style="text-align:center!important;background:#EBF5FB;">${sa}</td><td class="num" style="text-align:center!important;background:#EBF5FB;"><strong>${saScore}</strong></td></tr>`;
   });
 
   // 均分行
   html += '<tr style="font-weight:bold;background:#F5F7FA;"><td>均分</td>';
   store.staff.forEach(s => {
     const ch = calcChannelScore(s.id, monthKey);
-    html += `<td colspan="2" style="text-align:center;">${ch.filled ? ch.score.toFixed(1) : '未填报'}</td>`;
+    html += `<td colspan="2" style="text-align:center!important;">${ch.filled ? ch.score.toFixed(1) : '未填报'}</td>`;
   });
   // 门店平均均分
   let saTotal = 0;
   metricKeys.forEach(k => { saTotal += calcStepScore(k, storeAvg[k]); });
   const saAvg = saTotal / metricKeys.length;
-  html += `<td colspan="2" style="text-align:center;background:#EBF5FB;">${saAvg.toFixed(1)}</td>`;
+  html += `<td colspan="2" style="text-align:center!important;background:#EBF5FB;">${saAvg.toFixed(1)}</td>`;
   html += '</tr></tbody></table>';
 
   container.innerHTML = html;
@@ -4366,7 +4366,7 @@ function saveGlobalMgtDiscount(val) {
   store.globalManagementFeeDiscount = parseFloat(val) || 100;
   saveStore();
   showToast('通用折扣已更新为 ' + store.globalManagementFeeDiscount + '%');
-  renderPriceList($('#priceBody'));
+  renderPriceList($('#priceTabBody'));
 }
 
 function renderGenericDiscounts() {
