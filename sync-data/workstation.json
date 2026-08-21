@@ -827,7 +827,7 @@
       "newSign": 2,
       "checkOut": 1,
       "leads": 6,
-      "showings": 3,
+      "showings": 5,
       "staff": {
         "s3": {
           "newSign": 0,
@@ -843,13 +843,13 @@
         },
         "s4": {
           "newSign": 1,
-          "showings": 0,
+          "showings": 1,
           "leads": 0,
           "remark": ""
         },
         "s1": {
           "newSign": 1,
-          "showings": 0,
+          "showings": 1,
           "leads": 0,
           "remark": ""
         }
