@@ -903,6 +903,11 @@
         "leads": 227,
         "visits": 166,
         "signings": 94
+      },
+      "c1": {
+        "leads": 58,
+        "visits": 0,
+        "signings": 0
       }
     }
   },
@@ -1357,7 +1362,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/21 10:21:50",
+    "lastSyncTime": "2026/8/21 10:22:09",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
