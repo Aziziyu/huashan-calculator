@@ -213,7 +213,7 @@
       "label": "带看转成交率(%)",
       "steps": [
         {
-          "min": 30,
+          "min": 60,
           "score": 100
         },
         {
@@ -1191,7 +1191,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/21 10:03:15",
+    "lastSyncTime": "2026/8/21 10:03:32",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
