@@ -3495,9 +3495,6 @@ function renderPerformance(body) {
       </div>
       <div class="card-body">
         <div style="margin-bottom:12px;">
-          <select class="form-control" style="display:inline-block;width:auto;margin-right:8px;" id="perfStaffSelect" onchange="renderEventRecordTable()">
-            ${store.staff.map(s => `<option value="${s.id}">${s.name}</option>`).join('')}
-          </select>
           <button class="btn btn-sm btn-primary" onclick="addEventRecord()">+ 添加记录</button>
         </div>
         <div id="eventRecordTable"></div>
@@ -3636,40 +3633,43 @@ function saveChannelMetrics() {
 }
 
 function renderEventRecordTable() {
-  const staffId = $('#perfStaffSelect')?.value || store.staff[0]?.id;
-  if (!staffId) return;
   const monthKey = fmtMonth(new Date());
   const container = $('#eventRecordTable');
   if (!container) return;
 
-  let html = '<table class="data-table"><thead><tr><th>事件</th><th class="num">加分次数</th><th class="num">减分次数</th><th class="num">净分</th><th class="center">操作</th></tr></thead><tbody>';
-  let totalNet = 0;
-  store.posNegEvents.forEach(evt => {
-    const key = `${staffId}_${monthKey}_${evt.id}`;
-    const rec = store.eventRecords[key] || { plus: 0, minus: 0 };
-    const net = (rec.plus || 0) * evt.baseScore - (rec.minus || 0) * evt.baseScore;
-    totalNet += net;
-    html += `
-      <tr>
-        <td>${evt.name}</td>
-        <td class="num" style="color:#27AE60;">${rec.plus || 0}次 (+${(rec.plus || 0) * evt.baseScore})</td>
-        <td class="num" style="color:#E74C3C;">${rec.minus || 0}次 (-${(rec.minus || 0) * evt.baseScore})</td>
-        <td class="num"><strong style="color:${net >= 0 ? '#27AE60' : '#E74C3C'}">${net >= 0 ? '+' : ''}${net}</strong></td>
-        <td class="center">
-          <button class="btn btn-icon plus" onclick="adjustEventRecord('${evt.id}', 'plus')" title="加一次">+</button>
-          <button class="btn btn-icon minus" onclick="adjustEventRecord('${evt.id}', 'minus')" title="减一次">−</button>
-        </td>
-      </tr>
-    `;
+  let html = '<table class="data-table" style="font-size:13px;"><thead><tr><th>管家</th><th>事件</th><th class="num">加分次数</th><th class="num">减分次数</th><th class="num">净分</th><th class="center">操作</th></tr></thead><tbody>';
+  let grandTotal = 0;
+  store.staff.forEach(s => {
+    let staffTotal = 0;
+    store.posNegEvents.forEach(evt => {
+      const key = `${s.id}_${monthKey}_${evt.id}`;
+      const rec = store.eventRecords[key] || { plus: 0, minus: 0 };
+      const net = (rec.plus || 0) * evt.baseScore - (rec.minus || 0) * evt.baseScore;
+      staffTotal += net;
+      html += `
+        <tr>
+          <td style="font-weight:500;">${s.name}</td>
+          <td>${evt.name}</td>
+          <td class="num" style="color:#27AE60;">${rec.plus || 0}次 (+${(rec.plus || 0) * evt.baseScore})</td>
+          <td class="num" style="color:#E74C3C;">${rec.minus || 0}次 (-${(rec.minus || 0) * evt.baseScore})</td>
+          <td class="num"><strong style="color:${net >= 0 ? '#27AE60' : '#E74C3C'}">${net >= 0 ? '+' : ''}${net}</strong></td>
+          <td class="center">
+            <button class="btn btn-icon plus" onclick="adjustEventRecord('${s.id}','${evt.id}','plus')" title="加一次">+</button>
+            <button class="btn btn-icon minus" onclick="adjustEventRecord('${s.id}','${evt.id}','minus')" title="减一次">−</button>
+          </td>
+        </tr>
+      `;
+    });
+    grandTotal += staffTotal;
+    // 管家小计行
+    html += `<tr style="background:#FAFAFA;font-weight:600;"><td colspan="2">${s.name} 小计</td><td colspan="2"></td><td class="num" style="color:${staffTotal >= 0 ? '#27AE60' : '#E74C3C'}">${staffTotal >= 0 ? '+' : ''}${staffTotal}</td><td></td></tr>`;
   });
-  html += `<tr style="font-weight:600;background:#FAFAFA;"><td>合计</td><td colspan="2"></td><td class="num" style="color:${totalNet >= 0 ? '#27AE60' : '#E74C3C'}">${totalNet >= 0 ? '+' : ''}${totalNet}</td><td></td></tr>`;
+  html += `<tr style="font-weight:700;background:#F0F4F8;"><td colspan="4">合计</td><td class="num" style="color:${grandTotal >= 0 ? '#27AE60' : '#E74C3C'};font-size:15px;">${grandTotal >= 0 ? '+' : ''}${grandTotal}</td><td></td></tr>`;
   html += '</tbody></table>';
   container.innerHTML = html;
 }
 
-function adjustEventRecord(eventId, type) {
-  const staffId = $('#perfStaffSelect')?.value || store.staff[0]?.id;
-  if (!staffId) return;
+function adjustEventRecord(staffId, eventId, type) {
   const monthKey = fmtMonth(new Date());
   const key = `${staffId}_${monthKey}_${eventId}`;
   if (!store.eventRecords[key]) {
@@ -3690,8 +3690,13 @@ function adjustEventRecord(eventId, type) {
 }
 
 function addEventRecord() {
-  const staffId = $('#perfStaffSelect')?.value || store.staff[0]?.id;
   const html = `
+    <div class="form-group" style="margin-bottom:12px;">
+      <label>管家</label>
+      <select class="form-control" id="evStaffId">
+        ${store.staff.map(s => `<option value="${s.id}">${s.name}</option>`).join('')}
+      </select>
+    </div>
     <div class="form-group" style="margin-bottom:12px;">
       <label>事件</label>
       <select class="form-control" id="evEventId">
@@ -3715,6 +3720,7 @@ function addEventRecord() {
     </div>
   `;
   showModal('添加事件记录', html, () => {
+    const staffId = $('#evStaffId').value;
     const eventId = $('#evEventId').value;
     const type = $('#evType').value;
     const date = $('#evDate').value;
@@ -3889,31 +3895,49 @@ function showPerfDetailV2(staffId) {
       });
     }
   });
-  const maxSign = Math.max(1, ...Object.values(staffSigns));
-  const signScore = Math.round((staffSigns[staffId] / maxSign) * 100 * 10) / 10;
+  const signTargets = store.signTargets || { base: 10, stretch: 15 };
+  let signScore;
+  if (staffSigns[staffId] >= signTargets.stretch) {
+    signScore = 100;
+  } else if (staffSigns[staffId] >= signTargets.base) {
+    signScore = 60 + ((staffSigns[staffId] - signTargets.base) / (signTargets.stretch - signTargets.base)) * 40;
+  } else {
+    signScore = (staffSigns[staffId] / signTargets.base) * 60;
+  }
+  signScore = Math.round(signScore * 10) / 10;
   const managerScore = store.managerScores[staffId] !== undefined ? store.managerScores[staffId] : 80;
-  const finalScore = Math.round((signScore * 0.5 + daily.composite * 0.3 + managerScore * 0.2) * 10) / 10;
+  // 转化得分合入日常综合（与日常综合2项等权）
+  const conv = calcConversionScore(staffId, monthKey);
+  const opsComposite = Math.round(((daily.composite + conv.conversionScore) / 2) * 10) / 10;
+  const pw = store.perfWeights || { sales: 50, ops: 30, manager: 20 };
+  const finalScore = Math.round((signScore * pw.sales / 100 + opsComposite * pw.ops / 100 + managerScore * pw.manager / 100) * 10) / 10;
 
   const html = `
     <div style="margin-bottom:16px;padding:12px;background:#F5F7FA;border-radius:8px;">
       <div style="font-size:16px;font-weight:600;margin-bottom:10px;">${staff.name} · ${monthKey} 绩效明细</div>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;font-size:12px;text-align:center;">
         <div style="padding:8px;background:#fff;border-radius:6px;">
-          <div style="color:#666;">签约得分 (50%)</div>
+          <div style="color:#666;">签约得分 (${pw.sales}%)</div>
           <div style="font-size:16px;font-weight:600;color:#E74C3C;">${signScore}</div>
         </div>
         <div style="padding:8px;background:#fff;border-radius:6px;">
-          <div style="color:#666;">日常综合 (30%)</div>
+          <div style="color:#666;">日常综合 (${pw.ops}%)</div>
           <div style="font-size:16px;font-weight:600;color:#4A90D9;">${daily.composite.toFixed(1)}</div>
         </div>
         <div style="padding:8px;background:#fff;border-radius:6px;">
-          <div style="color:#666;">店长打分 (20%)</div>
-          <div style="font-size:16px;font-weight:600;color:#F39C12;">${managerScore}</div>
+          <div style="color:#666;">转化得分 (等权合入日常)</div>
+          <div style="font-size:16px;font-weight:600;color:#8E44AD;">${conv.conversionScore.toFixed(1)}</div>
         </div>
         <div style="padding:8px;background:#fff;border-radius:6px;">
-          <div style="color:#666;">最终得分</div>
-          <div style="font-size:16px;font-weight:600;color:#27AE60;">${finalScore}</div>
+          <div style="color:#666;">店长打分 (${pw.manager}%)</div>
+          <div style="font-size:16px;font-weight:600;color:#F39C12;">${managerScore}</div>
         </div>
+      </div>
+      <div style="text-align:center;margin-top:10px;padding:8px;background:#E8F8F0;border-radius:6px;">
+        <span style="font-size:12px;color:#666;">日常综合+转化等权 = </span>
+        <span style="font-size:18px;font-weight:700;color:#27AE60;">${opsComposite.toFixed(1)}</span>
+        <span style="font-size:12px;color:#666;margin-left:16px;">→ 最终得分 = </span>
+        <span style="font-size:18px;font-weight:700;color:#2E86C1;">${finalScore}</span>
       </div>
     </div>
     <div style="margin-bottom:16px;">
@@ -7011,20 +7035,15 @@ function editSignTargets() {
     '<input type="number" class="form-control" id="signTargetBase" value="' + targets.base + '"></div>' +
     '<div class="form-group"><label>卓越目标（单/月）</label>' +
     '<input type="number" class="form-control" id="signTargetStretch" value="' + targets.stretch + '"></div>';
-  showModal('签约目标设置', html,
-    '<button class="btn" onclick="closeModal()">取消</button>' +
-    '<button class="btn btn-primary" onclick="saveSignTargets()">保存</button>');
-}
-
-function saveSignTargets() {
-  var base = parseInt(document.getElementById('signTargetBase').value) || 10;
-  var stretch = parseInt(document.getElementById('signTargetStretch').value) || 15;
-  if (stretch <= base) { showToast('卓越目标必须大于基础目标'); return; }
-  store.signTargets = { base: base, stretch: stretch };
-  saveStore();
-  closeModal();
-  showToast('目标已保存');
-  renderOpTabBody();
+  showModal('签约目标设置', html, function() {
+    var base = parseInt(document.getElementById('signTargetBase').value) || 10;
+    var stretch = parseInt(document.getElementById('signTargetStretch').value) || 15;
+    if (stretch <= base) { showToast('卓越目标必须大于基础目标'); return false; }
+    store.signTargets = { base: base, stretch: stretch };
+    saveStore();
+    showToast('目标已保存');
+    renderOpTabBody();
+  });
 }
 
 // v6.0 Card drag/resize/edit support (initialized on page load)
@@ -7063,7 +7082,6 @@ function initCardLayoutEnhancements() {
 window.updatePerfWeight = updatePerfWeight;
 window.savePerfWeights = savePerfWeights;
 window.editSignTargets = editSignTargets;
-window.saveSignTargets = saveSignTargets;
 window.manageShifts = manageShifts;
 window.addCustomShift = addCustomShift;
 window.deleteCustomShift = deleteCustomShift;
@@ -7077,6 +7095,14 @@ window.togglePlan = togglePlan;
 window.setQueryBuilding = setQueryBuilding;
 window.setQueryRoomType = setQueryRoomType;
 window.copyQuote = copyQuote;
+
+// 通用折扣
+window.addGenericDiscount = addGenericDiscount;
+window.editGenericDiscount = editGenericDiscount;
+window.deleteGenericDiscount = deleteGenericDiscount;
+window.updateGenericDiscount = updateGenericDiscount;
+window.toggleGenericDiscount = toggleGenericDiscount;
+window.saveGlobalMgtDiscount = saveGlobalMgtDiscount;
 
 // 租金计算（花山河版计算器使用内部事件绑定）
 window.calcCopyResult = calcCopyResult;
