@@ -770,6 +770,11 @@
         "leads": 8,
         "visits": 2,
         "signings": 2
+      },
+      "mszw50uaacchb": {
+        "leads": 21,
+        "visits": 11,
+        "signings": 5
       }
     }
   },
@@ -1224,7 +1229,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/21 10:11:24",
+    "lastSyncTime": "2026/8/21 10:11:39",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
