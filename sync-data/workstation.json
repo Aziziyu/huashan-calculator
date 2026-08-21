@@ -744,7 +744,7 @@
       "mszt4rman2m78": {
         "leads": 303,
         "visits": 38,
-        "signings": 91
+        "signings": 51
       }
     }
   },
@@ -1199,7 +1199,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/21 10:09:57",
+    "lastSyncTime": "2026/8/21 10:10:06",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
