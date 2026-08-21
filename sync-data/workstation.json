@@ -742,7 +742,7 @@
   "channelData": {
     "2026-03": {
       "mszt4rman2m78": {
-        "leads": 137,
+        "leads": 456,
         "visits": 156,
         "signings": 91
       }
@@ -1199,7 +1199,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/21 10:09:18",
+    "lastSyncTime": "2026/8/21 10:09:25",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
