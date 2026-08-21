@@ -884,8 +884,8 @@
       },
       "mszw50uaacchb": {
         "leads": 31,
-        "visits": 17,
-        "signings": 0
+        "visits": 10,
+        "signings": 7
       }
     }
   },
@@ -1340,7 +1340,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/21 10:20:40",
+    "lastSyncTime": "2026/8/21 10:20:52",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
