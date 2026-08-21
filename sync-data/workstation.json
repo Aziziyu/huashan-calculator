@@ -741,7 +741,7 @@
   "managerScores": {},
   "perfWeights": {
     "sales": 50,
-    "ops": 41,
+    "ops": 30,
     "manager": 20
   },
   "genericDiscounts": [
@@ -1188,7 +1188,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/20 21:33:19",
+    "lastSyncTime": "2026/8/21 09:53:52",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
