@@ -2616,6 +2616,22 @@ function renderChannelData(body) {
     return { ...ch, ...cd, visitRate, signRate, mom };
   }).sort((a, b) => (b.signings || 0) - (a.signings || 0));
 
+  // 全年累计计算
+  const currentYear = month.split('-')[0];
+  let yearLeads = 0, yearVisits = 0, yearSigns = 0;
+  Object.keys(store.channelData).forEach(mk => {
+    if (mk.startsWith(currentYear)) {
+      const md = store.channelData[mk] || {};
+      store.channels.forEach(ch => {
+        const cd = md[ch.id] || { leads: 0, visits: 0, signings: 0 };
+        yearLeads += cd.leads || 0;
+        yearVisits += cd.visits || 0;
+        yearSigns += cd.signings || 0;
+      });
+    }
+  });
+  const yearSignRate = yearLeads > 0 ? (yearSigns / yearLeads * 100).toFixed(1) : '0.0';
+
   let html = `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
       <div style="display:flex;align-items:center;gap:8px;">
@@ -2624,6 +2640,14 @@ function renderChannelData(body) {
         <button class="btn btn-sm" onclick="changeChannelMonth(1)">下月 →</button>
       </div>
       <button class="btn btn-primary btn-sm" onclick="addChannel()">+ 新增渠道</button>
+    </div>
+
+    <!-- 全年累计 -->
+    <div class="stat-grid" style="grid-template-columns:repeat(4,1fr);background:#E8F8F5;border-radius:8px;padding:12px;margin-bottom:16px;">
+      <div style="text-align:center;"><div style="font-size:12px;color:#1ABC9C;margin-bottom:4px;font-weight:500;">全年进线</div><div style="font-size:22px;font-weight:bold;color:#16A085;">${yearLeads}</div></div>
+      <div style="text-align:center;"><div style="font-size:12px;color:#1ABC9C;margin-bottom:4px;font-weight:500;">全年来访</div><div style="font-size:22px;font-weight:bold;color:#16A085;">${yearVisits}</div></div>
+      <div style="text-align:center;"><div style="font-size:12px;color:#1ABC9C;margin-bottom:4px;font-weight:500;">全年签约</div><div style="font-size:22px;font-weight:bold;color:#16A085;">${yearSigns}</div></div>
+      <div style="text-align:center;"><div style="font-size:12px;color:#1ABC9C;margin-bottom:4px;font-weight:500;">全年签约转化率</div><div style="font-size:22px;font-weight:bold;color:#16A085;">${yearSignRate}%</div></div>
     </div>
 
     <!-- 汇总 -->
@@ -3558,15 +3582,15 @@ function renderChannelMetricsTable() {
       const hasValue = actual !== undefined && actual !== null && actual !== '';
       const score = hasValue ? calcStepScore(key, actual) : '-';
       if (isAuto) {
-        html += `<td class="num" style="color:#666;background:#FAFAFA;">${hasValue ? actual : '-'}</td>`;
+        html += `<td class="num" style="text-align:center;color:#666;background:#FAFAFA;">${hasValue ? actual : '-'}</td>`;
       } else {
-        html += `<td class="num"><input type="number" class="form-control ch-metric-input" style="width:70px;text-align:right;" data-staff="${s.id}" data-field="${key}" value="${hasValue ? actual : ''}" placeholder="-"></td>`;
+        html += `<td class="num" style="text-align:center;"><input type="number" class="form-control ch-metric-input" style="width:70px;text-align:center;" data-staff="${s.id}" data-field="${key}" value="${hasValue ? actual : ''}" placeholder="-"></td>`;
       }
-      html += `<td class="num"><strong style="color:${hasValue ? '#4A90D9' : '#999'}">${score}</strong></td>`;
+      html += `<td class="num" style="text-align:center;"><strong style="color:${hasValue ? '#4A90D9' : '#999'}">${score}</strong></td>`;
     });
     const sa = storeAvg[key];
     const saScore = calcStepScore(key, sa);
-    html += `<td class="num" style="background:#EBF5FB;">${sa}</td><td class="num" style="background:#EBF5FB;"><strong>${saScore}</strong></td></tr>`;
+    html += `<td class="num" style="text-align:center;background:#EBF5FB;">${sa}</td><td class="num" style="text-align:center;background:#EBF5FB;"><strong>${saScore}</strong></td></tr>`;
   });
 
   // 均分行
