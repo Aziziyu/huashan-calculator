@@ -1183,12 +1183,12 @@
   },
   "currentPage": "operation",
   "currentOperationGroup": "daily",
-  "currentOperationTab": "channel-data",
+  "currentOperationTab": "daily-data",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/21 09:56:48",
+    "lastSyncTime": "2026/8/21 09:56:56",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
