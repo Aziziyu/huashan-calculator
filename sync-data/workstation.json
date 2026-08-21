@@ -196,15 +196,15 @@
         },
         {
           "min": 40,
-          "score": 95
-        },
-        {
-          "min": 20,
           "score": 90
         },
         {
+          "min": 20,
+          "score": 80
+        },
+        {
           "min": 10,
-          "score": 60
+          "score": 40
         }
       ]
     },
@@ -218,11 +218,11 @@
         },
         {
           "min": 50,
-          "score": 80
+          "score": 90
         },
         {
           "min": 20,
-          "score": 60
+          "score": 80
         },
         {
           "min": 10,
@@ -1191,7 +1191,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/21 10:04:18",
+    "lastSyncTime": "2026/8/21 10:04:26",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
