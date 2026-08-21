@@ -1182,13 +1182,13 @@
     "estimatedMoveOut": 10
   },
   "currentPage": "operation",
-  "currentOperationGroup": "team",
-  "currentOperationTab": "performance",
+  "currentOperationGroup": "daily",
+  "currentOperationTab": "channel-data",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/21 10:00:35",
+    "lastSyncTime": "2026/8/21 10:00:42",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
