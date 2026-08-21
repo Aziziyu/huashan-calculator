@@ -912,7 +912,7 @@
       "c7": {
         "leads": 23,
         "visits": 20,
-        "signings": 7
+        "signings": 17
       }
     }
   },
@@ -1367,7 +1367,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/21 10:22:28",
+    "lastSyncTime": "2026/8/21 10:22:44",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
