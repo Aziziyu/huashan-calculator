@@ -391,8 +391,8 @@
       ]
     },
     "s1_2026-08_pe3": {
-      "plus": 6,
-      "minus": 8,
+      "plus": 11,
+      "minus": 11,
       "entries": [
         {
           "type": "minus",
@@ -456,6 +456,46 @@
         },
         {
           "type": "minus",
+          "date": "2026-08-21",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-21",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-21",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-21",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-21",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-21",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-21",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-21",
+          "note": ""
+        },
+        {
+          "type": "plus",
           "date": "2026-08-21",
           "note": ""
         },
@@ -1432,7 +1472,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/21 14:15:41",
+    "lastSyncTime": "2026/8/21 14:15:49",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
