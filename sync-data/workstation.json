@@ -858,20 +858,38 @@
       "netAdd": 1
     },
     "2026-08-22": {
-      "newSign": 0,
+      "newSign": 9,
       "checkOut": 0,
-      "leads": 5,
-      "showings": 7,
+      "leads": 9,
+      "showings": 14,
       "staff": {
         "s1": {
-          "newSign": 0,
+          "newSign": 5,
           "showings": 7,
           "leads": 5,
+          "remark": ""
+        },
+        "s3": {
+          "newSign": 2,
+          "showings": 3,
+          "leads": 1,
+          "remark": ""
+        },
+        "s4": {
+          "newSign": 2,
+          "showings": 2,
+          "leads": 0,
+          "remark": ""
+        },
+        "s2": {
+          "newSign": 0,
+          "showings": 2,
+          "leads": 3,
           "remark": ""
         }
       },
       "buildings": {},
-      "netAdd": 0
+      "netAdd": 9
     }
   },
   "channelData": {
