@@ -282,7 +282,7 @@
   "taskProgress": {
     "t1_s1_2026-W34": 1,
     "t1_s2_2026-W34": 1,
-    "t1_s3_2026-W34": 0,
+    "t1_s3_2026-W34": 2,
     "t1_s4_2026-W34": 0,
     "t2_s1_2026-W34": 0,
     "t2_s2_2026-W34": 0,
@@ -1533,14 +1533,14 @@
     "startRate": 72.7,
     "estimatedMoveOut": 10
   },
-  "currentPage": "dashboard",
+  "currentPage": "operation",
   "currentOperationGroup": "task",
-  "currentOperationTab": "reminder",
+  "currentOperationTab": "task-exec",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/23 12:16:36",
+    "lastSyncTime": "2026/8/23 12:16:44",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
