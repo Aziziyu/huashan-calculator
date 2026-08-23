@@ -895,7 +895,7 @@
       "newSign": 3,
       "checkOut": 0,
       "leads": 11,
-      "showings": 6,
+      "showings": 8,
       "staff": {
         "s1": {
           "newSign": 2,
@@ -911,7 +911,7 @@
         },
         "s4": {
           "newSign": 0,
-          "showings": 0,
+          "showings": 2,
           "leads": 5,
           "remark": ""
         }
@@ -1568,7 +1568,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/23 21:26:05",
+    "lastSyncTime": "2026/8/23 21:26:15",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
