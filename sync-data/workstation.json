@@ -1533,14 +1533,14 @@
     "startRate": 72.7,
     "estimatedMoveOut": 10
   },
-  "currentPage": "operation",
+  "currentPage": "calculator",
   "currentOperationGroup": "task",
   "currentOperationTab": "task-exec",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/23 18:40:28",
+    "lastSyncTime": "2026/8/23 18:46:54",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
