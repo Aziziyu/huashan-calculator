@@ -1534,8 +1534,8 @@
     "estimatedMoveOut": 10
   },
   "currentPage": "operation",
-  "currentOperationGroup": "task",
-  "currentOperationTab": "task-exec",
+  "currentOperationGroup": "daily",
+  "currentOperationTab": "daily-data",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
