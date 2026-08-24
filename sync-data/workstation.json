@@ -317,7 +317,7 @@
     {
       "id": "pe3",
       "name": "公客回收次数",
-      "type": "both",
+      "type": "minus",
       "baseScore": 3,
       "threshold": "达标+3/-3",
       "description": "公客回收是否达标"
@@ -1582,7 +1582,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/24 20:16:14",
+    "lastSyncTime": "2026/8/24 20:16:23",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
