@@ -973,8 +973,8 @@
     "2026-08-24": {
       "newSign": 2,
       "checkOut": 1,
-      "leads": 6,
-      "showings": 4,
+      "leads": 7,
+      "showings": 5,
       "staff": {
         "s2": {
           "newSign": 1,
@@ -986,6 +986,12 @@
           "newSign": 1,
           "showings": 2,
           "leads": 2,
+          "remark": ""
+        },
+        "s4": {
+          "newSign": 0,
+          "showings": 1,
+          "leads": 1,
           "remark": ""
         }
       },
@@ -1641,7 +1647,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/24 23:11:19",
+    "lastSyncTime": "2026/8/24 23:11:41",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
