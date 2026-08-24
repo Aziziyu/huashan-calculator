@@ -1612,14 +1612,14 @@
     "startRate": 72.7,
     "estimatedMoveOut": 10
   },
-  "currentPage": "dashboard",
-  "currentOperationGroup": "team",
-  "currentOperationTab": "performance",
+  "currentPage": "operation",
+  "currentOperationGroup": "daily",
+  "currentOperationTab": "daily-data",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/24 20:17:43",
+    "lastSyncTime": "2026/8/24 23:10:32",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
