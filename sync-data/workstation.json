@@ -515,12 +515,27 @@
       ]
     },
     "s3_2026-08_pe3": {
-      "plus": 0,
-      "minus": 1,
+      "plus": 1,
+      "minus": 3,
       "entries": [
         {
           "type": "minus",
           "date": "2026-08-19",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-24",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-24",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-24",
           "note": ""
         }
       ]
@@ -1604,7 +1619,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/24 20:16:53",
+    "lastSyncTime": "2026/8/24 20:17:04",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
