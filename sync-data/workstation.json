@@ -309,7 +309,7 @@
     {
       "id": "pe2",
       "name": "SOP完成考核",
-      "type": "both",
+      "type": "minus",
       "baseScore": 5,
       "threshold": "达标+5/-5",
       "description": "日常SOP是否完成"
@@ -1582,7 +1582,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/24 20:16:23",
+    "lastSyncTime": "2026/8/24 20:16:31",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
