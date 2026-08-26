@@ -672,7 +672,7 @@
       "done": false
     }
   ],
-  "todoResetDate": "2026-08-25",
+  "todoResetDate": "2026-08-26",
   "myTodos": [
     {
       "id": "mt1",
@@ -783,7 +783,7 @@
       "note": "待催缴账单"
     },
     "complaint": {
-      "count": 0,
+      "count": 1,
       "note": "未处理投诉"
     },
     "renew7d": {
@@ -1687,13 +1687,13 @@
     "estimatedMoveOut": 10
   },
   "currentPage": "operation",
-  "currentOperationGroup": "task",
-  "currentOperationTab": "task-exec",
+  "currentOperationGroup": "daily",
+  "currentOperationTab": "daily-data",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/26 12:04:31",
+    "lastSyncTime": "2026/8/26 12:04:39",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
