@@ -283,6 +283,12 @@
       "name": "小红书笔记",
       "targetCount": 2,
       "period": "week"
+    },
+    {
+      "id": "mt9s3143lj0ps",
+      "name": "老带新营销",
+      "targetCount": 3,
+      "period": "week"
     }
   ],
   "taskProgress": {
@@ -777,6 +783,19 @@
       "name": "早班巡查",
       "enabled": true,
       "cycle": "daily",
+      "customDays": 0,
+      "deadline": "",
+      "note": "",
+      "lastDone": "",
+      "weekDay": null,
+      "monthDay": null,
+      "time": ""
+    },
+    {
+      "id": "mt1787729632359",
+      "name": "老带新 营销2次",
+      "enabled": true,
+      "cycle": "weekly",
       "customDays": 0,
       "deadline": "",
       "note": "",
@@ -1699,9 +1718,9 @@
     "startRate": 72.7,
     "estimatedMoveOut": 10
   },
-  "currentPage": "settings",
-  "currentOperationGroup": "daily",
-  "currentOperationTab": "renewal",
+  "currentPage": "dashboard",
+  "currentOperationGroup": "task",
+  "currentOperationTab": "task-exec",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
