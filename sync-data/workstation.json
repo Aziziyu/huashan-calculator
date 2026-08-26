@@ -803,6 +803,19 @@
       "weekDay": null,
       "monthDay": null,
       "time": ""
+    },
+    {
+      "id": "mt1787738722860",
+      "name": "生日会",
+      "enabled": true,
+      "cycle": "once",
+      "customDays": 0,
+      "deadline": "2026-08-28",
+      "note": "",
+      "lastDone": "",
+      "weekDay": null,
+      "monthDay": null,
+      "time": ""
     }
   ],
   "reminders": {
@@ -1725,7 +1738,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/26 18:05:11",
+    "lastSyncTime": "2026/8/26 18:05:19",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
