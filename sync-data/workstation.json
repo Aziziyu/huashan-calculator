@@ -277,6 +277,12 @@
       "name": "营销朋友圈发布",
       "targetCount": 2,
       "period": "week"
+    },
+    {
+      "id": "mt9kkyxy5qkz8",
+      "name": "小红书笔记",
+      "targetCount": 2,
+      "period": "week"
     }
   ],
   "taskProgress": {
@@ -1687,7 +1693,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/26 12:04:14",
+    "lastSyncTime": "2026/8/26 12:04:22",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
