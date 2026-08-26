@@ -1686,14 +1686,14 @@
     "startRate": 72.7,
     "estimatedMoveOut": 10
   },
-  "currentPage": "operation",
+  "currentPage": "dashboard",
   "currentOperationGroup": "daily",
-  "currentOperationTab": "daily-data",
+  "currentOperationTab": "renewal",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/26 14:03:31",
+    "lastSyncTime": "2026/8/26 14:03:39",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
