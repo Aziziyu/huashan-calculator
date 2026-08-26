@@ -771,6 +771,19 @@
       "weekDay": null,
       "monthDay": null,
       "time": ""
+    },
+    {
+      "id": "mt1787724528698",
+      "name": "早班巡查",
+      "enabled": true,
+      "cycle": "daily",
+      "customDays": 0,
+      "deadline": "",
+      "note": "",
+      "lastDone": "",
+      "weekDay": null,
+      "monthDay": null,
+      "time": ""
     }
   ],
   "reminders": {
@@ -1686,14 +1699,14 @@
     "startRate": 72.7,
     "estimatedMoveOut": 10
   },
-  "currentPage": "settings",
+  "currentPage": "dashboard",
   "currentOperationGroup": "daily",
   "currentOperationTab": "renewal",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/26 14:06:22",
+    "lastSyncTime": "2026/8/26 14:08:44",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
