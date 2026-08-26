@@ -1092,8 +1092,8 @@
     "2026-08-26": {
       "newSign": 4,
       "checkOut": 1,
-      "leads": 10,
-      "showings": 5,
+      "leads": 17,
+      "showings": 11,
       "staff": {
         "s2": {
           "newSign": 2,
@@ -1102,15 +1102,21 @@
           "remark": ""
         },
         "s1": {
-          "newSign": 1,
-          "showings": 1,
-          "leads": 2,
+          "newSign": 0,
+          "showings": 5,
+          "leads": 8,
           "remark": ""
         },
         "s4": {
           "newSign": 1,
           "showings": 1,
           "leads": 2,
+          "remark": ""
+        },
+        "s3": {
+          "newSign": 1,
+          "showings": 2,
+          "leads": 1,
           "remark": ""
         }
       },
@@ -1761,7 +1767,7 @@
   },
   "currentPage": "operation",
   "currentOperationGroup": "daily",
-  "currentOperationTab": "daily-data",
+  "currentOperationTab": "channel-data",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
