@@ -755,8 +755,8 @@
       "deadline": "",
       "note": "",
       "lastDone": "",
-      "weekDay": null,
-      "monthDay": 25,
+      "weekDay": "",
+      "monthDay": 26,
       "time": ""
     },
     {
@@ -1706,7 +1706,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/26 14:08:44",
+    "lastSyncTime": "2026/8/26 14:09:01",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
