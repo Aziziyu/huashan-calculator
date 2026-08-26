@@ -1718,14 +1718,14 @@
     "startRate": 72.7,
     "estimatedMoveOut": 10
   },
-  "currentPage": "dashboard",
+  "currentPage": "settings",
   "currentOperationGroup": "task",
   "currentOperationTab": "task-exec",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/26 15:33:36",
+    "lastSyncTime": "2026/8/26 18:04:59",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
