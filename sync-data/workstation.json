@@ -678,7 +678,7 @@
       "done": false
     }
   ],
-  "todoResetDate": "2026-08-26",
+  "todoResetDate": "2026-08-27",
   "myTodos": [
     {
       "id": "mt1",
@@ -1731,7 +1731,7 @@
     "startRate": 72.7,
     "estimatedMoveOut": 10
   },
-  "currentPage": "calculator",
+  "currentPage": "dashboard",
   "currentOperationGroup": "task",
   "currentOperationTab": "task-exec",
   "currentPriceTab": "list",
