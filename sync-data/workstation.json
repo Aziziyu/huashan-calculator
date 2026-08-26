@@ -1680,9 +1680,9 @@
     "startRate": 72.7,
     "estimatedMoveOut": 10
   },
-  "currentPage": "calculator",
-  "currentOperationGroup": "daily",
-  "currentOperationTab": "daily-data",
+  "currentPage": "operation",
+  "currentOperationGroup": "task",
+  "currentOperationTab": "task-exec",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
