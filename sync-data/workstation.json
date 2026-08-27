@@ -1200,9 +1200,9 @@
       "netAdd": 3
     },
     "2026-08-27": {
-      "newSign": 3,
+      "newSign": 4,
       "checkOut": 0,
-      "leads": 8,
+      "leads": 13,
       "showings": 6,
       "staff": {
         "s4": {
@@ -1216,10 +1216,16 @@
           "showings": 1,
           "leads": 2,
           "remark": ""
+        },
+        "s1": {
+          "newSign": 1,
+          "showings": 0,
+          "leads": 5,
+          "remark": ""
         }
       },
       "buildings": {},
-      "netAdd": 3
+      "netAdd": 4
     }
   },
   "channelData": {
@@ -1870,7 +1876,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/27 22:03:04",
+    "lastSyncTime": "2026/8/27 22:03:19",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
