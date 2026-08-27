@@ -621,6 +621,42 @@
           "note": ""
         }
       ]
+    },
+    "s3_2026-08_pe2": {
+      "plus": 3,
+      "minus": 3,
+      "entries": [
+        {
+          "type": "minus",
+          "date": "2026-08-27",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-27",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-27",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-27",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-27",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-27",
+          "note": ""
+        }
+      ]
     }
   },
   "channelMonthlyData": {
@@ -1772,7 +1808,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/27 10:12:12",
+    "lastSyncTime": "2026/8/27 10:12:19",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
