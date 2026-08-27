@@ -1841,14 +1841,14 @@
     "startRate": 72.7,
     "estimatedMoveOut": 10
   },
-  "currentPage": "calculator",
+  "currentPage": "dashboard",
   "currentOperationGroup": "team",
   "currentOperationTab": "performance",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/27 16:49:49",
+    "lastSyncTime": "2026/8/27 17:33:21",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
