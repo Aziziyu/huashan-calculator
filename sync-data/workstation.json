@@ -1891,13 +1891,13 @@
     "estimatedMoveOut": 10
   },
   "currentPage": "operation",
-  "currentOperationGroup": "team",
-  "currentOperationTab": "performance",
+  "currentOperationGroup": "daily",
+  "currentOperationTab": "daily-data",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/28 09:07:15",
+    "lastSyncTime": "2026/8/28 09:07:23",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
