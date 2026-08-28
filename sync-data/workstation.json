@@ -1247,6 +1247,22 @@
       },
       "buildings": {},
       "netAdd": 7
+    },
+    "2026-08-28": {
+      "newSign": 0,
+      "checkOut": 1,
+      "leads": 3,
+      "showings": 3,
+      "staff": {
+        "s2": {
+          "newSign": 0,
+          "showings": 3,
+          "leads": 3,
+          "remark": ""
+        }
+      },
+      "buildings": {},
+      "netAdd": -1
     }
   },
   "channelData": {
@@ -1897,7 +1913,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/28 09:07:23",
+    "lastSyncTime": "2026/8/28 16:37:33",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
