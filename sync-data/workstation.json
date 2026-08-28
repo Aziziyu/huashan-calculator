@@ -345,8 +345,8 @@
   ],
   "eventRecords": {
     "s1_2026-08_pe1": {
-      "plus": 6,
-      "minus": 6,
+      "plus": 7,
+      "minus": 7,
       "entries": [
         {
           "type": "plus",
@@ -406,13 +406,23 @@
         {
           "type": "minus",
           "date": "2026-08-21",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-28",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-28",
           "note": ""
         }
       ]
     },
     "s1_2026-08_pe3": {
       "plus": 11,
-      "minus": 11,
+      "minus": 12,
       "entries": [
         {
           "type": "minus",
@@ -522,6 +532,11 @@
         {
           "type": "minus",
           "date": "2026-08-21",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-28",
           "note": ""
         }
       ]
@@ -1882,7 +1897,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/28 09:06:44",
+    "lastSyncTime": "2026/8/28 09:06:51",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
