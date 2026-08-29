@@ -311,7 +311,8 @@
     "t1_s4_2026-W35": 2,
     "t1_s2_2026-W35": 1,
     "mt141hrgcg65p_s2_2026-W35": 2,
-    "mt141hrgcg65p_s3_2026-W35": 1
+    "mt141hrgcg65p_s3_2026-W35": 1,
+    "mt141hrgcg65p_s4_2026-W35": 3
   },
   "posNegEvents": [
     {
@@ -1935,7 +1936,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/29 12:25:43",
+    "lastSyncTime": "2026/8/29 12:26:04",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
