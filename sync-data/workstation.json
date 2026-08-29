@@ -769,7 +769,7 @@
       "done": false
     }
   ],
-  "todoResetDate": "2026-08-28",
+  "todoResetDate": "2026-08-29",
   "myTodos": [
     {
       "id": "mt1",
@@ -1925,13 +1925,13 @@
     "estimatedMoveOut": 10
   },
   "currentPage": "operation",
-  "currentOperationGroup": "daily",
-  "currentOperationTab": "daily-data",
+  "currentOperationGroup": "task",
+  "currentOperationTab": "task-exec",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/29 11:57:47",
+    "lastSyncTime": "2026/8/29 11:57:57",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
