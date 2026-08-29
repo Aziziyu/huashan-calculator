@@ -317,7 +317,8 @@
     "mt9s3143lj0ps_s1_2026-W35": 1,
     "mt9s3143lj0ps_s4_2026-W35": 2,
     "mt9s3143lj0ps_s3_2026-W35": 1,
-    "mt9s3143lj0ps_s2_2026-W35": 2
+    "mt9s3143lj0ps_s2_2026-W35": 2,
+    "t1_s1_2026-W35": 1
   },
   "posNegEvents": [
     {
@@ -1934,9 +1935,9 @@
     "startRate": 72.7,
     "estimatedMoveOut": 10
   },
-  "currentPage": "operation",
-  "currentOperationGroup": "team",
-  "currentOperationTab": "performance",
+  "currentPage": "calculator",
+  "currentOperationGroup": "task",
+  "currentOperationTab": "task-exec",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
