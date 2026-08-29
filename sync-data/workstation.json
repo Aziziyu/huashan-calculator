@@ -315,7 +315,9 @@
     "mt141hrgcg65p_s4_2026-W35": 3,
     "mt141hrgcg65p_s1_2026-W35": 1,
     "mt9s3143lj0ps_s1_2026-W35": 1,
-    "mt9s3143lj0ps_s4_2026-W35": 2
+    "mt9s3143lj0ps_s4_2026-W35": 2,
+    "mt9s3143lj0ps_s3_2026-W35": 1,
+    "mt9s3143lj0ps_s2_2026-W35": 2
   },
   "posNegEvents": [
     {
@@ -1932,7 +1934,7 @@
     "startRate": 72.7,
     "estimatedMoveOut": 10
   },
-  "currentPage": "operation",
+  "currentPage": "dashboard",
   "currentOperationGroup": "task",
   "currentOperationTab": "task-exec",
   "currentPriceTab": "list",
