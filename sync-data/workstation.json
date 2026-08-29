@@ -913,7 +913,7 @@
       "customDays": 0,
       "deadline": "2026-08-28",
       "note": "",
-      "lastDone": "",
+      "lastDone": "2026-08-29",
       "weekDay": null,
       "monthDay": null,
       "time": ""
@@ -921,7 +921,7 @@
   ],
   "reminders": {
     "refund": {
-      "count": 1,
+      "count": 0,
       "note": "待处理退款"
     },
     "arrears": {
@@ -929,7 +929,7 @@
       "note": "待催缴账单"
     },
     "complaint": {
-      "count": 1,
+      "count": 0,
       "note": "未处理投诉"
     },
     "renew7d": {
@@ -1934,14 +1934,14 @@
     "startRate": 72.7,
     "estimatedMoveOut": 10
   },
-  "currentPage": "dashboard",
-  "currentOperationGroup": "task",
-  "currentOperationTab": "task-exec",
+  "currentPage": "operation",
+  "currentOperationGroup": "team",
+  "currentOperationTab": "performance",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/29 12:28:47",
+    "lastSyncTime": "2026/8/29 12:28:55",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
