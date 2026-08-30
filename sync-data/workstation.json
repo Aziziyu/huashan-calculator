@@ -318,7 +318,8 @@
     "mt9s3143lj0ps_s4_2026-W35": 2,
     "mt9s3143lj0ps_s3_2026-W35": 1,
     "mt9s3143lj0ps_s2_2026-W35": 2,
-    "t1_s1_2026-W35": 1
+    "t1_s1_2026-W35": 1,
+    "t1_s3_2026-W35": 1
   },
   "posNegEvents": [
     {
@@ -1970,13 +1971,13 @@
     "estimatedMoveOut": 10
   },
   "currentPage": "operation",
-  "currentOperationGroup": "daily",
-  "currentOperationTab": "daily-data",
+  "currentOperationGroup": "task",
+  "currentOperationTab": "task-exec",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/30 18:40:21",
+    "lastSyncTime": "2026/8/30 18:40:26",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
