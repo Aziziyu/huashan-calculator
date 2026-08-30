@@ -1971,13 +1971,13 @@
     "estimatedMoveOut": 10
   },
   "currentPage": "operation",
-  "currentOperationGroup": "task",
-  "currentOperationTab": "task-exec",
+  "currentOperationGroup": "daily",
+  "currentOperationTab": "daily-data",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/30 19:02:58",
+    "lastSyncTime": "2026/8/30 19:03:08",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
