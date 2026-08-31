@@ -1586,8 +1586,8 @@
     }
   ],
   "signTargets": {
-    "base": 10,
-    "stretch": 15
+    "base": 15,
+    "stretch": 25
   },
   "customShifts": [],
   "layoutOrder": {},
@@ -2013,14 +2013,14 @@
     "startRate": 72.7,
     "estimatedMoveOut": 10
   },
-  "currentPage": "dashboard",
+  "currentPage": "operation",
   "currentOperationGroup": "team",
   "currentOperationTab": "performance",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/31 09:26:28",
+    "lastSyncTime": "2026/8/31 09:26:36",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
