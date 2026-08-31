@@ -1601,6 +1601,13 @@
         "visits": 2,
         "signings": 2
       }
+    },
+    "2026-08": {
+      "mszt4rman2m78": {
+        "leads": 181,
+        "visits": 151,
+        "signings": 97
+      }
     }
   },
   "renewals": [],
@@ -2054,7 +2061,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/1 01:55:14",
+    "lastSyncTime": "2026/9/1 01:55:21",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
