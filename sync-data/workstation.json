@@ -796,7 +796,7 @@
       "done": false
     }
   ],
-  "todoResetDate": "2026-08-30",
+  "todoResetDate": "2026-09-01",
   "myTodos": [
     {
       "id": "mt1",
@@ -2020,7 +2020,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/31 15:25:43",
+    "lastSyncTime": "2026/8/31 15:25:51",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
