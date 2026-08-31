@@ -930,7 +930,7 @@
       "customDays": 0,
       "deadline": "2026-08-28",
       "note": "",
-      "lastDone": "2026-08-29",
+      "lastDone": "2026-08-31",
       "weekDay": null,
       "monthDay": null,
       "time": ""
@@ -2020,7 +2020,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/8/31 09:26:19",
+    "lastSyncTime": "2026/8/31 09:26:28",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
