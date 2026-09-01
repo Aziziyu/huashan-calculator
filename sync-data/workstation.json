@@ -601,8 +601,8 @@
     "2026-08-19": {
       "newSign": 5,
       "checkOut": 0,
-      "leads": 0,
-      "showings": 0,
+      "leads": 5,
+      "showings": 4,
       "staff": {
         "s1": {
           "newSign": 0,
@@ -2576,7 +2576,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/1 13:23:04",
+    "lastSyncTime": "2026/9/1 13:23:47",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
