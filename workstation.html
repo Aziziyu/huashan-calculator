@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>店长工作台 v6.0</title>
+<title>店长工作台 v6.1</title>
 <style>
 /* ===== CSS Reset & Base ===== */
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -444,6 +444,33 @@ textarea.form-control { resize: vertical; min-height: 60px; }
 .shift-manage-item .shift-icon { font-size: 20px; width: 30px; text-align: center; }
 .shift-manage-item .shift-name { flex: 1; font-size: 14px; }
 
+/* ===== v6.1 Mobile Input Optimization ===== */
+/* 输入框字体≥16px，避免 iOS 聚焦自动放大 */
+@media (max-width: 768px) {
+  .form-control, input[type="number"], input[type="text"], input[type="date"], input[type="month"], select {
+    font-size: 16px;
+    min-height: 40px;
+  }
+  .data-table th, .data-table td { padding: 8px 6px; }
+  .btn { min-height: 40px; }
+  .btn-sm { min-height: 36px; font-size: 13px; }
+  .btn-icon { width: 36px; height: 36px; font-size: 18px; }
+  .stat-grid { grid-template-columns: repeat(2,1fr) !important; gap: 8px !important; }
+}
+/* 加减值快速按钮 */
+.qty-ctrl { display: inline-flex; align-items: center; gap: 4px; }
+.qty-ctrl .btn-icon { font-weight: 700; }
+.qty-ctrl input { width: 64px; text-align: center; }
+.month-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.month-bar input[type="month"] { font-size: 16px; }
+/* v6.1修复：移动端月份选择器一行排下（规则须在基础样式之后，同选择器才生效） */
+@media (max-width: 768px) {
+  .month-bar { flex-wrap: nowrap; gap: 4px; overflow-x: auto; }
+  .month-bar .btn-sm { padding: 6px 8px; white-space: nowrap; }
+  .month-bar input[type="month"] { width: 120px !important; min-width: 120px; flex: 0 0 auto; }
+  .month-bar span { white-space: nowrap; font-size: 11px; }
+}
+
 </style>
 </head>
 <body>
@@ -462,7 +489,7 @@ textarea.form-control { resize: vertical; min-height: 60px; }
       <div class="nav-item" data-page="ka"><span class="nav-icon">🏢</span>企业客户KA</div>
       <div class="nav-item" data-page="settings"><span class="nav-icon">⚙️</span>设置</div>
     </nav>
-    <div class="sidebar-footer">v6.0 · GitHub 自动同步</div>
+    <div class="sidebar-footer">v6.1 · GitHub 自动同步</div>
   </aside>
 
   <!-- Main Content -->
@@ -896,6 +923,51 @@ function loadStore() {
         parsed.pricePlans = defaultStore.pricePlans;
         console.log("✅ pricePlans已恢复默认值");
       }
+      // ===== v6.0→v6.1 迁移 =====
+      // 1) 正负向事件记录：旧格式 {plus, minus, entries}（次数×基础分）→ 新格式 {score: 净分}
+      if (parsed.eventRecords) {
+        const eventBase = {};
+        (parsed.posNegEvents || defaultStore.posNegEvents).forEach(e => { eventBase[e.id] = e.baseScore; });
+        Object.keys(parsed.eventRecords).forEach(k => {
+          const rec = parsed.eventRecords[k];
+          if (rec && typeof rec === 'object' && (rec.plus !== undefined || rec.minus !== undefined) && rec.score === undefined) {
+            const eid = k.split('_')[2];
+            const base = eventBase[eid] || 1;
+            rec.score = (rec.plus || 0) * base - (rec.minus || 0) * base;
+            delete rec.plus; delete rec.minus; delete rec.entries;
+          }
+        });
+      }
+      // 2) 店长打分：旧 {staffId: 分} → 新 {staffId: {'YYYY-MM': 分}}（挂到迁移当月）
+      if (parsed.managerScores) {
+        const ms = parsed.managerScores;
+        const needsMigrate = Object.values(ms).some(v => typeof v === 'number');
+        if (needsMigrate) {
+          const cur = fmtMonth(new Date());
+          const migrated = {};
+          Object.entries(ms).forEach(([sid, v]) => {
+            migrated[sid] = (typeof v === 'number') ? { [cur]: v } : v;
+          });
+          parsed.managerScores = migrated;
+        }
+      }
+      // 3) 每日销售：旧 staff.newSign/showings/leads（绝对数）→ opsLog 事件流
+      //    把历史每日绝对值平铺为当天基线事件，保证历史月份绩效总数不变
+      if (parsed.dailyData) {
+        Object.entries(parsed.dailyData).forEach(([date, d]) => {
+          if (d && d.staff && !d.opsMigrated) {
+            d.opsLog = d.opsLog || [];
+            Object.entries(d.staff).forEach(([sid, sd]) => {
+              [['newSign','newSign'],['showings','showings'],['leads','leads']].forEach(([f]) => {
+                const v = parseInt(sd[f]) || 0;
+                if (v !== 0) d.opsLog.push({ staffId: sid, field: f, delta: v, time: date + 'T00:00' });
+              });
+            });
+            d.opsMigrated = true;
+          }
+        });
+      }
+      console.log('✅ 数据已从 v6.0 迁移到 v6.1');
       return deepMerge(defaultStore, parsed);
     }
   } catch (e) {
@@ -1570,10 +1642,11 @@ function calcStaffStats() {
     let leads = 0;
     // 汇总当月每日数据
     Object.entries(store.dailyData).forEach(([date, d]) => {
-      if (date.startsWith(monthKey) && d.staff && d.staff[s.id]) {
-        newSign += d.staff[s.id].newSign || 0;
-        showings += d.staff[s.id].showings || 0;
-        leads += d.staff[s.id].leads || 0;
+      // v6.1修复：数据可能只在 opsLog（加减值事件流），无 d.staff[sid] 记录
+      if (date.startsWith(monthKey)) {
+        newSign += staffFieldTotal(d, s.id, 'newSign');
+        showings += staffFieldTotal(d, s.id, 'showings');
+        leads += staffFieldTotal(d, s.id, 'leads');
       }
     });
     // 任务完成率（当月）
@@ -2353,9 +2426,9 @@ function renderDailyData(body) {
       </div>
     </div>
 
-    <!-- 管家销售数据 -->
+    <!-- 管家销售数据（v6.1：默认0，加减值填写） -->
     <div class="card">
-      <div class="card-header"><h3>👥 管家当日销售</h3></div>
+      <div class="card-header"><h3>👥 管家当日销售（点 +/− 加减，默认0）</h3></div>
       <div class="card-body" style="padding:0;">
         <table class="data-table">
           <thead>
@@ -2363,13 +2436,34 @@ function renderDailyData(body) {
           </thead>
           <tbody>
             ${store.staff.map(s => {
-              const sd = (data.staff && data.staff[s.id]) || { newSign: 0, showings: 0, leads: 0, remark: '' };
+              const nNew = staffFieldTotal(data, s.id, 'newSign');
+              const nShow = staffFieldTotal(data, s.id, 'showings');
+              const nLead = staffFieldTotal(data, s.id, 'leads');
+              const sd = (data.staff && data.staff[s.id]) || {};
               return `
                 <tr>
-                  <td>${s.name}</td>
-                  <td class="num"><input type="number" class="form-control" style="width:70px;text-align:right;" value="${sd.newSign||0}" onchange="saveStaffDaily('${s.id}','newSign',this.value)"></td>
-                  <td class="num"><input type="number" class="form-control" style="width:70px;text-align:right;" value="${sd.showings||0}" onchange="saveStaffDaily('${s.id}','showings',this.value)"></td>
-                  <td class="num"><input type="number" class="form-control" style="width:70px;text-align:right;" value="${sd.leads||0}" onchange="saveStaffDaily('${s.id}','leads',this.value)"></td>
+                  <td style="font-weight:500;">${s.name}</td>
+                  <td class="num">
+                    <div class="qty-ctrl" style="justify-content:flex-end;">
+                      <button class="btn btn-icon minus" onclick="adjustStaffDaily('${s.id}','newSign',-1)">−1</button>
+                      <input type="number" class="form-control" value="${nNew}" onchange="setStaffDailyAbs('${s.id}','newSign',this.value)" title="可直接改总数">
+                      <button class="btn btn-icon plus" onclick="adjustStaffDaily('${s.id}','newSign',1)">+1</button>
+                    </div>
+                  </td>
+                  <td class="num">
+                    <div class="qty-ctrl" style="justify-content:flex-end;">
+                      <button class="btn btn-icon minus" onclick="adjustStaffDaily('${s.id}','showings',-1)">−1</button>
+                      <input type="number" class="form-control" value="${nShow}" onchange="setStaffDailyAbs('${s.id}','showings',this.value)">
+                      <button class="btn btn-icon plus" onclick="adjustStaffDaily('${s.id}','showings',1)">+1</button>
+                    </div>
+                  </td>
+                  <td class="num">
+                    <div class="qty-ctrl" style="justify-content:flex-end;">
+                      <button class="btn btn-icon minus" onclick="adjustStaffDaily('${s.id}','leads',-1)">−1</button>
+                      <input type="number" class="form-control" value="${nLead}" onchange="setStaffDailyAbs('${s.id}','leads',this.value)">
+                      <button class="btn btn-icon plus" onclick="adjustStaffDaily('${s.id}','leads',1)">+1</button>
+                    </div>
+                  </td>
                   <td><input type="text" class="form-control" value="${sd.remark||''}" onchange="saveStaffDaily('${s.id}','remark',this.value)" placeholder="备注"></td>
                 </tr>
               `;
@@ -2379,35 +2473,9 @@ function renderDailyData(body) {
       </div>
     </div>
 
-    <!-- 各楼栋出租率 -->
-    <div class="card">
-      <div class="card-header"><h3>🏢 各楼栋出租率（手动录入在租数）</h3></div>
-      <div class="card-body">
-        <div class="grid-${Math.min(store.buildings.length, 3)}">
-          ${store.buildings.map(b => {
-            const rented = (data.buildings && data.buildings[b.id] && data.buildings[b.id].rented) || 0;
-            const rate = pct(rented, b.totalRooms);
-            const colorClass = rate >= 85 ? 'green' : rate >= 70 ? 'orange' : 'red';
-            return `
-              <div style="border:1px solid #E8E8E8;border-radius:8px;padding:14px;text-align:center;">
-                <div style="font-size:13px;color:#666;margin-bottom:8px;">${b.name}（${b.totalRooms}间）</div>
-                <div style="font-size:24px;font-weight:600;margin-bottom:4px;" class="stat-value ${colorClass}">${rate}%</div>
-                <div style="font-size:12px;color:#999;margin-bottom:8px;">在租 ${rented} 间</div>
-                <div style="display:flex;align-items:center;justify-content:center;gap:6px;">
-                  <span style="font-size:12px;color:#888;">在租数:</span>
-                  <input type="number" class="form-control" style="width:80px;text-align:center;" value="${rented}" min="0" max="${b.totalRooms}" onchange="saveBuildingDaily('${b.id}', this.value)">
-                </div>
-                <div class="progress-bar" style="margin-top:10px;"><div class="progress-fill ${colorClass}" style="width:${Math.min(rate,100)}%"></div></div>
-              </div>
-            `;
-          }).join('')}
-        </div>
-      </div>
-    </div>
-
     <!-- 趋势图 -->
     <div class="card">
-      <div class="card-header"><h3>📈 近7日趋势</h3></div>
+      <div class="card-header"><h3>📈 本月新签/退房趋势（柱顶标数量）</h3></div>
       <div class="card-body">
         <div class="chart-container" style="height:220px;">
           <canvas id="dailyTrendChart"></canvas>
@@ -2432,10 +2500,41 @@ function setDailyDate(date) {
   renderOpTabBody();
 }
 
+// v6.1：当日销售改为「加减值」事件流，默认0；支持历史累计
+function staffFieldTotal(dailyData, staffId, field) {
+  if (!dailyData) return 0;
+  let total = 0;
+  (dailyData.opsLog || []).forEach(e => {
+    if (e.staffId === staffId && e.field === field) total += (e.delta || 0);
+  });
+  return total;
+}
+function adjustStaffDaily(staffId, field, delta) {
+  const d = ensureDailyData(dailyDataDate);
+  d.opsLog = d.opsLog || [];
+  d.opsLog.push({ staffId, field, delta: delta, time: new Date().toISOString() });
+  saveStore();
+  renderOpTabBody();
+}
+function setStaffDailyAbs(staffId, field, val) {
+  // 直接改当日总数：追加一条补差事件，使当日累计 = val
+  const d = ensureDailyData(dailyDataDate);
+  const cur = staffFieldTotal(d, staffId, field);
+  const target = parseInt(val) || 0;
+  const diff = target - cur;
+  if (diff !== 0) {
+    d.opsLog = d.opsLog || [];
+    d.opsLog.push({ staffId, field, delta: diff, time: new Date().toISOString(), note: '直接改数' });
+  }
+  saveStore();
+  renderOpTabBody();
+}
+
 function ensureDailyData(date) {
   if (!store.dailyData[date]) {
-    store.dailyData[date] = { newSign: 0, checkOut: 0, leads: 0, showings: 0, staff: {}, buildings: {} };
+    store.dailyData[date] = { newSign: 0, checkOut: 0, leads: 0, showings: 0, staff: {}, buildings: {}, opsLog: [] };
   }
+  if (!store.dailyData[date].opsLog) store.dailyData[date].opsLog = [];
   return store.dailyData[date];
 }
 
@@ -2451,36 +2550,21 @@ function saveDailyField(field, value) {
 // 汇总所有管家的当日新签数
 function calcStaffNewSignTotal(data) {
   let total = 0;
-  if (data.staff) {
-    store.staff.forEach(s => {
-      const sd = data.staff[s.id];
-      if (sd && sd.newSign) total += sd.newSign;
-    });
-  }
+  store.staff.forEach(s => { total += staffFieldTotal(data, s.id, 'newSign'); });
   return total;
 }
 
 // 汇总所有管家的当日进线数
 function calcStaffLeadsTotal(data) {
   let total = 0;
-  if (data.staff) {
-    store.staff.forEach(s => {
-      const sd = data.staff[s.id];
-      if (sd && sd.leads) total += sd.leads;
-    });
-  }
+  store.staff.forEach(s => { total += staffFieldTotal(data, s.id, 'leads'); });
   return total;
 }
 
 // 汇总所有管家的当日带看数
 function calcStaffShowingsTotal(data) {
   let total = 0;
-  if (data.staff) {
-    store.staff.forEach(s => {
-      const sd = data.staff[s.id];
-      if (sd && sd.showings) total += sd.showings;
-    });
-  }
+  store.staff.forEach(s => { total += staffFieldTotal(data, s.id, 'showings'); });
   return total;
 }
 
@@ -2520,21 +2604,29 @@ function drawDailyTrendChart() {
   const w = rect.width;
   const h = rect.height;
 
-  // 近7天数据
+  // v6.1：本月数据（1号→今天/月末）
+  const now = new Date();
+  const y0 = now.getFullYear(), m0 = now.getMonth();
+  const lastDay = new Date(y0, m0 + 1, 0).getDate();
+  const todayDate = now.getDate();
+  const endDay = Math.min(lastDay, todayDate);
   const days = [];
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
+  for (let day = 1; day <= endDay; day++) {
+    const d = new Date(y0, m0, day);
     const key = fmtDate(d);
+    const dd = store.dailyData[key] || {};
     days.push({
       date: key,
-      label: `${d.getMonth()+1}/${d.getDate()}`,
-      data: store.dailyData[key] || { newSign: 0, checkOut: 0, netAdd: 0 }
+      label: `${day}`,
+      newSign: calcStaffNewSignTotal(dd),
+      checkOut: dd.checkOut || 0
     });
   }
 
-  const maxVal = Math.max(5, ...days.map(d => Math.max(d.data.newSign || 0, d.data.checkOut || 0, d.data.leads || 0)));
-  const padding = { top: 20, right: 20, bottom: 30, left: 30 };
+  const monthSign = days.reduce((a, d) => a + d.newSign, 0);
+  const monthCheck = days.reduce((a, d) => a + d.checkOut, 0);
+  const maxVal = Math.max(5, ...days.map(d => Math.max(d.newSign, d.checkOut)));
+  const padding = { top: 28, right: 16, bottom: 30, left: 28 };
   const chartW = w - padding.left - padding.right;
   const chartH = h - padding.top - padding.bottom;
 
@@ -2550,41 +2642,50 @@ function drawDailyTrendChart() {
     ctx.fillStyle = '#999';
     ctx.font = '10px sans-serif';
     ctx.textAlign = 'right';
-    ctx.fillText(Math.round(maxVal - (maxVal / 4) * i), padding.left - 5, y + 3);
+    ctx.fillText(Math.round(maxVal - (maxVal / 4) * i), padding.left - 4, y + 3);
   }
 
-  const barW = chartW / days.length * 0.25;
-  const groupW = chartW / days.length;
+  const n = days.length;
+  const groupW = chartW / n;
+  const barW = Math.min(14, groupW * 0.32);
 
   days.forEach((d, i) => {
     const x = padding.left + groupW * i + groupW / 2;
-    // 新签柱
-    const newSignH = (d.data.newSign / maxVal) * chartH;
+    // 新签柱（绿）
+    const newSignH = (d.newSign / maxVal) * chartH;
     ctx.fillStyle = '#27AE60';
-    ctx.fillRect(x - barW - 2, padding.top + chartH - newSignH, barW, newSignH);
-    // 退房柱
-    const checkH = (d.data.checkOut / maxVal) * chartH;
+    ctx.fillRect(x - barW - 1, padding.top + chartH - newSignH, barW, Math.max(newSignH, d.newSign > 0 ? 2 : 0));
+    // 退房柱（红）
+    const checkH = (d.checkOut / maxVal) * chartH;
     ctx.fillStyle = '#E74C3C';
-    ctx.fillRect(x + 2, padding.top + chartH - checkH, barW, checkH);
+    ctx.fillRect(x + 1, padding.top + chartH - checkH, barW, Math.max(checkH, d.checkOut > 0 ? 2 : 0));
 
-    // X轴标签
-    ctx.fillStyle = '#666';
-    ctx.font = '10px sans-serif';
+    // 柱顶数量标注
+    ctx.font = 'bold 9px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(d.label, x, h - 10);
+    if (d.newSign > 0) { ctx.fillStyle = '#27AE60'; ctx.fillText(d.newSign, x - barW / 2 - 1, padding.top + chartH - newSignH - 3); }
+    if (d.checkOut > 0) { ctx.fillStyle = '#E74C3C'; ctx.fillText(d.checkOut, x + barW / 2 + 1, padding.top + chartH - checkH - 3); }
+
+    // X轴标签：每天太密时隔2-3天标
+    ctx.fillStyle = '#999';
+    ctx.font = '9px sans-serif';
+    {
+      const step = n > 24 ? 5 : n > 16 ? 3 : 1;
+      if (i % step === 0 || i === n - 1) ctx.fillText(d.label, x, h - 10);
+    }
   });
 
-  // 图例
+  // 图例 + 本月合计
   ctx.fillStyle = '#27AE60';
-  ctx.fillRect(padding.left, 5, 10, 10);
+  ctx.fillRect(padding.left, 6, 10, 10);
   ctx.fillStyle = '#333';
   ctx.font = '11px sans-serif';
   ctx.textAlign = 'left';
-  ctx.fillText('新签', padding.left + 14, 14);
+  ctx.fillText(`新签（本月合计 ${monthSign}）`, padding.left + 14, 15);
   ctx.fillStyle = '#E74C3C';
-  ctx.fillRect(padding.left + 60, 5, 10, 10);
+  ctx.fillRect(padding.left + 140, 6, 10, 10);
   ctx.fillStyle = '#333';
-  ctx.fillText('退房', padding.left + 74, 14);
+  ctx.fillText(`退房（本月合计 ${monthCheck}）`, padding.left + 154, 15);
 }
 
 // ---------- 渠道数据 ----------
@@ -2721,14 +2822,12 @@ function renderChannelData(body) {
   const funnelData = {};
   store.staff.forEach(s => { funnelData[s.id] = { leads: 0, showings: 0, newSign: 0 }; });
   Object.entries(store.dailyData || {}).forEach(([date, d]) => {
-    if (date.startsWith(funnelMonth) && d.staff) {
+    // v6.1修复：opsLog 事件流独立于 d.staff，不能用 d.staff 存在性作为守卫
+    if (date.startsWith(funnelMonth)) {
       store.staff.forEach(s => {
-        const sd = d.staff[s.id];
-        if (sd) {
-          funnelData[s.id].leads += (sd.leads || 0);
-          funnelData[s.id].showings += (sd.showings || 0);
-          funnelData[s.id].newSign += (sd.newSign || 0);
-        }
+        funnelData[s.id].leads += staffFieldTotal(d, s.id, 'leads');
+        funnelData[s.id].showings += staffFieldTotal(d, s.id, 'showings');
+        funnelData[s.id].newSign += staffFieldTotal(d, s.id, 'newSign');
       });
     }
   });
@@ -3206,11 +3305,11 @@ function calcChannelStaffConversion(staffId, monthKey) {
   // 从 dailyData 汇总当月该管家的进线/带看/新签，计算3个转化率
   let tL = 0, tS = 0, tN = 0;
   Object.entries(store.dailyData || {}).forEach(([date, d]) => {
-    if (date.startsWith(monthKey) && d.staff && d.staff[staffId]) {
-      const sd = d.staff[staffId];
-      tL += (sd.leads || 0);
-      tS += (sd.showings || 0);
-      tN += (sd.newSign || 0);
+    // v6.1修复：opsLog 独立于 d.staff，直接按 staffId 汇总
+    if (date.startsWith(monthKey)) {
+      tL += staffFieldTotal(d, staffId, 'leads');
+      tS += staffFieldTotal(d, staffId, 'showings');
+      tN += staffFieldTotal(d, staffId, 'newSign');
     }
   });
   const leadToVisitRate = tL > 0 ? Math.round((tS / tL) * 1000) / 10 : 0;
@@ -3223,11 +3322,12 @@ function calcChannelStoreConversion(monthKey) {
   // 全店汇总转化率（非个人平均）
   let tL = 0, tS = 0, tN = 0;
   Object.entries(store.dailyData || {}).forEach(([date, d]) => {
-    if (date.startsWith(monthKey) && d.staff) {
-      Object.values(d.staff).forEach(sd => {
-        tL += (sd.leads || 0);
-        tS += (sd.showings || 0);
-        tN += (sd.newSign || 0);
+    // v6.1修复：opsLog 独立于 d.staff，按在册管家遍历
+    if (date.startsWith(monthKey)) {
+      store.staff.forEach(s => {
+        tL += staffFieldTotal(d, s.id, 'leads');
+        tS += staffFieldTotal(d, s.id, 'showings');
+        tN += staffFieldTotal(d, s.id, 'newSign');
       });
     }
   });
@@ -3261,14 +3361,12 @@ function calcChannelScore(staffId, monthKey) {
 }
 
 function calcEventNetScore(staffId, monthKey) {
+  // v6.1：事件记录只记净分（rec.score），不再按次数×基础分
   let netScore = 0;
   store.posNegEvents.forEach(evt => {
     const key = `${staffId}_${monthKey}_${evt.id}`;
     const rec = store.eventRecords[key];
-    if (rec) {
-      netScore += (rec.plus || 0) * evt.baseScore;
-      netScore -= (rec.minus || 0) * evt.baseScore;
-    }
+    if (rec) netScore += (rec.score || 0);
   });
   return netScore;
 }
@@ -3290,11 +3388,10 @@ function calcDailyCompositeScore(staffId, monthKey) {
 function calcConversionScore(staffId, monthKey) {
   let tL = 0, tS = 0, tN = 0;
   Object.entries(store.dailyData || {}).forEach(([date, d]) => {
-    if (date.startsWith(monthKey) && d.staff && d.staff[staffId]) {
-      const sd = d.staff[staffId];
-      tL += (sd.leads || 0);
-      tS += (sd.showings || 0);
-      tN += (sd.newSign || 0);
+    if (date.startsWith(monthKey)) { // v6.1修复：去掉d.staff守卫，opsLog为加减值唯一数据源
+      tL += staffFieldTotal(d, staffId, 'leads');
+      tS += staffFieldTotal(d, staffId, 'showings');
+      tN += staffFieldTotal(d, staffId, 'newSign');
     }
   });
   const l2v = tL > 0 ? (tS / tL * 100) : 0;
@@ -3315,8 +3412,20 @@ function calcConversionScore(staffId, monthKey) {
   };
 }
 
+// v6.1：团队绩效支持查看/编辑历史月份
+let perfMonth = fmtMonth(new Date());
+function changePerfMonth(delta) {
+  const [y, m] = perfMonth.split('-').map(Number);
+  const d = new Date(y, m - 1 + delta, 1);
+  perfMonth = fmtMonth(d);
+  renderPage();
+}
+function setPerfMonth(val) {
+  if (val) { perfMonth = val; renderPage(); }
+}
+
 function renderPerformance(body) {
-  const monthKey = fmtMonth(new Date());
+  const monthKey = perfMonth;
   const [y, m] = monthKey.split('-').map(Number);
   const weeks = getWeeksInMonth(y, m - 1);
 
@@ -3324,9 +3433,10 @@ function renderPerformance(body) {
   const staffSigns = {};
   store.staff.forEach(s => staffSigns[s.id] = 0);
   Object.entries(store.dailyData).forEach(([date, d]) => {
-    if (date.startsWith(monthKey) && d.staff) {
-      Object.entries(d.staff).forEach(([sid, sd]) => {
-        if (staffSigns[sid] !== undefined) staffSigns[sid] += sd.newSign || 0;
+    // v6.1修复：opsLog 独立于 d.staff，按在册管家汇总
+    if (date.startsWith(monthKey)) {
+      store.staff.forEach(s => {
+        staffSigns[s.id] += staffFieldTotal(d, s.id, 'newSign');
       });
     }
   });
@@ -3353,7 +3463,8 @@ function renderPerformance(body) {
     signScore = Math.round(signScore * 10) / 10;
     const daily = calcDailyCompositeScore(s.id, monthKey);
     const conv = calcConversionScore(s.id, monthKey);
-    const managerScore = store.managerScores[s.id] !== undefined ? store.managerScores[s.id] : 80;
+    const msRow = store.managerScores[s.id] || {};
+    const managerScore = msRow[monthKey] !== undefined ? msRow[monthKey] : 80;
     // 将转化得分按一定比例合入日常综合得分
     const opsComposite = (daily.composite + conv.conversionScore) / 2;
     const wSales = pw.sales / 100;
@@ -3417,7 +3528,14 @@ function renderPerformance(body) {
 
     <div class="card">
       <div class="card-header">
-        <h3>📊 ${monthKey} 月度绩效排名</h3>
+        <h3>📊 月度绩效排名</h3>
+        <div class="month-bar">
+          <button class="btn btn-sm" onclick="changePerfMonth(-1)">← 上月</button>
+          <input type="month" class="form-control" style="width:150px;" value="${monthKey}" onchange="setPerfMonth(this.value)">
+          <button class="btn btn-sm" onclick="changePerfMonth(1)">下月 →</button>
+          <button class="btn btn-sm" onclick="setPerfMonth('${fmtMonth(new Date())}')">本月</button>
+          <span style="font-size:12px;color:#999;">当前：<strong>${monthKey}</strong>${monthKey !== fmtMonth(new Date()) ? '（历史月份，可编辑）' : ''}</span>
+        </div>
       </div>
       <div class="card-body" style="padding:0;">
         <table class="data-table">
@@ -3441,7 +3559,7 @@ function renderPerformance(body) {
                 <td class="num">${p.signScore}</td>
                 <td class="num">${p.dailyComposite.toFixed(1)}</td>
                 <td class="num" title="进→带:${p.convDetail.leadToVisitRate}% 带→签:${p.convDetail.visitToSignRate}% 进→签:${p.convDetail.leadToSignRate}%">${p.conversionScore.toFixed(1)}</td>
-                <td class="num"><input type="number" min="0" max="100" value="${p.managerScore}" style="width:60px;text-align:right;" onchange="saveManagerScore('${p.id}', this.value)"></td>
+                <td class="num"><input type="number" min="0" max="100" value="${p.managerScore}" style="width:60px;text-align:right;" onchange="saveManagerScore('${p.id}', this.value, '${monthKey}')"></td>
                 <td class="num"><strong>${p.finalScore}</strong></td>
                 <td class="center">
                   <button class="btn btn-sm btn-link" onclick="showPerfDetailV2('${p.id}')">明细</button>
@@ -3494,9 +3612,7 @@ function renderPerformance(body) {
         <h3>📝 ${monthKey} 月度事件记录</h3>
       </div>
       <div class="card-body">
-        <div style="margin-bottom:12px;">
-          <button class="btn btn-sm btn-primary" onclick="addEventRecord()">+ 添加记录</button>
-        </div>
+        <p style="font-size:12px;color:#666;margin-bottom:12px;">每个管家×事件只记当前净分值：点 <strong style="color:#27AE60;">+分</strong>/<strong style="color:#E74C3C;">−分</strong> 快速加减，或直接在输入框改数；当月合计自动计入绩效。</p>
         <div id="eventRecordTable"></div>
       </div>
     </div>
@@ -3523,7 +3639,7 @@ function renderPerformance(body) {
 }
 
 function renderChannelMetricsTable() {
-  const monthKey = fmtMonth(new Date());
+  const monthKey = perfMonth || fmtMonth(new Date());
   const container = $('#channelMetricsTable');
   if (!container) return;
   const monthData = store.channelMonthlyData[monthKey] || {};
@@ -3607,7 +3723,7 @@ function renderChannelMetricsTable() {
 }
 
 function saveChannelMetrics() {
-  const monthKey = fmtMonth(new Date());
+  const monthKey = perfMonth || fmtMonth(new Date());
   if (!store.channelMonthlyData[monthKey]) {
     store.channelMonthlyData[monthKey] = {};
   }
@@ -3633,111 +3749,65 @@ function saveChannelMetrics() {
 }
 
 function renderEventRecordTable() {
-  const monthKey = fmtMonth(new Date());
+  const monthKey = perfMonth || fmtMonth(new Date());
   const container = $('#eventRecordTable');
   if (!container) return;
 
-  let html = '<table class="data-table" style="font-size:13px;"><thead><tr><th>管家</th><th>事件</th><th class="num">加分次数</th><th class="num">减分次数</th><th class="num">净分</th><th class="center">操作</th></tr></thead><tbody>';
+  // v6.1：只记录当前分值（净分），可加减微调也可直接改数
+  let html = '<table class="data-table" style="font-size:13px;"><thead><tr><th>管家</th><th>事件</th><th>基础分</th><th class="num">当前分值（净分）</th><th class="center">快速调整</th></tr></thead><tbody>';
   let grandTotal = 0;
   store.staff.forEach(s => {
     let staffTotal = 0;
     store.posNegEvents.forEach(evt => {
       const key = `${s.id}_${monthKey}_${evt.id}`;
-      const rec = store.eventRecords[key] || { plus: 0, minus: 0 };
-      const net = (rec.plus || 0) * evt.baseScore - (rec.minus || 0) * evt.baseScore;
-      staffTotal += net;
+      const rec = store.eventRecords[key] || { score: 0 };
+      const score = rec.score || 0;
+      staffTotal += score;
       html += `
         <tr>
           <td style="font-weight:500;">${s.name}</td>
           <td>${evt.name}</td>
-          <td class="num" style="color:#27AE60;">${rec.plus || 0}次 (+${(rec.plus || 0) * evt.baseScore})</td>
-          <td class="num" style="color:#E74C3C;">${rec.minus || 0}次 (-${(rec.minus || 0) * evt.baseScore})</td>
-          <td class="num"><strong style="color:${net >= 0 ? '#27AE60' : '#E74C3C'}">${net >= 0 ? '+' : ''}${net}</strong></td>
+          <td class="num" style="color:#999;">±${evt.baseScore}</td>
+          <td class="num">
+            <input type="number" class="form-control" style="width:90px;text-align:right;font-weight:600;color:${score >= 0 ? '#27AE60' : '#E74C3C'};" value="${score}" onchange="setEventScore('${s.id}','${evt.id}',this.value)">
+          </td>
           <td class="center">
-            <button class="btn btn-icon plus" onclick="adjustEventRecord('${s.id}','${evt.id}','plus')" title="加一次">+</button>
-            <button class="btn btn-icon minus" onclick="adjustEventRecord('${s.id}','${evt.id}','minus')" title="减一次">−</button>
+            <div class="qty-ctrl" style="justify-content:center;">
+              <button class="btn btn-icon plus" onclick="adjustEventScore('${s.id}','${evt.id}',${evt.baseScore})" title="+${evt.baseScore}分">+${evt.baseScore}</button>
+              <button class="btn btn-icon minus" onclick="adjustEventScore('${s.id}','${evt.id}',-${evt.baseScore})" title="-${evt.baseScore}分">−${evt.baseScore}</button>
+            </div>
           </td>
         </tr>
       `;
     });
     grandTotal += staffTotal;
     // 管家小计行
-    html += `<tr style="background:#FAFAFA;font-weight:600;"><td colspan="2">${s.name} 小计</td><td colspan="2"></td><td class="num" style="color:${staffTotal >= 0 ? '#27AE60' : '#E74C3C'}">${staffTotal >= 0 ? '+' : ''}${staffTotal}</td><td></td></tr>`;
+    html += `<tr style="background:#FAFAFA;font-weight:600;"><td colspan="3">${s.name} 小计</td><td class="num" style="color:${staffTotal >= 0 ? '#27AE60' : '#E74C3C'}">${staffTotal >= 0 ? '+' : ''}${staffTotal}</td><td></td></tr>`;
   });
-  html += `<tr style="font-weight:700;background:#F0F4F8;"><td colspan="4">合计</td><td class="num" style="color:${grandTotal >= 0 ? '#27AE60' : '#E74C3C'};font-size:15px;">${grandTotal >= 0 ? '+' : ''}${grandTotal}</td><td></td></tr>`;
+  html += `<tr style="font-weight:700;background:#F0F4F8;"><td colspan="3">合计</td><td class="num" style="color:${grandTotal >= 0 ? '#27AE60' : '#E74C3C'};font-size:15px;">${grandTotal >= 0 ? '+' : ''}${grandTotal}</td><td></td></tr>`;
   html += '</tbody></table>';
   container.innerHTML = html;
 }
 
-function adjustEventRecord(staffId, eventId, type) {
-  const monthKey = fmtMonth(new Date());
+// v6.1：事件只记净分
+function setEventScore(staffId, eventId, val) {
+  const monthKey = perfMonth || fmtMonth(new Date());
   const key = `${staffId}_${monthKey}_${eventId}`;
-  if (!store.eventRecords[key]) {
-    store.eventRecords[key] = { plus: 0, minus: 0, entries: [] };
-  }
-  const rec = store.eventRecords[key];
-  const today = todayStr();
-  if (type === 'plus') {
-    rec.plus = (rec.plus || 0) + 1;
-    rec.entries.push({ type: 'plus', date: today, note: '' });
-  } else {
-    rec.minus = (rec.minus || 0) + 1;
-    rec.entries.push({ type: 'minus', date: today, note: '' });
-  }
+  if (!store.eventRecords[key]) store.eventRecords[key] = { score: 0 };
+  store.eventRecords[key].score = parseInt(val) || 0;
   saveStore();
   renderEventRecordTable();
   renderPage();
 }
 
-function addEventRecord() {
-  const html = `
-    <div class="form-group" style="margin-bottom:12px;">
-      <label>管家</label>
-      <select class="form-control" id="evStaffId">
-        ${store.staff.map(s => `<option value="${s.id}">${s.name}</option>`).join('')}
-      </select>
-    </div>
-    <div class="form-group" style="margin-bottom:12px;">
-      <label>事件</label>
-      <select class="form-control" id="evEventId">
-        ${store.posNegEvents.map(e => `<option value="${e.id}">${e.name}</option>`).join('')}
-      </select>
-    </div>
-    <div class="form-group" style="margin-bottom:12px;">
-      <label>类型</label>
-      <select class="form-control" id="evType">
-        <option value="plus">正向（加分）</option>
-        <option value="minus">负向（减分）</option>
-      </select>
-    </div>
-    <div class="form-group" style="margin-bottom:12px;">
-      <label>日期</label>
-      <input type="date" class="form-control" id="evDate" value="${todayStr()}">
-    </div>
-    <div class="form-group">
-      <label>备注</label>
-      <input type="text" class="form-control" id="evNote" placeholder="可选">
-    </div>
-  `;
-  showModal('添加事件记录', html, () => {
-    const staffId = $('#evStaffId').value;
-    const eventId = $('#evEventId').value;
-    const type = $('#evType').value;
-    const date = $('#evDate').value;
-    const note = $('#evNote').value.trim();
-    const monthKey = fmtMonth(new Date(date));
-    const key = `${staffId}_${monthKey}_${eventId}`;
-    if (!store.eventRecords[key]) {
-      store.eventRecords[key] = { plus: 0, minus: 0, entries: [] };
-    }
-    const rec = store.eventRecords[key];
-    if (type === 'plus') rec.plus = (rec.plus || 0) + 1;
-    else rec.minus = (rec.minus || 0) + 1;
-    rec.entries.push({ type, date, note });
-    saveStore();
-    renderEventRecordTable();
-    renderPage();
-  });
+function adjustEventScore(staffId, eventId, delta) {
+  const monthKey = perfMonth || fmtMonth(new Date());
+  const key = `${staffId}_${monthKey}_${eventId}`;
+  if (!store.eventRecords[key]) store.eventRecords[key] = { score: 0 };
+  store.eventRecords[key].score = (store.eventRecords[key].score || 0) + delta;
+  saveStore();
+  renderEventRecordTable();
+  renderPage();
 }
 
 function addPosNegEvent() {
@@ -3829,7 +3899,7 @@ function deletePosNegEvent(id) {
 function showPerfDetailV2(staffId) {
   const staff = store.staff.find(s => s.id === staffId);
   if (!staff) return;
-  const monthKey = fmtMonth(new Date());
+  const monthKey = perfMonth || fmtMonth(new Date());
   const [y, m] = monthKey.split('-').map(Number);
   const weeks = getWeeksInMonth(y, m - 1);
 
@@ -3874,24 +3944,25 @@ function showPerfDetailV2(staffId) {
   chHtml += `<tr style="font-weight:600;background:#FAFAFA;"><td>均分</td><td></td><td class="num">${ch.filled ? ch.score.toFixed(1) : '未填报'}</td></tr>`;
   chHtml += '</tbody></table>';
 
-  // 正负事件明细
-  let evHtml = '<table class="data-table"><thead><tr><th>事件</th><th class="num">加分</th><th class="num">减分</th><th class="num">净分</th></tr></thead><tbody>';
+  // 正负事件明细（v6.1：直接记净分）
+  let evHtml = '<table class="data-table"><thead><tr><th>事件</th><th class="num">净分</th></tr></thead><tbody>';
   store.posNegEvents.forEach(evt => {
     const key = `${staffId}_${monthKey}_${evt.id}`;
-    const rec = store.eventRecords[key] || { plus: 0, minus: 0 };
-    const net = (rec.plus || 0) * evt.baseScore - (rec.minus || 0) * evt.baseScore;
-    evHtml += `<tr><td>${evt.name}</td><td class="num" style="color:#27AE60;">+${(rec.plus || 0) * evt.baseScore}</td><td class="num" style="color:#E74C3C;">-${(rec.minus || 0) * evt.baseScore}</td><td class="num">${net >= 0 ? '+' : ''}${net}</td></tr>`;
+    const rec = store.eventRecords[key] || { score: 0 };
+    const net = rec.score || 0;
+    evHtml += `<tr><td>${evt.name}</td><td class="num" style="color:${net >= 0 ? '#27AE60' : '#E74C3C'};font-weight:600;">${net >= 0 ? '+' : ''}${net}</td></tr>`;
   });
-  evHtml += `<tr style="font-weight:600;background:#FAFAFA;"><td>净分合计</td><td colspan="2"></td><td class="num" style="color:${daily.eventNet >= 0 ? '#27AE60' : '#E74C3C'}">${daily.eventNet >= 0 ? '+' : ''}${daily.eventNet}</td></tr>`;
+  evHtml += `<tr style="font-weight:600;background:#FAFAFA;"><td>净分合计</td><td class="num" style="color:${daily.eventNet >= 0 ? '#27AE60' : '#E74C3C'}">${daily.eventNet >= 0 ? '+' : ''}${daily.eventNet}</td></tr>`;
   evHtml += '</tbody></table>';
 
   // 签约得分
   const staffSigns = {};
   store.staff.forEach(s => staffSigns[s.id] = 0);
   Object.entries(store.dailyData).forEach(([date, d]) => {
-    if (date.startsWith(monthKey) && d.staff) {
-      Object.entries(d.staff).forEach(([sid, sd2]) => {
-        if (staffSigns[sid] !== undefined) staffSigns[sid] += sd2.newSign || 0;
+    // v6.1修复：opsLog 独立于 d.staff，按在册管家汇总
+    if (date.startsWith(monthKey)) {
+      store.staff.forEach(s => {
+        staffSigns[s.id] += staffFieldTotal(d, s.id, 'newSign');
       });
     }
   });
@@ -3905,7 +3976,8 @@ function showPerfDetailV2(staffId) {
     signScore = (staffSigns[staffId] / signTargets.base) * 60;
   }
   signScore = Math.round(signScore * 10) / 10;
-  const managerScore = store.managerScores[staffId] !== undefined ? store.managerScores[staffId] : 80;
+  const _msRow = store.managerScores[staffId] || {};
+  const managerScore = _msRow[monthKey] !== undefined ? _msRow[monthKey] : 80;
   // 转化得分合入日常综合（与日常综合2项等权）
   const conv = calcConversionScore(staffId, monthKey);
   const opsComposite = Math.round(((daily.composite + conv.conversionScore) / 2) * 10) / 10;
@@ -3960,8 +4032,12 @@ function showPerfDetail(staffId) {
   showPerfDetailV2(staffId);
 }
 
-function saveManagerScore(staffId, val) {
-  store.managerScores[staffId] = parseFloat(val) || 0;
+function saveManagerScore(staffId, val, mkey) {
+  const monthKey = mkey || perfMonth || fmtMonth(new Date());
+  if (!store.managerScores[staffId] || typeof store.managerScores[staffId] === 'number') {
+    store.managerScores[staffId] = {};
+  }
+  store.managerScores[staffId][monthKey] = parseFloat(val) || 0;
   saveStore();
   renderPage();
 }
@@ -6974,11 +7050,18 @@ window.showPerfDetailV2 = showPerfDetailV2;
 window.addPosNegEvent = addPosNegEvent;
 window.editPosNegEvent = editPosNegEvent;
 window.deletePosNegEvent = deletePosNegEvent;
-window.adjustEventRecord = adjustEventRecord;
-window.addEventRecord = addEventRecord;
+window.setEventScore = setEventScore;
+window.adjustEventScore = adjustEventScore;
 window.renderEventRecordTable = renderEventRecordTable;
 window.renderChannelMetricsTable = renderChannelMetricsTable;
 window.saveChannelMetrics = saveChannelMetrics;
+window.changePerfMonth = changePerfMonth;
+window.setPerfMonth = setPerfMonth;
+
+// v6.1 当日销售加减值
+window.adjustStaffDaily = adjustStaffDaily;
+window.setStaffDailyAbs = setStaffDailyAbs;
+window.staffFieldTotal = staffFieldTotal;
 
 
 // 排班管理
