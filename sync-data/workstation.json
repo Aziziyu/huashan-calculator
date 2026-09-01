@@ -357,388 +357,31 @@
   ],
   "eventRecords": {
     "s1_2026-08_pe1": {
-      "plus": 7,
-      "minus": 7,
-      "entries": [
-        {
-          "type": "plus",
-          "date": "2026-08-19",
-          "note": ""
-        },
-        {
-          "type": "minus",
-          "date": "2026-08-19",
-          "note": ""
-        },
-        {
-          "type": "plus",
-          "date": "2026-08-20",
-          "note": ""
-        },
-        {
-          "type": "minus",
-          "date": "2026-08-20",
-          "note": ""
-        },
-        {
-          "type": "minus",
-          "date": "2026-08-20",
-          "note": ""
-        },
-        {
-          "type": "plus",
-          "date": "2026-08-20",
-          "note": ""
-        },
-        {
-          "type": "plus",
-          "date": "2026-08-20",
-          "note": ""
-        },
-        {
-          "type": "plus",
-          "date": "2026-08-20",
-          "note": ""
-        },
-        {
-          "type": "minus",
-          "date": "2026-08-20",
-          "note": ""
-        },
-        {
-          "type": "minus",
-          "date": "2026-08-20",
-          "note": ""
-        },
-        {
-          "type": "plus",
-          "date": "2026-08-20",
-          "note": ""
-        },
-        {
-          "type": "minus",
-          "date": "2026-08-21",
-          "note": ""
-        },
-        {
-          "type": "minus",
-          "date": "2026-08-28",
-          "note": ""
-        },
-        {
-          "type": "plus",
-          "date": "2026-08-28",
-          "note": ""
-        }
-      ]
+      "score": 0
     },
     "s1_2026-08_pe3": {
-      "plus": 12,
-      "minus": 14,
-      "entries": [
-        {
-          "type": "minus",
-          "date": "2026-08-19",
-          "note": ""
-        },
-        {
-          "type": "plus",
-          "date": "2026-08-19",
-          "note": ""
-        },
-        {
-          "type": "minus",
-          "date": "2026-08-19",
-          "note": ""
-        },
-        {
-          "type": "minus",
-          "date": "2026-08-20",
-          "note": ""
-        },
-        {
-          "type": "plus",
-          "date": "2026-08-20",
-          "note": ""
-        },
-        {
-          "type": "plus",
-          "date": "2026-08-20",
-          "note": ""
-        },
-        {
-          "type": "plus",
-          "date": "2026-08-20",
-          "note": ""
-        },
-        {
-          "type": "minus",
-          "date": "2026-08-21",
-          "note": ""
-        },
-        {
-          "type": "plus",
-          "date": "2026-08-21",
-          "note": ""
-        },
-        {
-          "type": "plus",
-          "date": "2026-08-21",
-          "note": ""
-        },
-        {
-          "type": "minus",
-          "date": "2026-08-21",
-          "note": ""
-        },
-        {
-          "type": "minus",
-          "date": "2026-08-21",
-          "note": ""
-        },
-        {
-          "type": "minus",
-          "date": "2026-08-21",
-          "note": ""
-        },
-        {
-          "type": "minus",
-          "date": "2026-08-21",
-          "note": ""
-        },
-        {
-          "type": "minus",
-          "date": "2026-08-21",
-          "note": ""
-        },
-        {
-          "type": "minus",
-          "date": "2026-08-21",
-          "note": ""
-        },
-        {
-          "type": "plus",
-          "date": "2026-08-21",
-          "note": ""
-        },
-        {
-          "type": "plus",
-          "date": "2026-08-21",
-          "note": ""
-        },
-        {
-          "type": "plus",
-          "date": "2026-08-21",
-          "note": ""
-        },
-        {
-          "type": "plus",
-          "date": "2026-08-21",
-          "note": ""
-        },
-        {
-          "type": "plus",
-          "date": "2026-08-21",
-          "note": ""
-        },
-        {
-          "type": "minus",
-          "date": "2026-08-21",
-          "note": ""
-        },
-        {
-          "type": "minus",
-          "date": "2026-08-28",
-          "note": ""
-        },
-        {
-          "type": "plus",
-          "date": "2026-08-31",
-          "note": ""
-        },
-        {
-          "type": "minus",
-          "date": "2026-08-31",
-          "note": ""
-        },
-        {
-          "type": "minus",
-          "date": "2026-08-31",
-          "note": ""
-        }
-      ]
+      "score": -6
     },
     "s3_2026-08_pe3": {
-      "plus": 3,
-      "minus": 7,
-      "entries": [
-        {
-          "type": "minus",
-          "date": "2026-08-19",
-          "note": ""
-        },
-        {
-          "type": "plus",
-          "date": "2026-08-24",
-          "note": ""
-        },
-        {
-          "type": "minus",
-          "date": "2026-08-24",
-          "note": ""
-        },
-        {
-          "type": "minus",
-          "date": "2026-08-24",
-          "note": ""
-        },
-        {
-          "type": "plus",
-          "date": "2026-08-27",
-          "note": ""
-        },
-        {
-          "type": "plus",
-          "date": "2026-08-27",
-          "note": ""
-        },
-        {
-          "type": "minus",
-          "date": "2026-08-27",
-          "note": ""
-        },
-        {
-          "type": "minus",
-          "date": "2026-08-27",
-          "note": ""
-        },
-        {
-          "type": "minus",
-          "date": "2026-08-27",
-          "note": ""
-        },
-        {
-          "type": "minus",
-          "date": "2026-08-27",
-          "note": ""
-        }
-      ]
+      "score": -12
     },
     "s2_2026-08_pe1": {
-      "plus": 1,
-      "minus": 1,
-      "entries": [
-        {
-          "type": "plus",
-          "date": "2026-08-20",
-          "note": ""
-        },
-        {
-          "type": "minus",
-          "date": "2026-08-27",
-          "note": ""
-        }
-      ]
+      "score": 0
     },
     "s1_2026-08_pe2": {
-      "plus": 2,
-      "minus": 2,
-      "entries": [
-        {
-          "type": "plus",
-          "date": "2026-08-20",
-          "note": ""
-        },
-        {
-          "type": "minus",
-          "date": "2026-08-20",
-          "note": ""
-        },
-        {
-          "type": "minus",
-          "date": "2026-08-20",
-          "note": ""
-        },
-        {
-          "type": "plus",
-          "date": "2026-08-21",
-          "note": ""
-        }
-      ]
+      "score": 0
     },
     "s2_2026-08_pe2": {
-      "plus": 1,
-      "minus": 1,
-      "entries": [
-        {
-          "type": "minus",
-          "date": "2026-08-20",
-          "note": ""
-        },
-        {
-          "type": "plus",
-          "date": "2026-08-27",
-          "note": ""
-        }
-      ]
+      "score": 0
     },
     "s1_2026-08_mt779linxgpth": {
-      "plus": 1,
-      "minus": 0,
-      "entries": [
-        {
-          "type": "plus",
-          "date": "2026-08-24",
-          "note": ""
-        }
-      ]
+      "score": 5
     },
     "s4_2026-08_mt779linxgpth": {
-      "plus": 1,
-      "minus": 0,
-      "entries": [
-        {
-          "type": "plus",
-          "date": "2026-08-24",
-          "note": ""
-        }
-      ]
+      "score": 5
     },
     "s3_2026-08_pe2": {
-      "plus": 3,
-      "minus": 3,
-      "entries": [
-        {
-          "type": "minus",
-          "date": "2026-08-27",
-          "note": ""
-        },
-        {
-          "type": "minus",
-          "date": "2026-08-27",
-          "note": ""
-        },
-        {
-          "type": "minus",
-          "date": "2026-08-27",
-          "note": ""
-        },
-        {
-          "type": "plus",
-          "date": "2026-08-27",
-          "note": ""
-        },
-        {
-          "type": "plus",
-          "date": "2026-08-27",
-          "note": ""
-        },
-        {
-          "type": "plus",
-          "date": "2026-08-27",
-          "note": ""
-        }
-      ]
+      "score": 0
     }
   },
   "channelMonthlyData": {
@@ -994,7 +637,70 @@
           "rented": 234
         }
       },
-      "netAdd": 5
+      "netAdd": 5,
+      "opsLog": [
+        {
+          "staffId": "s1",
+          "field": "showings",
+          "delta": 1,
+          "time": "2026-08-19T00:00"
+        },
+        {
+          "staffId": "s1",
+          "field": "leads",
+          "delta": 2,
+          "time": "2026-08-19T00:00"
+        },
+        {
+          "staffId": "s2",
+          "field": "newSign",
+          "delta": 3,
+          "time": "2026-08-19T00:00"
+        },
+        {
+          "staffId": "s2",
+          "field": "showings",
+          "delta": 1,
+          "time": "2026-08-19T00:00"
+        },
+        {
+          "staffId": "s2",
+          "field": "leads",
+          "delta": 1,
+          "time": "2026-08-19T00:00"
+        },
+        {
+          "staffId": "s3",
+          "field": "newSign",
+          "delta": 1,
+          "time": "2026-08-19T00:00"
+        },
+        {
+          "staffId": "s3",
+          "field": "showings",
+          "delta": 1,
+          "time": "2026-08-19T00:00"
+        },
+        {
+          "staffId": "s4",
+          "field": "newSign",
+          "delta": 1,
+          "time": "2026-08-19T00:00"
+        },
+        {
+          "staffId": "s4",
+          "field": "showings",
+          "delta": 1,
+          "time": "2026-08-19T00:00"
+        },
+        {
+          "staffId": "s4",
+          "field": "leads",
+          "delta": 2,
+          "time": "2026-08-19T00:00"
+        }
+      ],
+      "opsMigrated": true
     },
     "2026-08-20": {
       "newSign": 4,
@@ -1035,7 +741,76 @@
           "rented": 238
         }
       },
-      "netAdd": 4
+      "netAdd": 4,
+      "opsLog": [
+        {
+          "staffId": "s1",
+          "field": "newSign",
+          "delta": 1,
+          "time": "2026-08-20T00:00"
+        },
+        {
+          "staffId": "s1",
+          "field": "showings",
+          "delta": 3,
+          "time": "2026-08-20T00:00"
+        },
+        {
+          "staffId": "s1",
+          "field": "leads",
+          "delta": 4,
+          "time": "2026-08-20T00:00"
+        },
+        {
+          "staffId": "s2",
+          "field": "newSign",
+          "delta": 1,
+          "time": "2026-08-20T00:00"
+        },
+        {
+          "staffId": "s2",
+          "field": "showings",
+          "delta": 1,
+          "time": "2026-08-20T00:00"
+        },
+        {
+          "staffId": "s2",
+          "field": "leads",
+          "delta": 1,
+          "time": "2026-08-20T00:00"
+        },
+        {
+          "staffId": "s3",
+          "field": "newSign",
+          "delta": 1,
+          "time": "2026-08-20T00:00"
+        },
+        {
+          "staffId": "s3",
+          "field": "leads",
+          "delta": 4,
+          "time": "2026-08-20T00:00"
+        },
+        {
+          "staffId": "s4",
+          "field": "newSign",
+          "delta": 1,
+          "time": "2026-08-20T00:00"
+        },
+        {
+          "staffId": "s4",
+          "field": "showings",
+          "delta": 2,
+          "time": "2026-08-20T00:00"
+        },
+        {
+          "staffId": "s4",
+          "field": "leads",
+          "delta": 3,
+          "time": "2026-08-20T00:00"
+        }
+      ],
+      "opsMigrated": true
     },
     "2026-08-21": {
       "newSign": 2,
@@ -1069,7 +844,58 @@
         }
       },
       "buildings": {},
-      "netAdd": 1
+      "netAdd": 1,
+      "opsLog": [
+        {
+          "staffId": "s3",
+          "field": "showings",
+          "delta": 2,
+          "time": "2026-08-21T00:00"
+        },
+        {
+          "staffId": "s3",
+          "field": "leads",
+          "delta": 2,
+          "time": "2026-08-21T00:00"
+        },
+        {
+          "staffId": "s2",
+          "field": "showings",
+          "delta": 1,
+          "time": "2026-08-21T00:00"
+        },
+        {
+          "staffId": "s2",
+          "field": "leads",
+          "delta": 4,
+          "time": "2026-08-21T00:00"
+        },
+        {
+          "staffId": "s4",
+          "field": "newSign",
+          "delta": 1,
+          "time": "2026-08-21T00:00"
+        },
+        {
+          "staffId": "s4",
+          "field": "showings",
+          "delta": 1,
+          "time": "2026-08-21T00:00"
+        },
+        {
+          "staffId": "s1",
+          "field": "newSign",
+          "delta": 1,
+          "time": "2026-08-21T00:00"
+        },
+        {
+          "staffId": "s1",
+          "field": "showings",
+          "delta": 1,
+          "time": "2026-08-21T00:00"
+        }
+      ],
+      "opsMigrated": true
     },
     "2026-08-22": {
       "newSign": 10,
@@ -1103,7 +929,76 @@
         }
       },
       "buildings": {},
-      "netAdd": 10
+      "netAdd": 10,
+      "opsLog": [
+        {
+          "staffId": "s1",
+          "field": "newSign",
+          "delta": 5,
+          "time": "2026-08-22T00:00"
+        },
+        {
+          "staffId": "s1",
+          "field": "showings",
+          "delta": 7,
+          "time": "2026-08-22T00:00"
+        },
+        {
+          "staffId": "s1",
+          "field": "leads",
+          "delta": 5,
+          "time": "2026-08-22T00:00"
+        },
+        {
+          "staffId": "s3",
+          "field": "newSign",
+          "delta": 2,
+          "time": "2026-08-22T00:00"
+        },
+        {
+          "staffId": "s3",
+          "field": "showings",
+          "delta": 3,
+          "time": "2026-08-22T00:00"
+        },
+        {
+          "staffId": "s3",
+          "field": "leads",
+          "delta": 1,
+          "time": "2026-08-22T00:00"
+        },
+        {
+          "staffId": "s4",
+          "field": "newSign",
+          "delta": 2,
+          "time": "2026-08-22T00:00"
+        },
+        {
+          "staffId": "s4",
+          "field": "showings",
+          "delta": 2,
+          "time": "2026-08-22T00:00"
+        },
+        {
+          "staffId": "s2",
+          "field": "newSign",
+          "delta": 1,
+          "time": "2026-08-22T00:00"
+        },
+        {
+          "staffId": "s2",
+          "field": "showings",
+          "delta": 2,
+          "time": "2026-08-22T00:00"
+        },
+        {
+          "staffId": "s2",
+          "field": "leads",
+          "delta": 3,
+          "time": "2026-08-22T00:00"
+        }
+      ],
+      "opsMigrated": true
     },
     "2026-08-23": {
       "newSign": 7,
@@ -1137,7 +1032,76 @@
         }
       },
       "buildings": {},
-      "netAdd": 7
+      "netAdd": 7,
+      "opsLog": [
+        {
+          "staffId": "s1",
+          "field": "newSign",
+          "delta": 2,
+          "time": "2026-08-23T00:00"
+        },
+        {
+          "staffId": "s1",
+          "field": "showings",
+          "delta": 3,
+          "time": "2026-08-23T00:00"
+        },
+        {
+          "staffId": "s1",
+          "field": "leads",
+          "delta": 4,
+          "time": "2026-08-23T00:00"
+        },
+        {
+          "staffId": "s3",
+          "field": "newSign",
+          "delta": 1,
+          "time": "2026-08-23T00:00"
+        },
+        {
+          "staffId": "s3",
+          "field": "showings",
+          "delta": 3,
+          "time": "2026-08-23T00:00"
+        },
+        {
+          "staffId": "s3",
+          "field": "leads",
+          "delta": 2,
+          "time": "2026-08-23T00:00"
+        },
+        {
+          "staffId": "s4",
+          "field": "newSign",
+          "delta": 2,
+          "time": "2026-08-23T00:00"
+        },
+        {
+          "staffId": "s4",
+          "field": "showings",
+          "delta": 2,
+          "time": "2026-08-23T00:00"
+        },
+        {
+          "staffId": "s4",
+          "field": "leads",
+          "delta": 5,
+          "time": "2026-08-23T00:00"
+        },
+        {
+          "staffId": "s2",
+          "field": "newSign",
+          "delta": 2,
+          "time": "2026-08-23T00:00"
+        },
+        {
+          "staffId": "s2",
+          "field": "showings",
+          "delta": 1,
+          "time": "2026-08-23T00:00"
+        }
+      ],
+      "opsMigrated": true
     },
     "2026-08-24": {
       "newSign": 3,
@@ -1171,7 +1135,76 @@
         }
       },
       "buildings": {},
-      "netAdd": 2
+      "netAdd": 2,
+      "opsLog": [
+        {
+          "staffId": "s2",
+          "field": "newSign",
+          "delta": 1,
+          "time": "2026-08-24T00:00"
+        },
+        {
+          "staffId": "s2",
+          "field": "showings",
+          "delta": 2,
+          "time": "2026-08-24T00:00"
+        },
+        {
+          "staffId": "s2",
+          "field": "leads",
+          "delta": 4,
+          "time": "2026-08-24T00:00"
+        },
+        {
+          "staffId": "s1",
+          "field": "newSign",
+          "delta": 1,
+          "time": "2026-08-24T00:00"
+        },
+        {
+          "staffId": "s1",
+          "field": "showings",
+          "delta": 2,
+          "time": "2026-08-24T00:00"
+        },
+        {
+          "staffId": "s1",
+          "field": "leads",
+          "delta": 2,
+          "time": "2026-08-24T00:00"
+        },
+        {
+          "staffId": "s4",
+          "field": "showings",
+          "delta": 1,
+          "time": "2026-08-24T00:00"
+        },
+        {
+          "staffId": "s4",
+          "field": "leads",
+          "delta": 1,
+          "time": "2026-08-24T00:00"
+        },
+        {
+          "staffId": "s3",
+          "field": "newSign",
+          "delta": 1,
+          "time": "2026-08-24T00:00"
+        },
+        {
+          "staffId": "s3",
+          "field": "showings",
+          "delta": 2,
+          "time": "2026-08-24T00:00"
+        },
+        {
+          "staffId": "s3",
+          "field": "leads",
+          "delta": 2,
+          "time": "2026-08-24T00:00"
+        }
+      ],
+      "opsMigrated": true
     },
     "2026-08-25": {
       "newSign": 5,
@@ -1205,13 +1238,70 @@
         }
       },
       "buildings": {},
-      "netAdd": 4
+      "netAdd": 4,
+      "opsLog": [
+        {
+          "staffId": "s1",
+          "field": "newSign",
+          "delta": 1,
+          "time": "2026-08-25T00:00"
+        },
+        {
+          "staffId": "s1",
+          "field": "showings",
+          "delta": 1,
+          "time": "2026-08-25T00:00"
+        },
+        {
+          "staffId": "s1",
+          "field": "leads",
+          "delta": 3,
+          "time": "2026-08-25T00:00"
+        },
+        {
+          "staffId": "s4",
+          "field": "newSign",
+          "delta": 1,
+          "time": "2026-08-25T00:00"
+        },
+        {
+          "staffId": "s4",
+          "field": "leads",
+          "delta": 2,
+          "time": "2026-08-25T00:00"
+        },
+        {
+          "staffId": "s3",
+          "field": "newSign",
+          "delta": 3,
+          "time": "2026-08-25T00:00"
+        },
+        {
+          "staffId": "s3",
+          "field": "showings",
+          "delta": 4,
+          "time": "2026-08-25T00:00"
+        },
+        {
+          "staffId": "s3",
+          "field": "leads",
+          "delta": 8,
+          "time": "2026-08-25T00:00"
+        },
+        {
+          "staffId": "s2",
+          "field": "leads",
+          "delta": 1,
+          "time": "2026-08-25T00:00"
+        }
+      ],
+      "opsMigrated": true
     },
     "2026-08-26": {
-      "newSign": 0,
+      "newSign": 4,
       "checkOut": 1,
-      "leads": 0,
-      "showings": 0,
+      "leads": 17,
+      "showings": 11,
       "staff": {
         "s2": {
           "newSign": 2,
@@ -1239,13 +1329,82 @@
         }
       },
       "buildings": {},
-      "netAdd": -1
+      "netAdd": 3,
+      "opsLog": [
+        {
+          "staffId": "s2",
+          "field": "newSign",
+          "delta": 2,
+          "time": "2026-08-26T00:00"
+        },
+        {
+          "staffId": "s2",
+          "field": "showings",
+          "delta": 3,
+          "time": "2026-08-26T00:00"
+        },
+        {
+          "staffId": "s2",
+          "field": "leads",
+          "delta": 6,
+          "time": "2026-08-26T00:00"
+        },
+        {
+          "staffId": "s1",
+          "field": "showings",
+          "delta": 5,
+          "time": "2026-08-26T00:00"
+        },
+        {
+          "staffId": "s1",
+          "field": "leads",
+          "delta": 8,
+          "time": "2026-08-26T00:00"
+        },
+        {
+          "staffId": "s4",
+          "field": "newSign",
+          "delta": 1,
+          "time": "2026-08-26T00:00"
+        },
+        {
+          "staffId": "s4",
+          "field": "showings",
+          "delta": 1,
+          "time": "2026-08-26T00:00"
+        },
+        {
+          "staffId": "s4",
+          "field": "leads",
+          "delta": 2,
+          "time": "2026-08-26T00:00"
+        },
+        {
+          "staffId": "s3",
+          "field": "newSign",
+          "delta": 1,
+          "time": "2026-08-26T00:00"
+        },
+        {
+          "staffId": "s3",
+          "field": "showings",
+          "delta": 2,
+          "time": "2026-08-26T00:00"
+        },
+        {
+          "staffId": "s3",
+          "field": "leads",
+          "delta": 1,
+          "time": "2026-08-26T00:00"
+        }
+      ],
+      "opsMigrated": true
     },
     "2026-08-27": {
-      "newSign": 0,
+      "newSign": 7,
       "checkOut": 0,
-      "leads": 0,
-      "showings": 0,
+      "leads": 13,
+      "showings": 9,
       "staff": {
         "s4": {
           "newSign": 1,
@@ -1273,13 +1432,76 @@
         }
       },
       "buildings": {},
-      "netAdd": 0
+      "netAdd": 7,
+      "opsLog": [
+        {
+          "staffId": "s4",
+          "field": "newSign",
+          "delta": 1,
+          "time": "2026-08-27T00:00"
+        },
+        {
+          "staffId": "s4",
+          "field": "showings",
+          "delta": 5,
+          "time": "2026-08-27T00:00"
+        },
+        {
+          "staffId": "s4",
+          "field": "leads",
+          "delta": 6,
+          "time": "2026-08-27T00:00"
+        },
+        {
+          "staffId": "s3",
+          "field": "newSign",
+          "delta": 2,
+          "time": "2026-08-27T00:00"
+        },
+        {
+          "staffId": "s3",
+          "field": "showings",
+          "delta": 1,
+          "time": "2026-08-27T00:00"
+        },
+        {
+          "staffId": "s3",
+          "field": "leads",
+          "delta": 2,
+          "time": "2026-08-27T00:00"
+        },
+        {
+          "staffId": "s1",
+          "field": "newSign",
+          "delta": 1,
+          "time": "2026-08-27T00:00"
+        },
+        {
+          "staffId": "s2",
+          "field": "newSign",
+          "delta": 3,
+          "time": "2026-08-27T00:00"
+        },
+        {
+          "staffId": "s2",
+          "field": "showings",
+          "delta": 3,
+          "time": "2026-08-27T00:00"
+        },
+        {
+          "staffId": "s2",
+          "field": "leads",
+          "delta": 5,
+          "time": "2026-08-27T00:00"
+        }
+      ],
+      "opsMigrated": true
     },
     "2026-08-28": {
-      "newSign": 0,
+      "newSign": 7,
       "checkOut": 2,
-      "leads": 0,
-      "showings": 0,
+      "leads": 10,
+      "showings": 8,
       "staff": {
         "s2": {
           "newSign": 1,
@@ -1307,13 +1529,76 @@
         }
       },
       "buildings": {},
-      "netAdd": -2
+      "netAdd": 5,
+      "opsLog": [
+        {
+          "staffId": "s2",
+          "field": "newSign",
+          "delta": 1,
+          "time": "2026-08-28T00:00"
+        },
+        {
+          "staffId": "s2",
+          "field": "showings",
+          "delta": 3,
+          "time": "2026-08-28T00:00"
+        },
+        {
+          "staffId": "s2",
+          "field": "leads",
+          "delta": 3,
+          "time": "2026-08-28T00:00"
+        },
+        {
+          "staffId": "s4",
+          "field": "newSign",
+          "delta": 2,
+          "time": "2026-08-28T00:00"
+        },
+        {
+          "staffId": "s1",
+          "field": "newSign",
+          "delta": 3,
+          "time": "2026-08-28T00:00"
+        },
+        {
+          "staffId": "s1",
+          "field": "showings",
+          "delta": 3,
+          "time": "2026-08-28T00:00"
+        },
+        {
+          "staffId": "s1",
+          "field": "leads",
+          "delta": 2,
+          "time": "2026-08-28T00:00"
+        },
+        {
+          "staffId": "s3",
+          "field": "newSign",
+          "delta": 1,
+          "time": "2026-08-28T00:00"
+        },
+        {
+          "staffId": "s3",
+          "field": "showings",
+          "delta": 2,
+          "time": "2026-08-28T00:00"
+        },
+        {
+          "staffId": "s3",
+          "field": "leads",
+          "delta": 5,
+          "time": "2026-08-28T00:00"
+        }
+      ],
+      "opsMigrated": true
     },
     "2026-08-29": {
-      "newSign": 0,
+      "newSign": 7,
       "checkOut": 0,
-      "leads": 0,
-      "showings": 0,
+      "leads": 9,
+      "showings": 8,
       "staff": {
         "s1": {
           "newSign": 1,
@@ -1341,13 +1626,82 @@
         }
       },
       "buildings": {},
-      "netAdd": 0
+      "netAdd": 7,
+      "opsLog": [
+        {
+          "staffId": "s1",
+          "field": "newSign",
+          "delta": 1,
+          "time": "2026-08-29T00:00"
+        },
+        {
+          "staffId": "s1",
+          "field": "showings",
+          "delta": 4,
+          "time": "2026-08-29T00:00"
+        },
+        {
+          "staffId": "s1",
+          "field": "leads",
+          "delta": 3,
+          "time": "2026-08-29T00:00"
+        },
+        {
+          "staffId": "s3",
+          "field": "newSign",
+          "delta": 1,
+          "time": "2026-08-29T00:00"
+        },
+        {
+          "staffId": "s3",
+          "field": "showings",
+          "delta": 2,
+          "time": "2026-08-29T00:00"
+        },
+        {
+          "staffId": "s3",
+          "field": "leads",
+          "delta": 3,
+          "time": "2026-08-29T00:00"
+        },
+        {
+          "staffId": "s4",
+          "field": "newSign",
+          "delta": 2,
+          "time": "2026-08-29T00:00"
+        },
+        {
+          "staffId": "s4",
+          "field": "showings",
+          "delta": 2,
+          "time": "2026-08-29T00:00"
+        },
+        {
+          "staffId": "s4",
+          "field": "leads",
+          "delta": 2,
+          "time": "2026-08-29T00:00"
+        },
+        {
+          "staffId": "s2",
+          "field": "newSign",
+          "delta": 3,
+          "time": "2026-08-29T00:00"
+        },
+        {
+          "staffId": "s2",
+          "field": "leads",
+          "delta": 1,
+          "time": "2026-08-29T00:00"
+        }
+      ],
+      "opsMigrated": true
     },
     "2026-08-30": {
-      "newSign": 0,
+      "newSign": 4,
       "checkOut": 1,
-      "leads": 0,
-      "showings": 0,
+      "leads": 7,
+      "showings": 8,
       "staff": {
         "s2": {
           "newSign": 0,
@@ -1369,13 +1723,64 @@
         }
       },
       "buildings": {},
-      "netAdd": -1
+      "netAdd": 3,
+      "opsLog": [
+        {
+          "staffId": "s2",
+          "field": "showings",
+          "delta": 1,
+          "time": "2026-08-30T00:00"
+        },
+        {
+          "staffId": "s2",
+          "field": "leads",
+          "delta": 1,
+          "time": "2026-08-30T00:00"
+        },
+        {
+          "staffId": "s3",
+          "field": "newSign",
+          "delta": 1,
+          "time": "2026-08-30T00:00"
+        },
+        {
+          "staffId": "s3",
+          "field": "showings",
+          "delta": 3,
+          "time": "2026-08-30T00:00"
+        },
+        {
+          "staffId": "s3",
+          "field": "leads",
+          "delta": 3,
+          "time": "2026-08-30T00:00"
+        },
+        {
+          "staffId": "s1",
+          "field": "newSign",
+          "delta": 3,
+          "time": "2026-08-30T00:00"
+        },
+        {
+          "staffId": "s1",
+          "field": "showings",
+          "delta": 4,
+          "time": "2026-08-30T00:00"
+        },
+        {
+          "staffId": "s1",
+          "field": "leads",
+          "delta": 3,
+          "time": "2026-08-30T00:00"
+        }
+      ],
+      "opsMigrated": true
     },
     "2026-08-31": {
-      "newSign": 0,
+      "newSign": 6,
       "checkOut": 3,
-      "leads": 0,
-      "showings": 0,
+      "leads": 6,
+      "showings": 5,
       "staff": {
         "s1": {
           "newSign": 2,
@@ -1403,7 +1808,82 @@
         }
       },
       "buildings": {},
-      "netAdd": -3
+      "netAdd": 3,
+      "opsLog": [
+        {
+          "staffId": "s1",
+          "field": "newSign",
+          "delta": 2,
+          "time": "2026-08-31T00:00"
+        },
+        {
+          "staffId": "s1",
+          "field": "showings",
+          "delta": 2,
+          "time": "2026-08-31T00:00"
+        },
+        {
+          "staffId": "s1",
+          "field": "leads",
+          "delta": 2,
+          "time": "2026-08-31T00:00"
+        },
+        {
+          "staffId": "s3",
+          "field": "newSign",
+          "delta": 1,
+          "time": "2026-08-31T00:00"
+        },
+        {
+          "staffId": "s3",
+          "field": "showings",
+          "delta": 1,
+          "time": "2026-08-31T00:00"
+        },
+        {
+          "staffId": "s3",
+          "field": "leads",
+          "delta": 2,
+          "time": "2026-08-31T00:00"
+        },
+        {
+          "staffId": "s4",
+          "field": "newSign",
+          "delta": 1,
+          "time": "2026-08-31T00:00"
+        },
+        {
+          "staffId": "s4",
+          "field": "showings",
+          "delta": 1,
+          "time": "2026-08-31T00:00"
+        },
+        {
+          "staffId": "s4",
+          "field": "leads",
+          "delta": 1,
+          "time": "2026-08-31T00:00"
+        },
+        {
+          "staffId": "s2",
+          "field": "newSign",
+          "delta": 2,
+          "time": "2026-08-31T00:00"
+        },
+        {
+          "staffId": "s2",
+          "field": "showings",
+          "delta": 1,
+          "time": "2026-08-31T00:00"
+        },
+        {
+          "staffId": "s2",
+          "field": "leads",
+          "delta": 1,
+          "time": "2026-08-31T00:00"
+        }
+      ],
+      "opsMigrated": true
     }
   },
   "channelData": {
@@ -2096,7 +2576,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/1 13:22:57",
+    "lastSyncTime": "2026/9/1 13:23:04",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
