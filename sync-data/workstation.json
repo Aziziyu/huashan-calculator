@@ -2571,12 +2571,12 @@
   },
   "currentPage": "operation",
   "currentOperationGroup": "daily",
-  "currentOperationTab": "channel-data",
+  "currentOperationTab": "daily-data",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/1 13:24:16",
+    "lastSyncTime": "2026/9/1 13:24:23",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
