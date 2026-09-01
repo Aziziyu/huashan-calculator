@@ -1208,10 +1208,10 @@
       "netAdd": 4
     },
     "2026-08-26": {
-      "newSign": 4,
+      "newSign": 0,
       "checkOut": 1,
-      "leads": 17,
-      "showings": 11,
+      "leads": 0,
+      "showings": 0,
       "staff": {
         "s2": {
           "newSign": 2,
@@ -1239,13 +1239,13 @@
         }
       },
       "buildings": {},
-      "netAdd": 3
+      "netAdd": -1
     },
     "2026-08-27": {
-      "newSign": 7,
+      "newSign": 0,
       "checkOut": 0,
-      "leads": 13,
-      "showings": 9,
+      "leads": 0,
+      "showings": 0,
       "staff": {
         "s4": {
           "newSign": 1,
@@ -1273,7 +1273,7 @@
         }
       },
       "buildings": {},
-      "netAdd": 7
+      "netAdd": 0
     },
     "2026-08-28": {
       "newSign": 0,
@@ -2096,7 +2096,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/1 13:22:28",
+    "lastSyncTime": "2026/9/1 13:22:35",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
