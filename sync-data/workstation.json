@@ -1,6 +1,6 @@
 {
   "storeInfo": {
-    "name": "长租公寓门店",
+    "name": "交投|泊寓·花山河店",
     "managerName": "于洋"
   },
   "buildings": [
@@ -69,12 +69,20 @@
   ],
   "channels": [
     {
+      "id": "mszt4rman2m78",
+      "name": "泊寓官方"
+    },
+    {
       "id": "c1",
       "name": "贝壳找房"
     },
     {
-      "id": "c3",
-      "name": "安居客"
+      "id": "c7",
+      "name": "老带新"
+    },
+    {
+      "id": "mszw50uaacchb",
+      "name": "人才网"
     },
     {
       "id": "c4",
@@ -85,24 +93,20 @@
       "name": "抖音"
     },
     {
-      "id": "c6",
-      "name": "微信朋友圈"
-    },
-    {
-      "id": "c7",
-      "name": "老带新"
-    },
-    {
       "id": "c8",
       "name": "企业合作"
     },
     {
-      "id": "c9",
-      "name": "周边中介"
+      "id": "mszw4md15ynbb",
+      "name": "闲鱼"
     },
     {
-      "id": "c10",
-      "name": "自然到访"
+      "id": "mszw4rtannz8i",
+      "name": "散客"
+    },
+    {
+      "id": "mszw5fu5gdezs",
+      "name": "内部推荐"
     }
   ],
   "scoringSteps": {
@@ -111,20 +115,16 @@
       "label": "贝壳回复率",
       "steps": [
         {
-          "min": 95,
+          "min": 100,
           "score": 100
         },
         {
-          "min": 85,
-          "score": 80
+          "min": 95,
+          "score": 95
         },
         {
-          "min": 70,
-          "score": 60
-        },
-        {
-          "min": 0,
-          "score": 40
+          "min": 90,
+          "score": 0
         }
       ]
     },
@@ -133,20 +133,16 @@
       "label": "贝壳接通率",
       "steps": [
         {
-          "min": 90,
+          "min": 100,
           "score": 100
         },
         {
-          "min": 80,
+          "min": 95,
           "score": 80
         },
         {
-          "min": 60,
-          "score": 60
-        },
-        {
-          "min": 0,
-          "score": 40
+          "min": 90,
+          "score": 0
         }
       ]
     },
@@ -155,20 +151,16 @@
       "label": "企微回复率",
       "steps": [
         {
-          "min": 95,
+          "min": 100,
           "score": 100
         },
         {
-          "min": 85,
-          "score": 80
+          "min": 95,
+          "score": 90
         },
         {
-          "min": 70,
-          "score": 60
-        },
-        {
-          "min": 0,
-          "score": 40
+          "min": 90,
+          "score": 0
         }
       ]
     },
@@ -177,20 +169,20 @@
       "label": "企微回复时长(分钟)",
       "steps": [
         {
-          "max": 5,
+          "max": 10,
           "score": 100
         },
         {
-          "max": 15,
-          "score": 80
+          "max": 20,
+          "score": 95
         },
         {
           "max": 30,
-          "score": 60
+          "score": 90
         },
         {
-          "max": 999,
-          "score": 40
+          "max": 60,
+          "score": 0
         }
       ]
     },
@@ -203,15 +195,15 @@
           "score": 100
         },
         {
-          "min": 30,
-          "score": 80
+          "min": 40,
+          "score": 90
         },
         {
           "min": 20,
-          "score": 60
+          "score": 80
         },
         {
-          "min": 0,
+          "min": 10,
           "score": 40
         }
       ]
@@ -221,8 +213,12 @@
       "label": "带看转成交率(%)",
       "steps": [
         {
-          "min": 30,
+          "min": 60,
           "score": 100
+        },
+        {
+          "min": 50,
+          "score": 90
         },
         {
           "min": 20,
@@ -230,10 +226,6 @@
         },
         {
           "min": 10,
-          "score": 60
-        },
-        {
-          "min": 0,
           "score": 40
         }
       ]
@@ -243,19 +235,19 @@
       "label": "进线转成交率(%)",
       "steps": [
         {
-          "min": 20,
+          "min": 40,
           "score": 100
         },
         {
-          "min": 15,
+          "min": 30,
+          "score": 90
+        },
+        {
+          "min": 20,
           "score": 80
         },
         {
           "min": 10,
-          "score": 60
-        },
-        {
-          "min": 0,
           "score": 40
         }
       ]
@@ -265,7 +257,7 @@
     {
       "id": "t1",
       "name": "巡楼",
-      "targetCount": 3,
+      "targetCount": 2,
       "period": "week"
     },
     {
@@ -281,34 +273,59 @@
       "period": "week"
     },
     {
-      "id": "mszidptb7ej6e",
-      "name": "打卡地推",
-      "targetCount": 3,
+      "id": "mt141hrgcg65p",
+      "name": "营销朋友圈发布",
+      "targetCount": 2,
+      "period": "week"
+    },
+    {
+      "id": "mt9kkyxy5qkz8",
+      "name": "小红书笔记",
+      "targetCount": 2,
+      "period": "week"
+    },
+    {
+      "id": "mt9s3143lj0ps",
+      "name": "老带新营销",
+      "targetCount": 2,
       "period": "week"
     }
   ],
   "taskProgress": {
     "t1_s1_2026-W34": 2,
-    "t1_s2_2026-W34": 0,
+    "t1_s2_2026-W34": 1,
     "t1_s3_2026-W34": 2,
-    "t1_s4_2026-W34": 2,
-    "t2_s1_2026-08-19": 2,
-    "t2_s2_2026-08-19": 2,
-    "t2_s3_2026-08-19": 1,
-    "t2_s4_2026-08-19": 2,
-    "t3_s1_2026-W34": 1,
+    "t1_s4_2026-W34": 0,
+    "t2_s1_2026-W34": 0,
+    "t2_s2_2026-W34": 0,
+    "t2_s3_2026-W34": 0,
+    "t2_s4_2026-W34": 0,
+    "t3_s1_2026-W34": 0,
     "t3_s2_2026-W34": 0,
-    "t3_s4_2026-W34": 2,
-    "mszidptb7ej6e_s1_2026-W34": 0,
-    "mszidptb7ej6e_s3_2026-W34": 0,
-    "mszidptb7ej6e_s4_2026-W34": 0,
-    "mszidptb7ej6e_s2_2026-W34": 6
+    "t3_s3_2026-W34": 0,
+    "t3_s4_2026-W34": 0,
+    "mt141hrgcg65p_s1_2026-W34": 2,
+    "mt141hrgcg65p_s2_2026-W34": 1,
+    "mt141hrgcg65p_s3_2026-W34": 0,
+    "mt141hrgcg65p_s4_2026-W34": 1,
+    "t1_s4_2026-W35": 3,
+    "t1_s2_2026-W35": 2,
+    "mt141hrgcg65p_s2_2026-W35": 2,
+    "mt141hrgcg65p_s3_2026-W35": 1,
+    "mt141hrgcg65p_s4_2026-W35": 3,
+    "mt141hrgcg65p_s1_2026-W35": 2,
+    "mt9s3143lj0ps_s1_2026-W35": 1,
+    "mt9s3143lj0ps_s4_2026-W35": 2,
+    "mt9s3143lj0ps_s3_2026-W35": 1,
+    "mt9s3143lj0ps_s2_2026-W35": 2,
+    "t1_s1_2026-W35": 2,
+    "t1_s3_2026-W35": 1
   },
   "posNegEvents": [
     {
       "id": "pe1",
       "name": "回访标准执行",
-      "type": "both",
+      "type": "minus",
       "baseScore": 5,
       "threshold": "达标+5/-5",
       "description": "回访是否按SOP执行"
@@ -316,7 +333,7 @@
     {
       "id": "pe2",
       "name": "SOP完成考核",
-      "type": "both",
+      "type": "minus",
       "baseScore": 5,
       "threshold": "达标+5/-5",
       "description": "日常SOP是否完成"
@@ -324,24 +341,424 @@
     {
       "id": "pe3",
       "name": "公客回收次数",
-      "type": "both",
+      "type": "minus",
       "baseScore": 3,
       "threshold": "达标+3/-3",
       "description": "公客回收是否达标"
+    },
+    {
+      "id": "mt779linxgpth",
+      "name": "收货客户400好评或锦旗",
+      "type": "plus",
+      "baseScore": 5,
+      "threshold": "±5",
+      "description": ""
     }
   ],
   "eventRecords": {
     "s1_2026-08_pe1": {
-      "score": 5
-    },
-    "s1_2026-08_pe2": {
-      "score": 5
+      "plus": 7,
+      "minus": 7,
+      "entries": [
+        {
+          "type": "plus",
+          "date": "2026-08-19",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-19",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-20",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-20",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-20",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-20",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-20",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-20",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-20",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-20",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-20",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-21",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-28",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-28",
+          "note": ""
+        }
+      ]
     },
     "s1_2026-08_pe3": {
-      "score": 3
+      "plus": 12,
+      "minus": 14,
+      "entries": [
+        {
+          "type": "minus",
+          "date": "2026-08-19",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-19",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-19",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-20",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-20",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-20",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-20",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-21",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-21",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-21",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-21",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-21",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-21",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-21",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-21",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-21",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-21",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-21",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-21",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-21",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-21",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-21",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-28",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-31",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-31",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-31",
+          "note": ""
+        }
+      ]
+    },
+    "s3_2026-08_pe3": {
+      "plus": 3,
+      "minus": 7,
+      "entries": [
+        {
+          "type": "minus",
+          "date": "2026-08-19",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-24",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-24",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-24",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-27",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-27",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-27",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-27",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-27",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-27",
+          "note": ""
+        }
+      ]
+    },
+    "s2_2026-08_pe1": {
+      "plus": 1,
+      "minus": 1,
+      "entries": [
+        {
+          "type": "plus",
+          "date": "2026-08-20",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-27",
+          "note": ""
+        }
+      ]
+    },
+    "s1_2026-08_pe2": {
+      "plus": 2,
+      "minus": 2,
+      "entries": [
+        {
+          "type": "plus",
+          "date": "2026-08-20",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-20",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-20",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-21",
+          "note": ""
+        }
+      ]
+    },
+    "s2_2026-08_pe2": {
+      "plus": 1,
+      "minus": 1,
+      "entries": [
+        {
+          "type": "minus",
+          "date": "2026-08-20",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-27",
+          "note": ""
+        }
+      ]
+    },
+    "s1_2026-08_mt779linxgpth": {
+      "plus": 1,
+      "minus": 0,
+      "entries": [
+        {
+          "type": "plus",
+          "date": "2026-08-24",
+          "note": ""
+        }
+      ]
+    },
+    "s4_2026-08_mt779linxgpth": {
+      "plus": 1,
+      "minus": 0,
+      "entries": [
+        {
+          "type": "plus",
+          "date": "2026-08-24",
+          "note": ""
+        }
+      ]
+    },
+    "s3_2026-08_pe2": {
+      "plus": 3,
+      "minus": 3,
+      "entries": [
+        {
+          "type": "minus",
+          "date": "2026-08-27",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-27",
+          "note": ""
+        },
+        {
+          "type": "minus",
+          "date": "2026-08-27",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-27",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-27",
+          "note": ""
+        },
+        {
+          "type": "plus",
+          "date": "2026-08-27",
+          "note": ""
+        }
+      ]
     }
   },
-  "channelMonthlyData": {},
+  "channelMonthlyData": {
+    "2026-08": {
+      "s1": {
+        "shellReplyRate": 99,
+        "shellAnswerRate": 100,
+        "wecomReplyRate": 89,
+        "wecomReplyTime": 23
+      },
+      "s2": {
+        "shellReplyRate": 96,
+        "shellAnswerRate": 100,
+        "wecomReplyRate": 95,
+        "wecomReplyTime": 5
+      },
+      "s3": {},
+      "s4": {}
+    }
+  },
   "todoList": [
     {
       "id": "td1",
@@ -362,6 +779,21 @@
       "id": "td4",
       "text": "每日数据填报",
       "done": false
+    },
+    {
+      "id": "td5",
+      "text": "空房验收",
+      "done": false
+    },
+    {
+      "id": "td6",
+      "text": "视频拍摄",
+      "done": false
+    },
+    {
+      "id": "td7",
+      "text": "推荐房源设置",
+      "done": false
     }
   ],
   "todoResetDate": "2026-09-01",
@@ -378,13 +810,16 @@
     },
     {
       "id": "mt2",
-      "name": "视频拍摄",
+      "name": "房间视频拍摄及审核",
       "enabled": true,
       "cycle": "daily",
       "customDays": 0,
       "deadline": "",
       "note": "",
-      "lastDone": ""
+      "lastDone": "",
+      "weekDay": null,
+      "monthDay": null,
+      "time": ""
     },
     {
       "id": "mt3",
@@ -394,7 +829,111 @@
       "customDays": 0,
       "deadline": "",
       "note": "",
-      "lastDone": "2026-08-20"
+      "lastDone": ""
+    },
+    {
+      "id": "mt1787132574828",
+      "name": "贝壳展位",
+      "enabled": true,
+      "cycle": "weekly",
+      "customDays": 0,
+      "deadline": "",
+      "note": "",
+      "lastDone": "2026-08-27",
+      "weekDay": 2,
+      "monthDay": null,
+      "time": "21:55"
+    },
+    {
+      "id": "mt1787132588577",
+      "name": "尾期账单",
+      "enabled": true,
+      "cycle": "daily",
+      "customDays": 0,
+      "deadline": "",
+      "note": "",
+      "lastDone": "",
+      "weekDay": null,
+      "monthDay": null,
+      "time": ""
+    },
+    {
+      "id": "mt1787132592675",
+      "name": "催缴",
+      "enabled": true,
+      "cycle": "daily",
+      "customDays": 0,
+      "deadline": "",
+      "note": "",
+      "lastDone": "",
+      "weekDay": null,
+      "monthDay": null,
+      "time": ""
+    },
+    {
+      "id": "mt1787132802485",
+      "name": "工资核算",
+      "enabled": true,
+      "cycle": "monthly",
+      "customDays": 0,
+      "deadline": "",
+      "note": "",
+      "lastDone": "2026-08-27",
+      "weekDay": null,
+      "monthDay": 27,
+      "time": ""
+    },
+    {
+      "id": "mt1787148418338",
+      "name": "资方汇报",
+      "enabled": true,
+      "cycle": "once",
+      "customDays": 0,
+      "deadline": "2026-09-10",
+      "note": "",
+      "lastDone": "",
+      "weekDay": null,
+      "monthDay": null,
+      "time": ""
+    },
+    {
+      "id": "mt1787724528698",
+      "name": "早班巡查",
+      "enabled": true,
+      "cycle": "daily",
+      "customDays": 0,
+      "deadline": "",
+      "note": "",
+      "lastDone": "",
+      "weekDay": null,
+      "monthDay": null,
+      "time": ""
+    },
+    {
+      "id": "mt1787729632359",
+      "name": "老带新 营销2次",
+      "enabled": true,
+      "cycle": "weekly",
+      "customDays": 0,
+      "deadline": "",
+      "note": "",
+      "lastDone": "",
+      "weekDay": null,
+      "monthDay": null,
+      "time": ""
+    },
+    {
+      "id": "mt1787738722860",
+      "name": "生日会",
+      "enabled": true,
+      "cycle": "once",
+      "customDays": 0,
+      "deadline": "2026-08-28",
+      "note": "",
+      "lastDone": "2026-08-31",
+      "weekDay": null,
+      "monthDay": null,
+      "time": ""
     }
   ],
   "reminders": {
@@ -417,27 +956,335 @@
   },
   "dailyData": {
     "2026-08-19": {
-      "newSign": 1,
-      "checkOut": 1,
+      "newSign": 5,
+      "checkOut": 0,
       "leads": 0,
       "showings": 0,
       "staff": {
         "s1": {
+          "newSign": 0,
+          "showings": 1,
+          "leads": 2,
+          "remark": ""
+        },
+        "s2": {
+          "newSign": 3,
+          "showings": 1,
+          "leads": 1,
+          "remark": ""
+        },
+        "s3": {
+          "newSign": 1,
+          "showings": 1,
+          "leads": 0,
+          "remark": ""
+        },
+        "s4": {
+          "newSign": 1,
+          "showings": 1,
+          "leads": 2,
+          "remark": ""
+        }
+      },
+      "buildings": {
+        "b1": {
+          "rented": 275
+        },
+        "b2": {
+          "rented": 234
+        }
+      },
+      "netAdd": 5
+    },
+    "2026-08-20": {
+      "newSign": 4,
+      "checkOut": 0,
+      "leads": 12,
+      "showings": 6,
+      "staff": {
+        "s1": {
+          "newSign": 1,
+          "showings": 3,
+          "leads": 4,
+          "remark": ""
+        },
+        "s2": {
+          "newSign": 1,
+          "showings": 1,
+          "leads": 1,
+          "remark": ""
+        },
+        "s3": {
+          "newSign": 1,
+          "showings": 0,
+          "leads": 4,
+          "remark": ""
+        },
+        "s4": {
+          "newSign": 1,
+          "showings": 2,
+          "leads": 3,
+          "remark": ""
+        }
+      },
+      "buildings": {
+        "b1": {
+          "rented": 275
+        },
+        "b2": {
+          "rented": 238
+        }
+      },
+      "netAdd": 4
+    },
+    "2026-08-21": {
+      "newSign": 2,
+      "checkOut": 1,
+      "leads": 6,
+      "showings": 5,
+      "staff": {
+        "s3": {
+          "newSign": 0,
+          "showings": 2,
+          "leads": 2,
+          "remark": ""
+        },
+        "s2": {
+          "newSign": 0,
+          "showings": 1,
+          "leads": 4,
+          "remark": ""
+        },
+        "s4": {
+          "newSign": 1,
+          "showings": 1,
+          "leads": 0,
+          "remark": ""
+        },
+        "s1": {
+          "newSign": 1,
+          "showings": 1,
+          "leads": 0,
+          "remark": ""
+        }
+      },
+      "buildings": {},
+      "netAdd": 1
+    },
+    "2026-08-22": {
+      "newSign": 10,
+      "checkOut": 0,
+      "leads": 9,
+      "showings": 14,
+      "staff": {
+        "s1": {
+          "newSign": 5,
+          "showings": 7,
+          "leads": 5,
+          "remark": ""
+        },
+        "s3": {
           "newSign": 2,
+          "showings": 3,
+          "leads": 1,
+          "remark": ""
+        },
+        "s4": {
+          "newSign": 2,
+          "showings": 2,
+          "leads": 0,
+          "remark": ""
+        },
+        "s2": {
+          "newSign": 1,
+          "showings": 2,
+          "leads": 3,
+          "remark": ""
+        }
+      },
+      "buildings": {},
+      "netAdd": 10
+    },
+    "2026-08-23": {
+      "newSign": 7,
+      "checkOut": 0,
+      "leads": 11,
+      "showings": 9,
+      "staff": {
+        "s1": {
+          "newSign": 2,
+          "showings": 3,
+          "leads": 4,
+          "remark": ""
+        },
+        "s3": {
+          "newSign": 1,
+          "showings": 3,
+          "leads": 2,
+          "remark": ""
+        },
+        "s4": {
+          "newSign": 2,
+          "showings": 2,
+          "leads": 5,
+          "remark": ""
+        },
+        "s2": {
+          "newSign": 2,
+          "showings": 1,
+          "leads": 0,
+          "remark": ""
+        }
+      },
+      "buildings": {},
+      "netAdd": 7
+    },
+    "2026-08-24": {
+      "newSign": 3,
+      "checkOut": 1,
+      "leads": 9,
+      "showings": 7,
+      "staff": {
+        "s2": {
+          "newSign": 1,
+          "showings": 2,
+          "leads": 4,
+          "remark": ""
+        },
+        "s1": {
+          "newSign": 1,
+          "showings": 2,
+          "leads": 2,
+          "remark": ""
+        },
+        "s4": {
+          "newSign": 0,
+          "showings": 1,
+          "leads": 1,
+          "remark": ""
+        },
+        "s3": {
+          "newSign": 1,
+          "showings": 2,
+          "leads": 2,
+          "remark": ""
+        }
+      },
+      "buildings": {},
+      "netAdd": 2
+    },
+    "2026-08-25": {
+      "newSign": 5,
+      "checkOut": 1,
+      "leads": 14,
+      "showings": 5,
+      "staff": {
+        "s1": {
+          "newSign": 1,
+          "showings": 1,
+          "leads": 3,
+          "remark": ""
+        },
+        "s4": {
+          "newSign": 1,
+          "showings": 0,
+          "leads": 2,
+          "remark": ""
+        },
+        "s3": {
+          "newSign": 3,
+          "showings": 4,
+          "leads": 8,
+          "remark": ""
+        },
+        "s2": {
+          "newSign": 0,
+          "showings": 0,
+          "leads": 1,
+          "remark": ""
+        }
+      },
+      "buildings": {},
+      "netAdd": 4
+    },
+    "2026-08-26": {
+      "newSign": 4,
+      "checkOut": 1,
+      "leads": 17,
+      "showings": 11,
+      "staff": {
+        "s2": {
+          "newSign": 2,
+          "showings": 3,
+          "leads": 6,
+          "remark": ""
+        },
+        "s1": {
+          "newSign": 0,
+          "showings": 5,
+          "leads": 8,
+          "remark": ""
+        },
+        "s4": {
+          "newSign": 1,
+          "showings": 1,
+          "leads": 2,
+          "remark": ""
+        },
+        "s3": {
+          "newSign": 1,
+          "showings": 2,
+          "leads": 1,
+          "remark": ""
+        }
+      },
+      "buildings": {},
+      "netAdd": 3
+    },
+    "2026-08-27": {
+      "newSign": 7,
+      "checkOut": 0,
+      "leads": 13,
+      "showings": 9,
+      "staff": {
+        "s4": {
+          "newSign": 1,
+          "showings": 5,
+          "leads": 6,
+          "remark": ""
+        },
+        "s3": {
+          "newSign": 2,
+          "showings": 1,
+          "leads": 2,
+          "remark": ""
+        },
+        "s1": {
+          "newSign": 1,
           "showings": 0,
           "leads": 0,
           "remark": ""
         },
         "s2": {
           "newSign": 3,
-          "showings": 0,
-          "leads": 0,
+          "showings": 3,
+          "leads": 5,
           "remark": ""
-        },
-        "s3": {
+        }
+      },
+      "buildings": {},
+      "netAdd": 7
+    },
+    "2026-08-28": {
+      "newSign": 7,
+      "checkOut": 2,
+      "leads": 10,
+      "showings": 8,
+      "staff": {
+        "s2": {
           "newSign": 1,
-          "showings": 0,
-          "leads": 0,
+          "showings": 3,
+          "leads": 3,
           "remark": ""
         },
         "s4": {
@@ -445,40 +1292,359 @@
           "showings": 0,
           "leads": 0,
           "remark": ""
+        },
+        "s1": {
+          "newSign": 3,
+          "showings": 3,
+          "leads": 2,
+          "remark": ""
+        },
+        "s3": {
+          "newSign": 1,
+          "showings": 2,
+          "leads": 5,
+          "remark": ""
         }
       },
       "buildings": {},
-      "netAdd": 0,
-      "opsLog": [
-        {
-          "staffId": "s1",
-          "field": "newSign",
-          "delta": 2,
-          "time": "2026-08-19T00:00"
+      "netAdd": 5
+    },
+    "2026-08-29": {
+      "newSign": 7,
+      "checkOut": 0,
+      "leads": 9,
+      "showings": 8,
+      "staff": {
+        "s1": {
+          "newSign": 1,
+          "showings": 4,
+          "leads": 3,
+          "remark": ""
         },
-        {
-          "staffId": "s2",
-          "field": "newSign",
-          "delta": 3,
-          "time": "2026-08-19T00:00"
+        "s3": {
+          "newSign": 1,
+          "showings": 2,
+          "leads": 3,
+          "remark": ""
         },
-        {
-          "staffId": "s3",
-          "field": "newSign",
-          "delta": 1,
-          "time": "2026-08-19T00:00"
+        "s4": {
+          "newSign": 2,
+          "showings": 2,
+          "leads": 2,
+          "remark": ""
         },
-        {
-          "staffId": "s4",
-          "field": "newSign",
-          "delta": 2,
-          "time": "2026-08-19T00:00"
+        "s2": {
+          "newSign": 3,
+          "showings": 0,
+          "leads": 1,
+          "remark": ""
         }
-      ],
-      "opsMigrated": true
+      },
+      "buildings": {},
+      "netAdd": 7
+    },
+    "2026-08-30": {
+      "newSign": 4,
+      "checkOut": 1,
+      "leads": 7,
+      "showings": 8,
+      "staff": {
+        "s2": {
+          "newSign": 0,
+          "showings": 1,
+          "leads": 1,
+          "remark": ""
+        },
+        "s3": {
+          "newSign": 1,
+          "showings": 3,
+          "leads": 3,
+          "remark": ""
+        },
+        "s1": {
+          "newSign": 3,
+          "showings": 4,
+          "leads": 3,
+          "remark": ""
+        }
+      },
+      "buildings": {},
+      "netAdd": 3
+    },
+    "2026-08-31": {
+      "newSign": 6,
+      "checkOut": 3,
+      "leads": 6,
+      "showings": 5,
+      "staff": {
+        "s1": {
+          "newSign": 2,
+          "showings": 2,
+          "leads": 2,
+          "remark": ""
+        },
+        "s3": {
+          "newSign": 1,
+          "showings": 1,
+          "leads": 2,
+          "remark": ""
+        },
+        "s4": {
+          "newSign": 1,
+          "showings": 1,
+          "leads": 1,
+          "remark": ""
+        },
+        "s2": {
+          "newSign": 2,
+          "showings": 1,
+          "leads": 1,
+          "remark": ""
+        }
+      },
+      "buildings": {},
+      "netAdd": 3
     }
   },
-  "channelData": {},
+  "channelData": {
+    "2026-03": {
+      "mszt4rman2m78": {
+        "leads": 303,
+        "visits": 38,
+        "signings": 51
+      },
+      "c1": {
+        "leads": 45,
+        "visits": 27,
+        "signings": 7
+      },
+      "c7": {
+        "leads": 21,
+        "visits": 12,
+        "signings": 0
+      },
+      "c4": {
+        "leads": 32,
+        "visits": 10,
+        "signings": 3
+      },
+      "mszw4md15ynbb": {
+        "leads": 5,
+        "visits": 0,
+        "signings": 0
+      },
+      "c5": {
+        "leads": 8,
+        "visits": 2,
+        "signings": 2
+      },
+      "mszw50uaacchb": {
+        "leads": 21,
+        "visits": 11,
+        "signings": 5
+      },
+      "mszw4rtannz8i": {
+        "leads": 21,
+        "visits": 10,
+        "signings": 0
+      }
+    },
+    "2026-04": {
+      "mszt4rman2m78": {
+        "leads": 137,
+        "visits": 62,
+        "signings": 30
+      },
+      "c1": {
+        "leads": 119,
+        "visits": 40,
+        "signings": 28
+      },
+      "c7": {
+        "leads": 22,
+        "visits": 12,
+        "signings": 14
+      },
+      "c4": {
+        "leads": 10,
+        "visits": 7,
+        "signings": 4
+      },
+      "c5": {
+        "leads": 3,
+        "visits": 0,
+        "signings": 0
+      },
+      "mszw50uaacchb": {
+        "leads": 24,
+        "visits": 12,
+        "signings": 6
+      },
+      "mszw4rtannz8i": {
+        "leads": 18,
+        "visits": 23,
+        "signings": 9
+      }
+    },
+    "2026-05": {
+      "mszt4rman2m78": {
+        "leads": 141,
+        "visits": 56,
+        "signings": 33
+      },
+      "c1": {
+        "leads": 34,
+        "visits": 23,
+        "signings": 8
+      },
+      "c7": {
+        "leads": 24,
+        "visits": 12,
+        "signings": 5
+      },
+      "c4": {
+        "leads": 11,
+        "visits": 8,
+        "signings": 5
+      },
+      "mszw4md15ynbb": {
+        "leads": 2,
+        "visits": 1,
+        "signings": 0
+      },
+      "mszw50uaacchb": {
+        "leads": 22,
+        "visits": 6,
+        "signings": 3
+      },
+      "mszw4rtannz8i": {
+        "leads": 11,
+        "visits": 16,
+        "signings": 4
+      },
+      "mszw5fu5gdezs": {
+        "leads": 1,
+        "visits": 0,
+        "signings": 1
+      }
+    },
+    "2026-06": {
+      "mszt4rman2m78": {
+        "leads": 225,
+        "visits": 132,
+        "signings": 72
+      },
+      "c1": {
+        "leads": 77,
+        "visits": 51,
+        "signings": 31
+      },
+      "c7": {
+        "leads": 22,
+        "visits": 20,
+        "signings": 16
+      },
+      "c4": {
+        "leads": 4,
+        "visits": 2,
+        "signings": 3
+      },
+      "mszw50uaacchb": {
+        "leads": 31,
+        "visits": 10,
+        "signings": 7
+      },
+      "mszw4rtannz8i": {
+        "leads": 14,
+        "visits": 14,
+        "signings": 1
+      },
+      "mszw5fu5gdezs": {
+        "leads": 3,
+        "visits": 0,
+        "signings": 1
+      }
+    },
+    "2026-07": {
+      "mszt4rman2m78": {
+        "leads": 227,
+        "visits": 166,
+        "signings": 94
+      },
+      "c1": {
+        "leads": 58,
+        "visits": 43,
+        "signings": 30
+      },
+      "c7": {
+        "leads": 23,
+        "visits": 20,
+        "signings": 17
+      },
+      "c4": {
+        "leads": 3,
+        "visits": 7,
+        "signings": 5
+      },
+      "mszw50uaacchb": {
+        "leads": 19,
+        "visits": 6,
+        "signings": 3
+      },
+      "mszw4rtannz8i": {
+        "leads": 13,
+        "visits": 11,
+        "signings": 4
+      },
+      "mszw5fu5gdezs": {
+        "leads": 2,
+        "visits": 2,
+        "signings": 2
+      }
+    },
+    "2026-08": {
+      "mszt4rman2m78": {
+        "leads": 181,
+        "visits": 151,
+        "signings": 97
+      },
+      "c1": {
+        "leads": 32,
+        "visits": 28,
+        "signings": 17
+      },
+      "c7": {
+        "leads": 25,
+        "visits": 19,
+        "signings": 13
+      },
+      "mszw50uaacchb": {
+        "leads": 13,
+        "visits": 6,
+        "signings": 4
+      },
+      "c4": {
+        "leads": 4,
+        "visits": 8,
+        "signings": 6
+      },
+      "mszw4md15ynbb": {
+        "leads": 0,
+        "visits": 0,
+        "signings": 1
+      },
+      "mszw4rtannz8i": {
+        "leads": 10,
+        "visits": 11,
+        "signings": 5
+      },
+      "mszw5fu5gdezs": {
+        "leads": 1,
+        "visits": 0,
+        "signings": 0
+      }
+    }
+  },
   "renewals": [],
   "managerScores": {},
   "perfWeights": {
@@ -496,94 +1662,395 @@
     }
   ],
   "signTargets": {
-    "base": 10,
-    "stretch": 15
+    "base": 15,
+    "stretch": 25
   },
   "customShifts": [],
   "layoutOrder": {},
   "layoutSizes": {},
-  "schedule": {},
-  "scheduleTemplates": [],
+  "schedule": {
+    "2026-08": {
+      "s1": {
+        "1": "rest",
+        "2": "evening",
+        "3": "morning",
+        "4": "evening",
+        "5": "morning",
+        "6": "morning",
+        "7": "evening",
+        "8": "evening",
+        "9": "morning",
+        "10": "morning",
+        "11": "morning",
+        "12": "rest",
+        "13": "rest",
+        "14": "evening",
+        "15": "evening",
+        "16": "evening",
+        "17": "morning",
+        "18": "morning",
+        "19": "morning",
+        "20": "evening",
+        "21": "rest",
+        "22": "evening",
+        "23": "evening",
+        "24": "morning",
+        "25": "morning",
+        "26": "morning",
+        "27": "rest",
+        "28": "rest",
+        "29": "evening",
+        "30": "evening",
+        "31": "evening"
+      },
+      "s3": {
+        "1": "morning",
+        "2": "morning",
+        "3": "evening",
+        "4": "evening",
+        "5": "rest",
+        "6": "evening",
+        "7": "evening",
+        "8": "morning",
+        "9": "morning",
+        "10": "rest",
+        "11": "evening",
+        "12": "evening",
+        "13": "morning",
+        "14": "rest",
+        "15": "rest",
+        "16": "evening",
+        "17": "evening",
+        "18": "evening",
+        "19": "morning",
+        "20": "rest",
+        "21": "evening",
+        "22": "morning",
+        "23": "morning",
+        "24": "evening",
+        "25": "morning",
+        "26": "rest",
+        "27": "evening",
+        "28": "evening",
+        "29": "morning",
+        "30": "morning",
+        "31": "evening"
+      },
+      "s2": {
+        "1": "morning",
+        "2": "rest",
+        "3": "evening",
+        "4": "morning",
+        "5": "evening",
+        "6": "evening",
+        "7": "morning",
+        "8": "morning",
+        "9": "rest",
+        "10": "evening",
+        "11": "evening",
+        "12": "evening",
+        "13": "evening",
+        "14": "morning",
+        "15": "morning",
+        "16": "rest",
+        "17": "rest",
+        "18": "evening",
+        "19": "evening",
+        "20": "evening",
+        "21": "morning",
+        "22": "morning",
+        "23": "rest",
+        "24": "evening",
+        "25": "evening",
+        "26": "evening",
+        "27": "evening",
+        "28": "morning",
+        "29": "rest",
+        "30": "evening",
+        "31": "morning"
+      },
+      "s4": {
+        "1": "evening",
+        "2": "evening",
+        "3": "morning",
+        "4": "morning",
+        "5": "evening",
+        "6": "morning",
+        "7": "rest",
+        "8": "evening",
+        "9": "evening",
+        "10": "evening",
+        "11": "morning",
+        "12": "morning",
+        "13": "rest",
+        "14": "rest",
+        "15": "evening",
+        "16": "morning",
+        "17": "morning",
+        "18": "morning",
+        "19": "evening",
+        "20": "morning",
+        "21": "rest",
+        "22": "rest",
+        "23": "evening",
+        "24": "morning",
+        "25": "evening",
+        "26": "evening",
+        "27": "morning",
+        "28": "evening",
+        "29": "morning",
+        "30": "morning",
+        "31": "rest"
+      }
+    }
+  },
+  "scheduleTemplates": [
+    {
+      "id": "mt15eonjpaeu7",
+      "name": "标准",
+      "data": {
+        "s1": {
+          "1": "rest",
+          "2": "evening",
+          "3": "morning",
+          "4": "evening",
+          "5": "morning",
+          "6": "morning",
+          "7": "evening",
+          "8": "evening",
+          "9": "morning",
+          "10": "morning",
+          "11": "morning",
+          "12": "rest",
+          "13": "rest",
+          "14": "evening",
+          "15": "evening",
+          "16": "evening",
+          "17": "morning",
+          "18": "morning",
+          "19": "morning",
+          "20": "evening",
+          "21": "rest",
+          "22": "evening",
+          "23": "evening",
+          "24": "morning",
+          "25": "morning",
+          "26": "morning",
+          "27": "rest",
+          "28": "rest",
+          "29": "evening",
+          "30": "evening",
+          "31": "evening"
+        },
+        "s3": {
+          "1": "morning",
+          "2": "morning",
+          "3": "evening",
+          "4": "evening",
+          "5": "rest",
+          "6": "evening",
+          "7": "evening",
+          "8": "morning",
+          "9": "morning",
+          "10": "rest",
+          "11": "evening",
+          "12": "evening",
+          "13": "morning",
+          "14": "rest",
+          "15": "rest",
+          "16": "evening",
+          "17": "evening",
+          "18": "evening",
+          "19": "morning",
+          "20": "rest",
+          "21": "evening",
+          "22": "morning",
+          "23": "morning",
+          "24": "evening",
+          "25": "morning",
+          "26": "rest",
+          "27": "evening",
+          "28": "evening",
+          "29": "morning",
+          "30": "morning",
+          "31": "evening"
+        },
+        "s2": {
+          "1": "morning",
+          "2": "rest",
+          "3": "evening",
+          "4": "morning",
+          "5": "evening",
+          "6": "evening",
+          "7": "morning",
+          "8": "morning",
+          "9": "rest",
+          "10": "evening",
+          "11": "evening",
+          "12": "evening",
+          "13": "evening",
+          "14": "morning",
+          "15": "morning",
+          "16": "rest",
+          "17": "rest",
+          "18": "evening",
+          "19": "evening",
+          "20": "evening",
+          "21": "morning",
+          "22": "morning",
+          "23": "rest",
+          "24": "evening",
+          "25": "evening",
+          "26": "evening",
+          "27": "evening",
+          "28": "morning",
+          "29": "rest",
+          "30": "evening",
+          "31": "morning"
+        },
+        "s4": {
+          "1": "evening",
+          "2": "evening",
+          "3": "morning",
+          "4": "morning",
+          "5": "evening",
+          "6": "morning",
+          "7": "rest",
+          "8": "evening",
+          "9": "evening",
+          "10": "evening",
+          "11": "morning",
+          "12": "morning",
+          "13": "rest",
+          "14": "rest",
+          "15": "evening",
+          "16": "morning",
+          "17": "morning",
+          "18": "morning",
+          "19": "evening",
+          "20": "morning",
+          "21": "rest",
+          "22": "rest",
+          "23": "evening",
+          "24": "morning",
+          "25": "evening",
+          "26": "evening",
+          "27": "morning",
+          "28": "evening",
+          "29": "morning",
+          "30": "morning",
+          "31": "rest"
+        }
+      }
+    }
+  ],
   "pricePlans": [
     {
-      "id": "pp1",
-      "name": "原价不打折",
+      "id": "mt147wsgzl57i",
+      "name": "G11 一人团基础折扣",
+      "buildingIds": [
+        "b2"
+      ],
+      "roomTypeIds": [
+        "rt1",
+        "rt2",
+        "rt3"
+      ],
+      "rentDiscount": 96,
+      "managementFeeDiscount": 100,
+      "leaseTerm": 12,
+      "oldBringNew": "",
+      "target": "",
+      "approval": "",
+      "validFrom": "2026-08-20",
+      "validTo": "2026-09-30",
+      "note": "",
+      "enabled": true
+    },
+    {
+      "id": "mt148f2rlhycm",
+      "name": "G11 二人团基础折扣",
+      "buildingIds": [
+        "b2"
+      ],
+      "roomTypeIds": [
+        "rt1",
+        "rt2",
+        "rt3"
+      ],
+      "rentDiscount": 93,
+      "managementFeeDiscount": 100,
+      "leaseTerm": 12,
+      "oldBringNew": "",
+      "target": "",
+      "approval": "",
+      "validFrom": "2026-08-20",
+      "validTo": "2026-09-30",
+      "note": "",
+      "enabled": true
+    },
+    {
+      "id": "mt1498kpqivta",
+      "name": "G11 三人团折扣",
+      "buildingIds": [
+        "b2"
+      ],
+      "roomTypeIds": [
+        "rt1",
+        "rt2",
+        "rt3"
+      ],
+      "rentDiscount": 90,
+      "managementFeeDiscount": 100,
+      "leaseTerm": 12,
+      "oldBringNew": "",
+      "target": "",
+      "approval": "",
+      "validFrom": "2026-08-20",
+      "validTo": "2026-09-30",
+      "note": "",
+      "enabled": true
+    },
+    {
+      "id": "mt14bnsuhmwjg",
+      "name": "G10小户型折扣 01,02,05,08,09",
+      "buildingIds": [
+        "b1"
+      ],
+      "roomTypeIds": [
+        "rt1"
+      ],
+      "rentDiscount": 90,
+      "managementFeeDiscount": 100,
+      "leaseTerm": 12,
+      "oldBringNew": "",
+      "target": "",
+      "approval": "",
+      "validFrom": "2026-08-20",
+      "validTo": "2026-09-30",
+      "note": "",
+      "enabled": true
+    },
+    {
+      "id": "mt14d1nw7ouep",
+      "name": "G10大户型折扣 03,04,06,07",
+      "buildingIds": [
+        "b1"
+      ],
+      "roomTypeIds": [
+        "rt2",
+        "rt3"
+      ],
       "rentDiscount": 100,
       "managementFeeDiscount": 100,
       "leaseTerm": 12,
-      "buildingIds": [],
-      "roomTypeIds": [],
-      "enabled": true,
-      "target": "所有客户",
-      "approval": "店长",
-      "note": "挂牌原价，无折扣",
-      "validFrom": "",
-      "validTo": "",
-      "oldBringNew": ""
-    },
-    {
-      "id": "pp2",
-      "name": "96折长租折扣",
-      "rentDiscount": 96,
-      "managementFeeDiscount": 96,
-      "leaseTerm": 12,
-      "buildingIds": [],
-      "roomTypeIds": [],
-      "enabled": true,
-      "target": "长租客户",
-      "approval": "店长",
-      "note": "长租一年以上享受",
-      "validFrom": "",
-      "validTo": "",
-      "oldBringNew": ""
-    },
-    {
-      "id": "pp3",
-      "name": "94折特殊",
-      "rentDiscount": 94,
-      "managementFeeDiscount": 94,
-      "leaseTerm": 12,
-      "buildingIds": [],
-      "roomTypeIds": [],
-      "enabled": true,
-      "target": "特殊渠道",
-      "approval": "区域经理",
-      "note": "特殊审批折扣",
-      "validFrom": "",
-      "validTo": "",
-      "oldBringNew": ""
-    },
-    {
-      "id": "pp4",
-      "name": "93折2人团",
-      "rentDiscount": 93,
-      "managementFeeDiscount": 93,
-      "leaseTerm": 12,
-      "buildingIds": [],
-      "roomTypeIds": [],
-      "enabled": true,
-      "target": "2人及以上团租",
-      "approval": "店长",
-      "note": "2人成团享93折",
-      "validFrom": "",
-      "validTo": "",
-      "oldBringNew": ""
-    },
-    {
-      "id": "pp5",
-      "name": "88折3人团",
-      "rentDiscount": 88,
-      "managementFeeDiscount": 88,
-      "leaseTerm": 12,
-      "buildingIds": [],
-      "roomTypeIds": [],
-      "enabled": true,
-      "target": "3人及以上团租",
-      "approval": "区域经理",
-      "note": "3人成团享88折",
-      "validFrom": "",
-      "validTo": "",
-      "oldBringNew": ""
+      "oldBringNew": "",
+      "target": "",
+      "approval": "",
+      "validFrom": "2026-08-20",
+      "validTo": "2026-09-30",
+      "note": "",
+      "enabled": true
     }
   ],
   "calcHistory": [],
@@ -616,11 +2083,11 @@
     }
   ],
   "occupancyGoal": {
-    "targetRate": 90,
-    "targetDate": "2026-08-31",
+    "targetRate": 95,
+    "targetDate": "2026-09-15",
     "startDate": "2026-08-19",
-    "startRate": 72.41,
-    "estimatedMoveOut": 0
+    "startRate": 72.7,
+    "estimatedMoveOut": 10
   },
   "currentPage": "settings",
   "currentOperationGroup": "team",
@@ -629,8 +2096,8 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "",
-    "lastSyncDirection": "",
+    "lastSyncTime": "2026/9/1 13:21:50",
+    "lastSyncDirection": "download",
     "autoSync": true
   }
 }
