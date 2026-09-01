@@ -1344,10 +1344,10 @@
       "netAdd": 7
     },
     "2026-08-30": {
-      "newSign": 4,
+      "newSign": 0,
       "checkOut": 1,
-      "leads": 7,
-      "showings": 8,
+      "leads": 0,
+      "showings": 0,
       "staff": {
         "s2": {
           "newSign": 0,
@@ -1369,7 +1369,7 @@
         }
       },
       "buildings": {},
-      "netAdd": 3
+      "netAdd": -1
     },
     "2026-08-31": {
       "newSign": 0,
@@ -2096,7 +2096,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/1 13:22:14",
+    "lastSyncTime": "2026/9/1 13:22:21",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
