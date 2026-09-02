@@ -2909,14 +2909,14 @@
     "startRate": 81.18,
     "estimatedMoveOut": 20
   },
-  "currentPage": "operation",
+  "currentPage": "settings",
   "currentOperationGroup": "team",
   "currentOperationTab": "repair",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/2 17:46:31",
+    "lastSyncTime": "2026/9/2 17:46:38",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
