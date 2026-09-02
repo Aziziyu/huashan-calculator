@@ -2734,14 +2734,14 @@
     "startRate": 72.7,
     "estimatedMoveOut": 10
   },
-  "currentPage": "operation",
+  "currentPage": "settings",
   "currentOperationGroup": "team",
   "currentOperationTab": "performance",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/2 10:50:53",
+    "lastSyncTime": "2026/9/2 10:51:01",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
