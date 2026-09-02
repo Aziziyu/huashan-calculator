@@ -124,10 +124,6 @@
         },
         {
           "min": 90,
-          "score": 80
-        },
-        {
-          "min": 60,
           "score": 0
         }
       ]
@@ -160,14 +156,10 @@
         },
         {
           "min": 95,
-          "score": 95
+          "score": 90
         },
         {
           "min": 90,
-          "score": 80
-        },
-        {
-          "min": 60,
           "score": 0
         }
       ]
@@ -395,29 +387,19 @@
   "channelMonthlyData": {
     "2026-08": {
       "s1": {
-        "shellReplyRate": 91,
+        "shellReplyRate": 99,
         "shellAnswerRate": 100,
-        "wecomReplyRate": 99,
-        "wecomReplyTime": 20
+        "wecomReplyRate": 89,
+        "wecomReplyTime": 23
       },
       "s2": {
         "shellReplyRate": 96,
         "shellAnswerRate": 100,
-        "wecomReplyRate": 98,
-        "wecomReplyTime": 20
-      },
-      "s3": {
-        "shellReplyRate": 86,
-        "shellAnswerRate": 100,
-        "wecomReplyRate": 93,
-        "wecomReplyTime": 47
-      },
-      "s4": {
-        "shellReplyRate": 100,
-        "shellAnswerRate": 100,
-        "wecomReplyRate": 100,
+        "wecomReplyRate": 95,
         "wecomReplyTime": 5
-      }
+      },
+      "s3": {},
+      "s4": {}
     }
   },
   "todoList": [
@@ -2316,7 +2298,7 @@
   ],
   "signTargets": {
     "base": 15,
-    "stretch": 20
+    "stretch": 25
   },
   "customShifts": [],
   "layoutOrder": {},
@@ -2736,20 +2718,20 @@
     }
   ],
   "occupancyGoal": {
-    "targetRate": 93,
-    "targetDate": "2026-09-30",
-    "startDate": "2026-09-01",
-    "startRate": 81.18,
-    "estimatedMoveOut": 20
+    "targetRate": 95,
+    "targetDate": "2026-09-15",
+    "startDate": "2026-08-19",
+    "startRate": 72.7,
+    "estimatedMoveOut": 10
   },
   "currentPage": "operation",
-  "currentOperationGroup": "team",
-  "currentOperationTab": "performance",
+  "currentOperationGroup": "daily",
+  "currentOperationTab": "daily-data",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/2 10:59:29",
+    "lastSyncTime": "2026/9/2 10:45:53",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
