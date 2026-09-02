@@ -387,19 +387,29 @@
   "channelMonthlyData": {
     "2026-08": {
       "s1": {
-        "shellReplyRate": 99,
+        "shellReplyRate": 91,
         "shellAnswerRate": 100,
-        "wecomReplyRate": 89,
-        "wecomReplyTime": 23
+        "wecomReplyRate": 99,
+        "wecomReplyTime": 20
       },
       "s2": {
         "shellReplyRate": 96,
         "shellAnswerRate": 100,
-        "wecomReplyRate": 95,
-        "wecomReplyTime": 5
+        "wecomReplyRate": 98,
+        "wecomReplyTime": 20
       },
-      "s3": {},
-      "s4": {}
+      "s3": {
+        "shellReplyRate": 86,
+        "shellAnswerRate": 100,
+        "wecomReplyRate": 93,
+        "wecomReplyTime": 47
+      },
+      "s4": {
+        "shellReplyRate": 100,
+        "shellAnswerRate": 100,
+        "wecomReplyRate": 100,
+        "wecomReplyTime": 5
+      }
     }
   },
   "todoList": [
@@ -2731,7 +2741,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/2 10:50:37",
+    "lastSyncTime": "2026/9/2 10:50:45",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
