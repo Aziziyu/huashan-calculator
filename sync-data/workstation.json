@@ -125,6 +125,10 @@
         {
           "min": 90,
           "score": 0
+        },
+        {
+          "min": 0,
+          "score": 0
         }
       ]
     },
@@ -2734,14 +2738,14 @@
     "startRate": 72.7,
     "estimatedMoveOut": 10
   },
-  "currentPage": "operation",
+  "currentPage": "settings",
   "currentOperationGroup": "team",
   "currentOperationTab": "performance",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/2 10:51:33",
+    "lastSyncTime": "2026/9/2 10:51:41",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
