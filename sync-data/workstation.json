@@ -2315,8 +2315,8 @@
     }
   ],
   "signTargets": {
-    "base": 30,
-    "stretch": 35
+    "base": 15,
+    "stretch": 20
   },
   "customShifts": [],
   "layoutOrder": {},
@@ -2749,7 +2749,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/2 10:57:21",
+    "lastSyncTime": "2026/9/2 10:57:29",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
