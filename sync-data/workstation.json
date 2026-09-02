@@ -1886,10 +1886,10 @@
       "opsMigrated": true
     },
     "2026-09-01": {
-      "newSign": 4,
+      "newSign": 3,
       "checkOut": 0,
-      "leads": 5,
-      "showings": 4,
+      "leads": 7,
+      "showings": 6,
       "staff": {},
       "buildings": {},
       "opsLog": [
@@ -2006,9 +2006,39 @@
           "field": "showings",
           "delta": -1,
           "time": "2026-09-02T02:44:33.245Z"
+        },
+        {
+          "staffId": "s1",
+          "field": "showings",
+          "delta": 1,
+          "time": "2026-09-02T02:44:39.800Z"
+        },
+        {
+          "staffId": "s1",
+          "field": "newSign",
+          "delta": -1,
+          "time": "2026-09-02T02:44:42.749Z"
+        },
+        {
+          "staffId": "s1",
+          "field": "showings",
+          "delta": 1,
+          "time": "2026-09-02T02:44:44.440Z"
+        },
+        {
+          "staffId": "s1",
+          "field": "leads",
+          "delta": 1,
+          "time": "2026-09-02T02:44:45.886Z"
+        },
+        {
+          "staffId": "s1",
+          "field": "leads",
+          "delta": 1,
+          "time": "2026-09-02T02:44:46.045Z"
         }
       ],
-      "netAdd": 4
+      "netAdd": 3
     }
   },
   "channelData": {
@@ -2701,7 +2731,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/2 10:44:29",
+    "lastSyncTime": "2026/9/2 10:44:40",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
