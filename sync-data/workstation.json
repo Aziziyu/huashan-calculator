@@ -2911,12 +2911,12 @@
   },
   "currentPage": "operation",
   "currentOperationGroup": "team",
-  "currentOperationTab": "performance",
+  "currentOperationTab": "repair",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/2 16:33:56",
+    "lastSyncTime": "2026/9/2 17:46:11",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
