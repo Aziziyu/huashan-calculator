@@ -2736,7 +2736,7 @@
     }
   ],
   "occupancyGoal": {
-    "targetRate": 95,
+    "targetRate": 93,
     "targetDate": "2026-09-30",
     "startDate": "2026-09-01",
     "startRate": 81.18,
@@ -2749,7 +2749,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/2 10:56:33",
+    "lastSyncTime": "2026/9/2 10:56:41",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
