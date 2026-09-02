@@ -2318,6 +2318,168 @@
     "base": 15,
     "stretch": 20
   },
+  "monthlySignTargets": {},
+  "repairScoringSteps": {
+    "repairCount": {
+      "type": "positive",
+      "label": "维修单量",
+      "steps": [
+        {
+          "min": 80,
+          "score": 100
+        },
+        {
+          "min": 60,
+          "score": 80
+        },
+        {
+          "min": 40,
+          "score": 60
+        },
+        {
+          "min": 0,
+          "score": 40
+        }
+      ]
+    },
+    "acceptTime": {
+      "type": "negative",
+      "label": "受理时长(分钟)",
+      "steps": [
+        {
+          "max": 15,
+          "score": 100
+        },
+        {
+          "max": 30,
+          "score": 80
+        },
+        {
+          "max": 60,
+          "score": 60
+        },
+        {
+          "max": 9999,
+          "score": 40
+        }
+      ]
+    },
+    "closeTime": {
+      "type": "negative",
+      "label": "关单时长(小时)",
+      "steps": [
+        {
+          "max": 24,
+          "score": 100
+        },
+        {
+          "max": 48,
+          "score": 80
+        },
+        {
+          "max": 72,
+          "score": 60
+        },
+        {
+          "max": 9999,
+          "score": 40
+        }
+      ]
+    },
+    "reviewCount": {
+      "type": "positive",
+      "label": "评价量",
+      "steps": [
+        {
+          "min": 20,
+          "score": 100
+        },
+        {
+          "min": 10,
+          "score": 80
+        },
+        {
+          "min": 5,
+          "score": 60
+        },
+        {
+          "min": 0,
+          "score": 40
+        }
+      ]
+    },
+    "goodRate": {
+      "type": "positive",
+      "label": "客户好评率(%)",
+      "steps": [
+        {
+          "min": 95,
+          "score": 100
+        },
+        {
+          "min": 90,
+          "score": 80
+        },
+        {
+          "min": 85,
+          "score": 60
+        },
+        {
+          "min": 0,
+          "score": 40
+        }
+      ]
+    }
+  },
+  "repairBadReviewDeduct": {
+    "perBad": 5,
+    "maxDeduct": 20
+  },
+  "repairMonthlyData": {},
+  "repairPosNegEvents": [
+    {
+      "id": "rpe1",
+      "name": "维修质量优秀",
+      "type": "plus",
+      "baseScore": 5,
+      "threshold": "+5",
+      "description": "客户特别表扬维修质量"
+    },
+    {
+      "id": "rpe2",
+      "name": "维修响应及时",
+      "type": "plus",
+      "baseScore": 3,
+      "threshold": "+3",
+      "description": "30分钟内到达现场"
+    },
+    {
+      "id": "rpe3",
+      "name": "二次返修",
+      "type": "minus",
+      "baseScore": 5,
+      "threshold": "-5",
+      "description": "同一问题7天内二次报修"
+    },
+    {
+      "id": "rpe4",
+      "name": "客户投诉",
+      "type": "minus",
+      "baseScore": 10,
+      "threshold": "-10",
+      "description": "因维修问题产生投诉"
+    }
+  ],
+  "repairEventRecords": {},
+  "repairWeights": {
+    "repairCount": 20,
+    "acceptTime": 15,
+    "closeTime": 15,
+    "reviewCount": 10,
+    "goodRate": 20,
+    "event": 20
+  },
+  "repairMonth": "",
   "customShifts": [],
   "layoutOrder": {},
   "layoutSizes": {},
