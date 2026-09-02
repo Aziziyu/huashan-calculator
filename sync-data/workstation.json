@@ -2318,7 +2318,12 @@
     "base": 15,
     "stretch": 20
   },
-  "monthlySignTargets": {},
+  "monthlySignTargets": {
+    "2026-09": {
+      "base": 30,
+      "stretch": 35
+    }
+  },
   "repairScoringSteps": {
     "repairCount": {
       "type": "positive",
@@ -2911,7 +2916,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/2 16:31:49",
+    "lastSyncTime": "2026/9/2 16:31:57",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
