@@ -2726,12 +2726,12 @@
   },
   "currentPage": "operation",
   "currentOperationGroup": "team",
-  "currentOperationTab": "daily-data",
+  "currentOperationTab": "performance",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/2 10:45:44",
+    "lastSyncTime": "2026/9/2 10:46:39",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
