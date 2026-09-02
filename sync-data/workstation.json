@@ -124,6 +124,10 @@
         },
         {
           "min": 90,
+          "score": 80
+        },
+        {
+          "min": 60,
           "score": 0
         }
       ]
@@ -156,10 +160,14 @@
         },
         {
           "min": 95,
-          "score": 90
+          "score": 95
         },
         {
           "min": 90,
+          "score": 80
+        },
+        {
+          "min": 60,
           "score": 0
         }
       ]
@@ -387,19 +395,29 @@
   "channelMonthlyData": {
     "2026-08": {
       "s1": {
-        "shellReplyRate": 99,
+        "shellReplyRate": 91,
         "shellAnswerRate": 100,
-        "wecomReplyRate": 89,
-        "wecomReplyTime": 23
+        "wecomReplyRate": 99,
+        "wecomReplyTime": 20
       },
       "s2": {
         "shellReplyRate": 96,
         "shellAnswerRate": 100,
-        "wecomReplyRate": 95,
-        "wecomReplyTime": 5
+        "wecomReplyRate": 98,
+        "wecomReplyTime": 20
       },
-      "s3": {},
-      "s4": {}
+      "s3": {
+        "shellReplyRate": 86,
+        "shellAnswerRate": 100,
+        "wecomReplyRate": 93,
+        "wecomReplyTime": 47
+      },
+      "s4": {
+        "shellReplyRate": 100,
+        "shellAnswerRate": 100,
+        "wecomReplyRate": 100,
+        "wecomReplyTime": 5
+      }
     }
   },
   "todoList": [
@@ -2298,7 +2316,7 @@
   ],
   "signTargets": {
     "base": 15,
-    "stretch": 25
+    "stretch": 20
   },
   "customShifts": [],
   "layoutOrder": {},
@@ -2718,20 +2736,20 @@
     }
   ],
   "occupancyGoal": {
-    "targetRate": 95,
-    "targetDate": "2026-09-15",
-    "startDate": "2026-08-19",
-    "startRate": 72.7,
-    "estimatedMoveOut": 10
+    "targetRate": 93,
+    "targetDate": "2026-09-30",
+    "startDate": "2026-09-01",
+    "startRate": 81.18,
+    "estimatedMoveOut": 20
   },
   "currentPage": "operation",
-  "currentOperationGroup": "daily",
-  "currentOperationTab": "daily-data",
+  "currentOperationGroup": "team",
+  "currentOperationTab": "performance",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/2 10:45:53",
+    "lastSyncTime": "2026/9/2 10:59:38",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
