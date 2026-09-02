@@ -2060,7 +2060,7 @@
       "opsMigrated": true
     },
     "2026-09-02": {
-      "newSign": 8,
+      "newSign": 7,
       "checkOut": 0,
       "leads": 10,
       "showings": 9,
@@ -2264,9 +2264,15 @@
           "field": "newSign",
           "delta": 1,
           "time": "2026-09-02T15:34:51.408Z"
+        },
+        {
+          "staffId": "s3",
+          "field": "newSign",
+          "delta": -1,
+          "time": "2026-09-02T15:35:05.839Z"
         }
       ],
-      "netAdd": 8
+      "netAdd": 7
     }
   },
   "channelData": {
@@ -3126,7 +3132,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/2 23:34:03",
+    "lastSyncTime": "2026/9/2 23:35:04",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
