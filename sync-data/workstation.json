@@ -2742,14 +2742,14 @@
     "startRate": 81.18,
     "estimatedMoveOut": 20
   },
-  "currentPage": "dashboard",
+  "currentPage": "settings",
   "currentOperationGroup": "team",
   "currentOperationTab": "performance",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/2 10:56:41",
+    "lastSyncTime": "2026/9/2 10:56:53",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
