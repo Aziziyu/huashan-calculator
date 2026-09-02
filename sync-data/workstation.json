@@ -2058,6 +2058,53 @@
       ],
       "netAdd": 1,
       "opsMigrated": true
+    },
+    "2026-09-02": {
+      "newSign": 1,
+      "checkOut": 0,
+      "leads": 4,
+      "showings": 1,
+      "staff": {},
+      "buildings": {},
+      "opsLog": [
+        {
+          "staffId": "s3",
+          "field": "leads",
+          "delta": 1,
+          "time": "2026-09-02T15:33:51.631Z"
+        },
+        {
+          "staffId": "s3",
+          "field": "leads",
+          "delta": 1,
+          "time": "2026-09-02T15:33:51.823Z"
+        },
+        {
+          "staffId": "s3",
+          "field": "leads",
+          "delta": 1,
+          "time": "2026-09-02T15:33:51.998Z"
+        },
+        {
+          "staffId": "s3",
+          "field": "leads",
+          "delta": 1,
+          "time": "2026-09-02T15:33:52.502Z"
+        },
+        {
+          "staffId": "s3",
+          "field": "showings",
+          "delta": 1,
+          "time": "2026-09-02T15:33:53.244Z"
+        },
+        {
+          "staffId": "s3",
+          "field": "newSign",
+          "delta": 1,
+          "time": "2026-09-02T15:33:56.052Z"
+        }
+      ],
+      "netAdd": 1
     }
   },
   "channelData": {
@@ -2910,14 +2957,14 @@
     "startRate": 81.18,
     "estimatedMoveOut": 20
   },
-  "currentPage": "settings",
-  "currentOperationGroup": "team",
-  "currentOperationTab": "repair",
+  "currentPage": "operation",
+  "currentOperationGroup": "daily",
+  "currentOperationTab": "daily-data",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/2 17:46:38",
+    "lastSyncTime": "2026/9/2 23:33:17",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
