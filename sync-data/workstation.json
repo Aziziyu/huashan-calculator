@@ -1886,10 +1886,10 @@
       "opsMigrated": true
     },
     "2026-09-01": {
-      "newSign": 1,
+      "newSign": 3,
       "checkOut": 0,
-      "leads": 1,
-      "showings": 1,
+      "leads": 5,
+      "showings": 4,
       "staff": {},
       "buildings": {},
       "opsLog": [
@@ -1910,9 +1910,63 @@
           "field": "leads",
           "delta": 1,
           "time": "2026-09-02T02:43:32.624Z"
+        },
+        {
+          "staffId": "s3",
+          "field": "leads",
+          "delta": 1,
+          "time": "2026-09-02T02:43:45.964Z"
+        },
+        {
+          "staffId": "s3",
+          "field": "leads",
+          "delta": 1,
+          "time": "2026-09-02T02:43:46.173Z"
+        },
+        {
+          "staffId": "s3",
+          "field": "leads",
+          "delta": 1,
+          "time": "2026-09-02T02:43:46.329Z"
+        },
+        {
+          "staffId": "s3",
+          "field": "leads",
+          "delta": 1,
+          "time": "2026-09-02T02:43:46.629Z"
+        },
+        {
+          "staffId": "s3",
+          "field": "showings",
+          "delta": 1,
+          "time": "2026-09-02T02:43:47.591Z"
+        },
+        {
+          "staffId": "s3",
+          "field": "showings",
+          "delta": 1,
+          "time": "2026-09-02T02:43:47.731Z"
+        },
+        {
+          "staffId": "s3",
+          "field": "showings",
+          "delta": 1,
+          "time": "2026-09-02T02:43:47.899Z"
+        },
+        {
+          "staffId": "s3",
+          "field": "newSign",
+          "delta": 1,
+          "time": "2026-09-02T02:43:48.942Z"
+        },
+        {
+          "staffId": "s3",
+          "field": "newSign",
+          "delta": 1,
+          "time": "2026-09-02T02:43:49.092Z"
         }
       ],
-      "netAdd": 1
+      "netAdd": 3
     }
   },
   "channelData": {
@@ -2605,7 +2659,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/2 10:43:40",
+    "lastSyncTime": "2026/9/2 10:43:49",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
