@@ -2737,10 +2737,10 @@
   ],
   "occupancyGoal": {
     "targetRate": 95,
-    "targetDate": "2026-09-15",
-    "startDate": "2026-08-19",
-    "startRate": 72.7,
-    "estimatedMoveOut": 10
+    "targetDate": "2026-09-30",
+    "startDate": "2026-09-01",
+    "startRate": 81.18,
+    "estimatedMoveOut": 20
   },
   "currentPage": "dashboard",
   "currentOperationGroup": "team",
@@ -2749,7 +2749,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/2 10:55:47",
+    "lastSyncTime": "2026/9/2 10:55:55",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
