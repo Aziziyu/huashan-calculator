@@ -3232,14 +3232,14 @@
     "startRate": 81.18,
     "estimatedMoveOut": 20
   },
-  "currentPage": "operation",
+  "currentPage": "calculator",
   "currentOperationGroup": "daily",
   "currentOperationTab": "daily-data",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/4 09:36:18",
+    "lastSyncTime": "2026/9/4 09:36:27",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
