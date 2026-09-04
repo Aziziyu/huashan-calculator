@@ -3236,12 +3236,12 @@
   },
   "currentPage": "operation",
   "currentOperationGroup": "daily",
-  "currentOperationTab": "daily-data",
+  "currentOperationTab": "channel-data",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/4 12:11:39",
+    "lastSyncTime": "2026/9/4 23:58:47",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
