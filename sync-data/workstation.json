@@ -457,7 +457,7 @@
       "done": false
     }
   ],
-  "todoResetDate": "2026-09-02",
+  "todoResetDate": "2026-09-04",
   "myTodos": [
     {
       "id": "mt1",
@@ -2272,7 +2272,8 @@
           "time": "2026-09-02T15:35:05.839Z"
         }
       ],
-      "netAdd": 7
+      "netAdd": 7,
+      "opsMigrated": true
     },
     "2026-09-03": {
       "newSign": 3,
@@ -2379,7 +2380,8 @@
           "time": "2026-09-04T01:17:36.591Z"
         }
       ],
-      "netAdd": 2
+      "netAdd": 2,
+      "opsMigrated": true
     }
   },
   "channelData": {
