@@ -2743,9 +2743,9 @@
   "genericDiscounts": [
     {
       "id": "gdisc_1",
-      "name": "通用管理费折扣",
-      "value": 100,
-      "enabled": true,
+      "name": "通用店长折扣",
+      "value": 98,
+      "enabled": false,
       "description": "适用于所有价格方案的管理费折扣，独立于各方案的租金折扣"
     }
   ],
@@ -3351,7 +3351,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/5 09:45:24",
+    "lastSyncTime": "2026/9/5 09:45:35",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
