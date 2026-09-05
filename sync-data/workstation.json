@@ -393,6 +393,9 @@
     },
     "s3_2026-09_pe3": {
       "score": -6
+    },
+    "s1_2026-09_pe3": {
+      "score": -3
     }
   },
   "channelMonthlyData": {
@@ -3344,14 +3347,14 @@
     "startRate": 81.18,
     "estimatedMoveOut": 20
   },
-  "currentPage": "price",
+  "currentPage": "operation",
   "currentOperationGroup": "team",
   "currentOperationTab": "performance",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/5 18:33:42",
+    "lastSyncTime": "2026/9/5 18:33:51",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
