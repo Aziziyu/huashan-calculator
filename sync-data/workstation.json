@@ -2386,8 +2386,8 @@
     "2026-09-04": {
       "newSign": 4,
       "checkOut": 1,
-      "leads": 5,
-      "showings": 4,
+      "leads": 7,
+      "showings": 5,
       "staff": {},
       "buildings": {},
       "opsLog": [
@@ -2468,6 +2468,24 @@
           "field": "newSign",
           "delta": 1,
           "time": "2026-09-05T01:43:37.041Z"
+        },
+        {
+          "staffId": "s3",
+          "field": "leads",
+          "delta": 1,
+          "time": "2026-09-05T01:43:44.276Z"
+        },
+        {
+          "staffId": "s3",
+          "field": "leads",
+          "delta": 1,
+          "time": "2026-09-05T01:43:44.425Z"
+        },
+        {
+          "staffId": "s3",
+          "field": "showings",
+          "delta": 1,
+          "time": "2026-09-05T01:43:45.510Z"
         }
       ],
       "netAdd": 3
@@ -3330,7 +3348,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/5 09:43:32",
+    "lastSyncTime": "2026/9/5 09:43:44",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
