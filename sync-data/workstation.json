@@ -3344,14 +3344,14 @@
     "startRate": 81.18,
     "estimatedMoveOut": 20
   },
-  "currentPage": "operation",
+  "currentPage": "price",
   "currentOperationGroup": "team",
   "currentOperationTab": "performance",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/5 09:45:17",
+    "lastSyncTime": "2026/9/5 09:45:24",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
