@@ -2385,7 +2385,7 @@
     },
     "2026-09-04": {
       "newSign": 2,
-      "checkOut": 0,
+      "checkOut": 1,
       "leads": 2,
       "showings": 2,
       "staff": {},
@@ -2428,7 +2428,7 @@
           "time": "2026-09-05T01:43:12.407Z"
         }
       ],
-      "netAdd": 2
+      "netAdd": 1
     }
   },
   "channelData": {
@@ -3288,7 +3288,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/5 09:43:05",
+    "lastSyncTime": "2026/9/5 09:43:20",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
