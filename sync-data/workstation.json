@@ -2499,7 +2499,7 @@
     "2026-09-05": {
       "newSign": 4,
       "checkOut": 1,
-      "leads": 8,
+      "leads": 9,
       "showings": 8,
       "staff": {},
       "buildings": {},
@@ -2623,6 +2623,12 @@
           "field": "newSign",
           "delta": 1,
           "time": "2026-09-07T01:21:04.710Z"
+        },
+        {
+          "staffId": "s4",
+          "field": "leads",
+          "delta": 1,
+          "time": "2026-09-07T01:21:10.178Z"
         }
       ],
       "netAdd": 3
@@ -3485,7 +3491,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/7 09:21:04",
+    "lastSyncTime": "2026/9/7 09:21:12",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
