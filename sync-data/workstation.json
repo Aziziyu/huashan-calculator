@@ -3567,14 +3567,14 @@
     "startRate": 81.18,
     "estimatedMoveOut": 20
   },
-  "currentPage": "operation",
+  "currentPage": "settings",
   "currentOperationGroup": "daily",
   "currentOperationTab": "channel-data",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/7 09:33:08",
+    "lastSyncTime": "2026/9/7 09:33:16",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
