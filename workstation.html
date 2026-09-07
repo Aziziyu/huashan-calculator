@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>店长工作台 v6.2</title>
+<title>店长工作台 v7.0</title>
 <style>
 /* ===== CSS Reset & Base ===== */
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -276,8 +276,9 @@ textarea.form-control { resize: vertical; min-height: 60px; }
 @media (max-width: 768px) {
   .sidebar { display: none; }
   .mobile-tab-bar { display: flex; }
-  .main-content { padding-bottom: 60px; }
-  .content-area { padding: 12px; }
+  .main-content { padding-bottom: 60px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .content-area { padding: 12px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .card { max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .top-bar { padding: 10px 12px; }
   .stat-grid { grid-template-columns: repeat(2, 1fr); }
   .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); }
@@ -578,7 +579,8 @@ textarea.form-control { resize: vertical; min-height: 60px; }
 // ============================================================
 // Data Store & LocalStorage
 // ============================================================
-const STORAGE_KEY = 'boyu_workstation_v6_2';
+const STORAGE_KEY = 'boyu_workstation_v7_0';
+const V62_STORAGE_KEY = 'boyu_workstation_v6_2';
 const V60_STORAGE_KEY = 'boyu_workstation_v6_0';
 const V61_STORAGE_KEY = 'boyu_workstation_v6_1';
 const OLD_STORAGE_KEY = 'workstation_v5_data';
@@ -608,10 +610,10 @@ const defaultStore = {
   ],
   // 管家团队
   staff: [
-    { id: 's1', name: '余润泽', floors: '', hireDate: '' },
-    { id: 's2', name: '邱靖杰', floors: '', hireDate: '' },
-    { id: 's3', name: '李乐晶', floors: '', hireDate: '' },
-    { id: 's4', name: '罗明婧', floors: '', hireDate: '' }
+    { id: 's1', name: '余润泽', floors: '', hireDate: '', role: 'manager' },
+    { id: 's2', name: '邱靖杰', floors: '', hireDate: '', role: 'manager' },
+    { id: 's3', name: '李乐晶', floors: '', hireDate: '', role: 'manager' },
+    { id: 's4', name: '罗明婧', floors: '', hireDate: '', role: 'manager' }
   ],
   // 渠道管理
   channels: [
@@ -722,7 +724,32 @@ const defaultStore = {
   // 团队绩效 - 店长打分 { staffId: score }
   managerScores: {},
   // 绩效权重配置
-  perfWeights: { sales: 40, ops: 50, manager: 10 },
+  perfWeights: { sales: 40, ops: 50, kpi: 10 },
+  // ====== v7.0 KPI板块系统 ======
+  // KPI板块定义
+  kpiBoards: [
+    { id: 'kb1', name: '销售', metrics: [
+      { id: 'km1', name: '出租率目标达成率', unit: '%', baseTarget: 90, stretchTarget: 98, source: 'auto', baseScore: 60, stretchScore: 100 },
+      { id: 'km2', name: '租金收缴率', unit: '%', baseTarget: 95, stretchTarget: 99, source: 'manual', baseScore: 60, stretchScore: 100 },
+      { id: 'km3', name: '旺季占比', unit: '%', baseTarget: 60, stretchTarget: 80, source: 'manual', baseScore: 60, stretchScore: 100 }
+    ]},
+    { id: 'kb2', name: '服务', metrics: [
+      { id: 'km4', name: '满意度评分', unit: '分', baseTarget: 85, stretchTarget: 95, source: 'manual', baseScore: 60, stretchScore: 100 }
+    ]},
+    { id: 'kb3', name: '物业', metrics: [
+      { id: 'km5', name: '巡楼完成率', unit: '%', baseTarget: 80, stretchTarget: 100, source: 'auto', baseScore: 60, stretchScore: 100 },
+      { id: 'km6', name: '维修受理时长', unit: '小时', baseTarget: 72, stretchTarget: 24, source: 'manual', baseScore: 60, stretchScore: 100, isNegative: true }
+    ]},
+    { id: 'kb4', name: '支持', metrics: [
+      { id: 'km7', name: '内容发布完成率', unit: '%', baseTarget: 80, stretchTarget: 100, source: 'manual', baseScore: 60, stretchScore: 100 }
+    ]}
+  ],
+  // 管家-板块分工 { staffId: [boardId, ...] }
+  staffBoardAssignment: {},
+  // KPI月度数据 { 'YYYY-MM': { metricId: value } }（全店维度）
+  kpiMonthlyData: {},
+  // KPI月度目标（可选覆盖）{ 'YYYY-MM': { metricId: { baseTarget, stretchTarget } } }
+  kpiMonthlyTargets: {},
   // 通用折扣列表
   genericDiscounts: [
     { id: 'gdisc_1', name: '通用管理费折扣', value: 100, enabled: true, description: '适用于所有价格方案的管理费折扣，独立于各方案的租金折扣' }
@@ -846,6 +873,10 @@ const defaultStore = {
   // 工资考勤待办
   salaryTodos: [],
   // 云同步配置（GitHub 仓库文件同步）
+  // v7.0 第三批功能 - 任务下达
+  storeManagerTasks: [],
+  // v7.0 第二批功能 - 提醒增强
+  reminderItems: [],
   cloudSync: {
     pat: '',           // PAT 独立存储在 localStorage gh_pat_store，不写入 store
     lastSyncTime: '',
@@ -883,13 +914,36 @@ let store = loadStore();
 
 function loadStore() {
   try {
+    // v7.0 迁移：从 v6.2 key 迁移数据
+    const v62Raw = localStorage.getItem(V62_STORAGE_KEY);
+    if (v62Raw && !localStorage.getItem(STORAGE_KEY)) {
+      try {
+        const v62Data = JSON.parse(v62Raw);
+        // 迁移：staff添加role默认值
+        if (v62Data.staff) {
+          v62Data.staff.forEach(s => { if (!s.role) s.role = 'manager'; });
+        }
+        // managerScores数据丢弃（改为KPI自动赋分）
+        // perfWeights中manager→kpi
+        if (v62Data.perfWeights) {
+          if (v62Data.perfWeights.manager !== undefined) {
+            v62Data.perfWeights.kpi = v62Data.perfWeights.manager;
+            delete v62Data.perfWeights.manager;
+          }
+        }
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(v62Data));
+        console.log('✅ 数据已从 v6.2 迁移到 v7.0');
+      } catch (e) {
+        console.error('Migration v6.2->v7.0 error:', e);
+      }
+    }
     // v6.2 迁移：从 v6_1 / v6_0 key 迁移数据
     const v61Raw = localStorage.getItem(V61_STORAGE_KEY);
     if (v61Raw && !localStorage.getItem(STORAGE_KEY)) {
       try {
         const v61Data = JSON.parse(v61Raw);
         localStorage.setItem(STORAGE_KEY, JSON.stringify(v61Data));
-        console.log('✅ 数据已从 v6.1 迁移到 v6.2');
+        console.log('✅ 数据已从 v6.1 迁移到 v7.0');
       } catch (e) {
         console.error('Migration v6.1->v6.2 error:', e);
       }
@@ -899,7 +953,7 @@ function loadStore() {
       try {
         const v60Data = JSON.parse(v60Raw);
         localStorage.setItem(STORAGE_KEY, JSON.stringify(v60Data));
-        console.log('✅ 数据已从 v6.0 迁移到 v6.2');
+        console.log('✅ 数据已从 v6.0 迁移到 v7.0');
       } catch (e) {
         console.error('Migration v6.0->v6.2 error:', e);
       }
@@ -1069,6 +1123,15 @@ function loadStore() {
         });
       }
       console.log('✅ 数据已从 v6.0 迁移到 v6.1');
+      // v7.0: 确保staff有role字段
+      if (parsed.staff) {
+        parsed.staff.forEach(s => { if (!s.role) s.role = 'manager'; });
+      }
+      // v7.0: perfWeights中manager→kpi
+      if (parsed.perfWeights && parsed.perfWeights.manager !== undefined && parsed.perfWeights.kpi === undefined) {
+        parsed.perfWeights.kpi = parsed.perfWeights.manager;
+        delete parsed.perfWeights.manager;
+      }
       return deepMerge(defaultStore, parsed);
     }
   } catch (e) {
@@ -1108,6 +1171,148 @@ function deepMerge(target, source) {
   }
   return result;
 }
+
+
+// ====== v7.0 KPI板块赋分函数 ======
+function calcKpiMetricScore(metric, actual) {
+  if (actual === undefined || actual === null || actual === '') return null;
+  const base = metric.baseScore || 60;
+  const stretch = metric.stretchScore || 100;
+  const baseT = metric.baseTarget;
+  const stretchT = metric.stretchTarget;
+  const isNeg = metric.isNegative || false;
+  let score;
+  if (isNeg) {
+    // 反向指标：actual ≤ stretchTarget → 100; stretchTarget < actual ≤ baseTarget → 60-100; actual > baseTarget → 0-60
+    if (actual <= stretchT) score = stretch;
+    else if (actual <= baseT) score = base + (baseT - actual) / (baseT - stretchT) * (stretch - base);
+    else score = Math.max(0, base * (1 - (actual - baseT) / baseT));
+  } else {
+    // 正向指标：actual < baseTarget → 0-60; baseTarget ≤ actual < stretchTarget → 60-100; actual ≥ stretchTarget → 100
+    if (actual >= stretchT) score = stretch;
+    else if (actual >= baseT) score = base + (actual - baseT) / (stretchT - baseT) * (stretch - base);
+    else score = baseT > 0 ? (actual / baseT) * base : 0;
+  }
+  return Math.round(Math.max(0, Math.min(100, score)) * 10) / 10;
+}
+
+function calcKpiBoardScore(board, monthKey) {
+  if (!board.metrics || board.metrics.length === 0) return 0;
+  const monthData = store.kpiMonthlyData?.[monthKey] || {};
+  const monthTargets = store.kpiMonthlyTargets?.[monthKey] || {};
+  let total = 0, count = 0;
+  board.metrics.forEach(m => {
+    const mt = monthTargets[m.id];
+    const metric = mt ? { ...m, baseTarget: mt.baseTarget, stretchTarget: mt.stretchTarget } : m;
+    let actual;
+    if (m.source === 'auto') {
+      // auto类：从系统数据聚合
+      actual = calcKpiAutoValue(m, monthKey);
+    } else {
+      actual = monthData[m.id];
+    }
+    const score = calcKpiMetricScore(metric, actual);
+    if (score !== null) { total += score; count++; }
+  });
+  return count > 0 ? Math.round(total / count * 10) / 10 : 0;
+}
+
+function calcKpiAutoValue(metric, monthKey) {
+  // 从dailyData聚合auto类指标
+  if (metric.id === 'km1') {
+    // 出租率目标达成率 = 当月平均出租率 / 目标 × 100
+    const occ = calcMonthAvgOccupancy(monthKey);
+    const targetRate = store.occupancyGoal?.targetRate || 90;
+    return targetRate > 0 ? Math.round(occ / targetRate * 1000) / 10 : 0;
+  }
+  if (metric.id === 'km5') {
+    // 巡楼完成率：从taskProgress中聚合巡楼任务
+    const [y, m] = monthKey.split('-').map(Number);
+    const weeks = getWeeksInMonth(y, m - 1);
+    let totalTarget = 0, totalDone = 0;
+    store.customTasks.forEach(t => {
+      if (t.name.includes('巡楼')) {
+        if (t.period === 'week') {
+          weeks.forEach(wk => {
+            store.staff.forEach(s => {
+              totalTarget += t.targetCount;
+              totalDone += store.taskProgress[t.id + '_' + s.id + '_' + wk] || 0;
+            });
+          });
+        } else if (t.period === 'day') {
+          totalTarget += t.targetCount * 30;
+          const days = getDaysInMonth(monthKey);
+          days.forEach(d => {
+            store.staff.forEach(s => {
+              totalDone += store.taskProgress[t.id + '_' + s.id + '_' + d] || 0;
+            });
+          });
+        }
+      }
+    });
+    return totalTarget > 0 ? Math.round(totalDone / totalTarget * 1000) / 10 : 0;
+  }
+  return null;
+}
+
+function calcMonthAvgOccupancy(monthKey) {
+  let totalOcc = 0, count = 0;
+  Object.entries(store.dailyData).forEach(([date, d]) => {
+    if (date.startsWith(monthKey)) {
+      const occ = calcOccupancyForDate(date);
+      totalOcc += occ.rate;
+      count++;
+    }
+  });
+  return count > 0 ? Math.round(totalOcc / count * 10) / 10 : 0;
+}
+
+function calcOccupancyForDate(date) {
+  const data = store.dailyData[date];
+  let rented = store.initialRentedTotal || 0;
+  let total = 0;
+  store.buildings.forEach(b => { total += b.totalRooms; });
+  // 累计到该日期
+  const sortedDates = Object.keys(store.dailyData).filter(d => d <= date).sort();
+  sortedDates.forEach(d => {
+    const dd = store.dailyData[d];
+    if (dd) {
+      rented += (dd.newSign || 0) - (dd.checkOut || 0);
+    }
+  });
+  rented = Math.max(0, Math.min(rented, total));
+  return { rented, total, rate: total > 0 ? Math.round(rented / total * 100) : 0 };
+}
+
+function getDaysInMonth(monthKey) {
+  const [y, m] = monthKey.split('-').map(Number);
+  const days = [];
+  const d = new Date(y, m - 1, 1);
+  while (d.getMonth() === m - 1) {
+    days.push(fmtDate(d));
+    d.setDate(d.getDate() + 1);
+  }
+  return days;
+}
+
+function calcStaffKpiScore(staffId, monthKey) {
+  const boardIds = store.staffBoardAssignment?.[staffId] || [];
+  if (boardIds.length === 0) return { score: null, boards: [] };
+  let total = 0, count = 0;
+  const boardDetails = [];
+  boardIds.forEach(bid => {
+    const board = (store.kpiBoards || []).find(b => b.id === bid);
+    if (board) {
+      const bScore = calcKpiBoardScore(board, monthKey);
+      boardDetails.push({ id: bid, name: board.name, score: bScore });
+      total += bScore;
+      count++;
+    }
+  });
+  return { score: count > 0 ? Math.round(total / count * 10) / 10 : null, boards: boardDetails };
+}
+
+let kpiDataMonth = fmtMonth(new Date());
 
 // ============================================================
 // Utility Functions
@@ -1857,7 +2062,7 @@ function renderDashboard(area) {
   let html = `
     <div class="stat-grid">
       <div class="stat-card">
-        <div class="stat-label">🏠 全店出租率</div>
+        <div class="stat-label">🏠 全店出租率 ${getTrendArrow('occupancy')}</div>
         <div class="stat-value ${occ.rate >= 85 ? 'green' : occ.rate >= 70 ? 'orange' : 'red'}">${occ.rate}%</div>
         <div class="stat-sub">${occ.rented} / ${occ.total} 间在租</div>
         <div class="progress-bar"><div class="progress-fill ${occ.rate >= 85 ? 'green' : occ.rate >= 70 ? 'orange' : 'red'}" style="width:${Math.min(occ.rate,100)}%"></div></div>
@@ -1869,7 +2074,7 @@ function renderDashboard(area) {
         <div class="progress-bar"><div class="progress-fill ${tasks.rate >= 80 ? 'green' : tasks.rate >= 50 ? 'orange' : 'red'}" style="width:${Math.min(tasks.rate,100)}%"></div></div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">📝 本周新签进度</div>
+        <div class="stat-label">📝 本周新签进度 ${getTrendArrow('weekSign')}</div>
         <div class="stat-value blue">${weekSign} 间</div>
         <div class="stat-sub">本周累计新签</div>
       </div>
@@ -2097,7 +2302,8 @@ function renderOperation(area) {
     { id: 'daily', name: '📋 日常运营', tabs: [
       { id: 'daily-data', name: '每日数据' },
       { id: 'channel-data', name: '渠道数据' },
-      { id: 'renewal', name: '续租管理' }
+      { id: 'renewal', name: '续租管理' },
+      { id: 'data-review', name: '数据看板' }
     ]},
     { id: 'task', name: '✅ 任务与提醒', tabs: [
       { id: 'task-exec', name: '任务执行' },
@@ -2107,7 +2313,7 @@ function renderOperation(area) {
       { id: 'performance', name: '团队绩效' },
       { id: 'schedule', name: '排班管理' },
       { id: 'repair', name: '维修考核' }
-    ]}
+    ]},
   ];
 
   const group = groups.find(g => g.id === store.currentOperationGroup) || groups[0];
@@ -2179,23 +2385,64 @@ function renderOpTabBody() {
     case 'performance': renderPerformance(body); break;
     case 'schedule': renderSchedule(body); break;
     case 'repair': renderRepairAssessment(body); break;
+    case 'data-review': renderDataReview(body); break;
   }
+}
+
+
+// v7.0 任务执行周切换
+let taskExecWeekOffset = 0; // 0=本周, -1=上周, -2=更早...
+function getTaskExecViewDate() {
+  const now = new Date();
+  now.setDate(now.getDate() + taskExecWeekOffset * 7);
+  return now;
+}
+function getTaskExecWeekLabel() {
+  if (taskExecWeekOffset === 0) return '本周';
+  if (taskExecWeekOffset === -1) return '上周';
+  const d = getTaskExecViewDate();
+  return getWeekKey(d);
+}
+function changeTaskExecWeek(delta) {
+  taskExecWeekOffset += delta;
+  if (taskExecWeekOffset > 0) taskExecWeekOffset = 0;
+  renderOpTabBody();
 }
 
 // ---------- 任务执行 ----------
 function getTaskProgressKey(taskId, staffId) {
   const task = store.customTasks.find(t => t.id === taskId);
   if (!task) return '';
-  const periodKey = getPeriodKey(task.period);
-  return `${taskId}_${staffId}_${periodKey}`;
+  // v7.0: 使用任务执行视图的周偏移
+  const viewDate = getTaskExecViewDate ? getTaskExecViewDate() : new Date();
+  let periodKey;
+  if (task.period === 'day') {
+    periodKey = fmtDate(viewDate);
+  } else if (task.period === 'week') {
+    periodKey = getWeekKey(viewDate);
+  } else {
+    const d = viewDate;
+    periodKey = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+  }
+  return taskId + '_' + staffId + '_' + periodKey;
 }
 
 function renderTaskExec(body) {
+  var isCurrentWeek = taskExecWeekOffset === 0;
+  var weekLabel = getTaskExecWeekLabel();
+  var isReadOnly = taskExecWeekOffset < -1; // 更早的周只读
   let html = `
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-      <div style="font-size:13px;color:#666;">点击 +1 / -1 记录完成情况，按周期自动重置</div>
-      <button class="btn btn-primary btn-sm" onclick="addCustomTask()">+ 新增任务</button>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button class="btn btn-sm" onclick="changeTaskExecWeek(-1)">← 上一周</button>
+        <span style="font-size:14px;font-weight:600;color:#333;min-width:60px;text-align:center;">${weekLabel}</span>
+        <button class="btn btn-sm" onclick="changeTaskExecWeek(1)" ${isCurrentWeek ? 'disabled style="opacity:0.3;"' : ''}>下一周 →</button>
+        ${!isCurrentWeek ? '<button class="btn btn-sm btn-primary" onclick="changeTaskExecWeek(0); taskExecWeekOffset=0; renderOpTabBody();">回到本周</button>' : ''}
+        ${isReadOnly ? '<span class="badge badge-gray">只读模式</span>' : ''}
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="addCustomTask()" ${isReadOnly ? 'disabled style="opacity:0.3;"' : ''}>+ 新增任务</button>
     </div>
+    <div style="font-size:12px;color:#888;margin-bottom:12px;">💡 在此处新增任务即为向管家下达任务，默认任务已预设。点击 +1 / -1 记录完成情况，按周期自动重置。${isCurrentWeek ? '当前显示本周数据' : '当前查看历史周数据，可补录'}</div>
   `;
 
   store.customTasks.forEach(task => {
@@ -2216,7 +2463,7 @@ function renderTaskExec(body) {
             <tr><th>管家</th><th class="num">目标</th><th class="num">已完成</th><th class="num" style="width:200px;">进度</th><th class="center" style="width:120px;">操作</th></tr>
           </thead>
           <tbody>
-            ${store.staff.map(s => {
+            ${store.staff.filter(s => s.role !== 'repair').map(s => {
               const key = getTaskProgressKey(task.id, s.id);
               const done = store.taskProgress[key] || 0;
               const rate = pct(done, task.targetCount);
@@ -2230,8 +2477,8 @@ function renderTaskExec(body) {
                     <div class="progress-label"><span>${rate}%</span><span>${done}/${task.targetCount}</span></div>
                   </td>
                   <td class="center">
-                    <button class="btn-icon plus" onclick="incTask('${task.id}','${s.id}',1)">+1</button>
-                    <button class="btn-icon minus" onclick="incTask('${task.id}','${s.id}',-1)">-1</button>
+                    <button class="btn-icon plus" onclick="incTask('${task.id}','${s.id}',1)" ${isReadOnly ? 'disabled style="opacity:0.3;"' : ''}>+1</button>
+                    <button class="btn-icon minus" onclick="incTask('${task.id}','${s.id}',-1)" ${isReadOnly ? 'disabled style="opacity:0.3;"' : ''}>-1</button>
                   </td>
                 </tr>
               `;
@@ -2424,6 +2671,10 @@ function renderReminder(body) {
     { key: 'renew7d', icon: '🔄', color: 'orange', label: '近7天续租' }
   ];
 
+  // 确保 reminderItems 存在
+  if (!store.reminderItems) store.reminderItems = [];
+  var today = todayStr();
+
   let html = '<div class="reminder-grid">';
   items.forEach(it => {
     const data = store.reminders[it.key];
@@ -2440,8 +2691,35 @@ function renderReminder(body) {
     `;
   });
   html += '</div>';
+
+  // 提醒明细列表
+  html += '<div class="card" style="margin-top:16px;"><div class="card-header"><h3>📋 提醒明细</h3><span class="card-action" onclick="addReminderItem()">+ 新增提醒</span></div><div class="card-body" style="padding:0;">';
+  if (store.reminderItems.length === 0) {
+    html += '<div class="empty-state" style="padding:20px;"><div class="empty-icon">📝</div>暂无提醒明细，点击上方"+ 新增提醒"添加</div>';
+  } else {
+    html += '<div class="table-scroll-wrapper"><table class="data-table"><thead><tr><th>内容</th><th>类型</th><th>截止日期</th><th>状态</th><th>操作</th></tr></thead><tbody>';
+    store.reminderItems.forEach(function(item) {
+      var isDone = item.done === true;
+      var isOverdue = !isDone && item.deadline && item.deadline < today;
+      var daysUntil = item.deadline ? Math.ceil((new Date(item.deadline) - new Date(today)) / 86400000) : 999;
+      var isDueSoon = !isDone && !isOverdue && daysUntil <= 3;
+      var rowStyle = isDone ? 'background:#F0FFF4;' : (isOverdue ? 'background:#FFF5F5;' : (isDueSoon ? 'background:#FFFBF0;' : ''));
+      var statusBadge = isDone ? '<span class="badge badge-green">✅ 已完成</span>' : (isOverdue ? '<span class="badge badge-red">⏰ 已过期</span>' : (isDueSoon ? '<span class="badge badge-orange">⚡ 即将到期</span>' : '<span class="badge badge-gray">进行中</span>'));
+      var nameStyle = isDone ? 'text-decoration:line-through;color:#999;' : '';
+      html += '<tr style="' + rowStyle + '"><td style="' + nameStyle + '">' + item.name + '</td><td>' + (item.type || '-') + '</td><td>' + (item.deadline || '-') + '</td><td>' + statusBadge + '</td><td>';
+      if (!isDone) html += '<button class="btn btn-sm btn-primary" onclick="toggleReminderItemDone(\'' + item.id + '\')">完成</button> ';
+      else html += '<button class="btn btn-sm" onclick="toggleReminderItemDone(\'' + item.id + '\')">撤销</button> ';
+      html += '<button class="btn btn-sm" onclick="editReminderItem(\'' + item.id + '\')">编辑</button> ';
+      html += '<button class="btn btn-sm btn-danger" onclick="deleteReminderItem(\'' + item.id + '\')">删除</button>';
+      html += '</td></tr>';
+    });
+    html += '</tbody></table></div>';
+  }
+  html += '</div></div>';
+
   html += `<div style="margin-top:16px;padding:12px;background:#F7F8FA;border-radius:6px;font-size:12px;color:#888;">
-    💡 提醒数字由店长手动管理，点击 +1 / -1 增减计数。仅用于快速查看，不记录明细。
+    💡 提醒数字由店长手动管理，点击 +1 / -1 增减计数。明细列表支持设置截止日期和完成状态。
+    <br>🔴 红色=已过期 · 🟡 黄色=3天内到期 · 🟢 绿色=已完成
   </div>`;
 
   body.innerHTML = html;
@@ -3545,15 +3823,17 @@ function renderPerformance(body) {
   });
   // 签约目标得分（绝对值制）
   const signTargets = store.monthlySignTargets?.[monthKey] || store.signTargets || { base: 10, stretch: 15 };
-  const pw = store.perfWeights || { sales: 50, ops: 50, manager: 0 };
+  const pw = store.perfWeights || { sales: 50, ops: 50, kpi: 0 };
+  if (pw.manager !== undefined && pw.kpi === undefined) { pw.kpi = pw.manager; delete pw.manager; }
   // 迁移：如果旧数据有conversion权重，合入ops
   if (pw.conversion !== undefined) {
     pw.ops = (pw.ops || 0) + (pw.conversion || 0);
     delete pw.conversion;
   }
 
-  // 每个管家的综合绩效
-  const perfData = store.staff.map(s => {
+  // 每个管家的综合绩效（仅管家岗位）
+  const managerStaff = store.staff.filter(s => s.role !== 'repair');
+  const perfData = managerStaff.map(s => {
     let signScore;
     const signs = staffSigns[s.id];
     if (signs >= signTargets.stretch) {
@@ -3566,14 +3846,15 @@ function renderPerformance(body) {
     signScore = Math.round(signScore * 10) / 10;
     const daily = calcDailyCompositeScore(s.id, monthKey);
     const conv = calcConversionScore(s.id, monthKey);
-    const msRow = store.managerScores[s.id] || {};
-    const managerScore = msRow[monthKey] !== undefined ? msRow[monthKey] : 80;
     // 将转化得分按一定比例合入日常综合得分
     const opsComposite = (daily.composite + conv.conversionScore) / 2;
     const wSales = pw.sales / 100;
     const wOps = pw.ops / 100;
-    const wMgr = pw.manager / 100;
-    const finalScore = Math.round((signScore * wSales + opsComposite * wOps + managerScore * wMgr) * 10) / 10;
+    const wKpi = (pw.kpi || 0) / 100;
+    // v7.0: KPI板块自动赋分
+    const kpiResult = calcStaffKpiScore(s.id, monthKey);
+    const kpiScore = kpiResult.score !== null ? kpiResult.score : 0;
+    const finalScore = Math.round((signScore * wSales + opsComposite * wOps + kpiScore * wKpi) * 10) / 10;
     return {
       id: s.id,
       name: s.name,
@@ -3586,7 +3867,8 @@ function renderPerformance(body) {
       dailyComposite: daily.composite,
       conversionScore: conv.conversionScore,
       convDetail: conv,
-      managerScore,
+      kpiScore,
+      kpiBoards: kpiResult.boards,
       finalScore
     };
   }).sort((a, b) => b.finalScore - a.finalScore);
@@ -3613,14 +3895,14 @@ function renderPerformance(body) {
             <div class="weight-value" id="weightOps">${pw.ops}%</div>
           </div>
           <div class="weight-slider-item">
-            <label>店长打分权重 (%)</label>
-            <input type="range" min="0" max="100" value="${pw.manager}" oninput="updatePerfWeight('manager', this.value)">
-            <div class="weight-value" id="weightManager">${pw.manager}%</div>
+            <label>KPI板块权重 (%)</label>
+            <input type="range" min="0" max="100" value="${pw.kpi||0}" oninput="updatePerfWeight('kpi', this.value)">
+            <div class="weight-value" id="weightManager">${pw.kpi||0}%</div>
           </div>
         </div>
         <div style="margin-top:10px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-          <span style="font-size:13px;color:#666;">合计：<strong id="weightTotal" style="color:${pw.sales+pw.ops+pw.manager===100?'#27AE60':'#E74C3C'};">${pw.sales+pw.ops+pw.manager}%</strong></span>
-          <button class="btn btn-sm btn-primary" id="saveWeightBtn" onclick="savePerfWeights()" ${pw.sales+pw.ops+pw.manager!==100?'disabled style="opacity:0.5;"':''}>保存权重</button>
+          <span style="font-size:13px;color:#666;">合计：<strong id="weightTotal" style="color:${(pw.sales+pw.ops+(pw.kpi||0))===100?'#27AE60':'#E74C3C'};">${pw.sales+pw.ops+(pw.kpi||0)}%</strong></span>
+          <button class="btn btn-sm btn-primary" id="saveWeightBtn" onclick="savePerfWeights()" ${pw.sales+pw.ops+(pw.kpi||0)!==100?'disabled style="opacity:0.5;"':''}>保存权重</button>
           <span style="font-size:12px;color:#999;">签约目标：基础 ${signTargets.base} 单/月，卓越 ${signTargets.stretch} 单/月</span>
           <button class="btn btn-sm" onclick="editSignTargets()">🎯 设置当月目标</button>
           <span style="font-size:12px;color:#999;">（${monthKey} 月独立目标）</span>
@@ -3629,7 +3911,7 @@ function renderPerformance(body) {
     </div>
 
     <div style="margin-bottom:16px;padding:12px;background:#EBF3FC;border-radius:8px;font-size:13px;color:#2E6DA4;line-height:1.8;">
-      <strong>综合评分公式：</strong>月度签约得分 × ${pw.sales}% + 日常任务综合（含转化得分） × ${pw.ops}% + 店长打分 × ${pw.manager}%<br>
+      <strong>综合评分公式：</strong>月度签约得分 × ${pw.sales}% + 日常任务综合（含转化得分） × ${pw.ops}% + KPI板块得分 × ${(pw.kpi||0)}%<br>
       <strong>签约得分规则：</strong>签约数<基础目标(${signTargets.base})：得分=(签约数/基础目标)×60；基础≤签约<卓越(${signTargets.stretch})：得分=60+(签约-基础)/(卓越-基础)×40；≥卓越：100分<br>
       <strong>日常任务综合（含转化，2项等权）：</strong>日常综合得分 + 转化漏斗得分<br>
       <span style="font-size:12px;">* 渠道指标需在下方"渠道指标月度填报"中录入，未填报默认0分计入日常综合</span>
@@ -3659,7 +3941,7 @@ function renderPerformance(body) {
               <th class="num">签约得分 (${pw.sales}%)</th>
               <th class="num">日常综合 (${pw.ops}%)</th>
               <th class="num">转化得分</th>
-              <th class="num">店长打分 (${pw.manager}%)</th>
+              <th class="num">KPI板块 (${(pw.kpi||0)}%)</th>
               <th class="num">最终得分</th>
               <th class="center">操作</th>
             </tr>
@@ -3672,7 +3954,7 @@ function renderPerformance(body) {
                 <td class="num">${p.signScore}</td>
                 <td class="num">${p.dailyComposite.toFixed(1)}</td>
                 <td class="num" title="进→带:${p.convDetail.leadToVisitRate}% 带→签:${p.convDetail.visitToSignRate}% 进→签:${p.convDetail.leadToSignRate}%">${p.conversionScore.toFixed(1)}</td>
-                <td class="num"><input type="number" min="0" max="100" value="${p.managerScore}" style="width:60px;text-align:right;" onchange="saveManagerScore('${p.id}', this.value, '${monthKey}')"></td>
+                <td class="num" title="${(p.kpiBoards||[]).map(b=>b.name+':'+b.score).join(', ')}"><strong style="color:#8E44AD;">${p.kpiScore}</strong></td>
                 <td class="num"><strong>${p.finalScore}</strong></td>
                 <td class="center">
                   <button class="btn btn-sm btn-link" onclick="showPerfDetailV2('${p.id}')">明细</button>
@@ -3687,6 +3969,27 @@ function renderPerformance(body) {
 
     <!-- v6.0 全店漏斗已移至渠道数据Tab按管家维度展示 -->
 
+
+    <!-- v7.0 KPI月度数据填报 -->
+    <div class="card">
+      <div class="card-header">
+        <h3>📊 ${monthKey} KPI板块数据填报</h3>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button class="btn btn-sm" onclick="changeKpiDataMonth(-1)">← 上月</button>
+          <input type="month" class="form-control" style="width:140px;" value="\${kpiDataMonth}" onchange="setKpiDataMonth(this.value)">
+          <button class="btn btn-sm" onclick="changeKpiDataMonth(1)">下月 →</button>
+        </div>
+      </div>
+      <div class="card-body" id="kpiDataEntryArea"></div>
+    </div>
+
+    <!-- v7.0 KPI板块得分看板 -->
+    <div class="card">
+      <div class="card-header">
+        <h3>🏆 KPI板块得分看板（\${kpiDataMonth}）</h3>
+      </div>
+      <div class="card-body" id="kpiBoardOverview"></div>
+    </div>
     <div class="card">
       <div class="card-header">
         <h3>📋 正负向事件管理</h3>
@@ -3749,8 +4052,125 @@ function renderPerformance(body) {
   setTimeout(() => {
     renderEventRecordTable();
     renderChannelMetricsTable();
+    renderKpiDataEntry();
+    renderKpiBoardOverview();
   }, 10);
 }
+
+function renderKpiDataEntry() {
+  const container = document.getElementById('kpiDataEntryArea');
+  if (!container) return;
+  const monthKey = kpiDataMonth;
+  const boards = store.kpiBoards || [];
+  const monthData = store.kpiMonthlyData?.[monthKey] || {};
+  const manualMetrics = [];
+  boards.forEach(b => {
+    b.metrics.forEach(m => {
+      if (m.source === 'manual') manualMetrics.push({ ...m, boardName: b.name });
+    });
+  });
+  if (manualMetrics.length === 0) {
+    container.innerHTML = '<div class="empty-state">暂无手动填报指标</div>';
+    return;
+  }
+  let html = '<p style="font-size:12px;color:#666;margin-bottom:12px;">填报全店维度的实际值（auto类指标自动从系统数据聚合，无需手动填写）</p>';
+  html += '<div class="table-scroll-wrapper"><table class="data-table"><thead><tr><th>板块</th><th>指标</th><th>单位</th><th class="num">基础目标</th><th class="num">卓越目标</th><th class="num">实际值</th><th class="num">得分</th></tr></thead><tbody>';
+  manualMetrics.forEach(m => {
+    const actual = monthData[m.id];
+    const score = calcKpiMetricScore(m, actual);
+    html += '<tr><td>' + m.boardName + '</td><td>' + m.name + '</td><td>' + m.unit + '</td>';
+    html += '<td class="num">' + m.baseTarget + '</td><td class="num">' + m.stretchTarget + '</td>';
+    html += '<td class="num"><input type="number" class="form-control" style="width:90px;text-align:right;" data-metric="' + m.id + '" value="' + (actual !== undefined ? actual : '') + '" placeholder="-"></td>';
+    html += '<td class="num"><strong style="color:#4A90D9;">' + (score !== null ? score : '-') + '</strong></td></tr>';
+  });
+  // auto类指标
+  boards.forEach(b => {
+    b.metrics.forEach(m => {
+      if (m.source === 'auto') {
+        const actual = calcKpiAutoValue(m, monthKey);
+        const score = calcKpiMetricScore(m, actual);
+        html += '<tr style="background:#FAFAFA;"><td>' + b.name + '</td><td>' + m.name + ' <span class="badge badge-blue">自动</span></td><td>' + m.unit + '</td>';
+        html += '<td class="num">' + m.baseTarget + '</td><td class="num">' + m.stretchTarget + '</td>';
+        html += '<td class="num" style="color:#666;">' + (actual !== null ? actual : '-') + '</td>';
+        html += '<td class="num"><strong style="color:#4A90D9;">' + (score !== null ? score : '-') + '</strong></td></tr>';
+      }
+    });
+  });
+  html += '</tbody></table></div>';
+  html += '<div style="margin-top:12px;text-align:right;"><button class="btn btn-sm btn-primary" onclick="saveKpiMonthlyData()">💾 保存填报数据</button></div>';
+  container.innerHTML = html;
+}
+
+function saveKpiMonthlyData() {
+  const monthKey = kpiDataMonth;
+  if (!store.kpiMonthlyData) store.kpiMonthlyData = {};
+  if (!store.kpiMonthlyData[monthKey]) store.kpiMonthlyData[monthKey] = {};
+  var inputs = document.querySelectorAll('#kpiDataEntryArea input[data-metric]');
+  inputs.forEach(function(inp) {
+    var mid = inp.dataset.metric;
+    var val = inp.value.trim();
+    if (val === '') { delete store.kpiMonthlyData[monthKey][mid]; }
+    else { store.kpiMonthlyData[monthKey][mid] = parseFloat(val); }
+  });
+  saveStore();
+  renderKpiDataEntry();
+  renderKpiBoardOverview();
+  renderPage();
+  showToast('KPI数据已保存');
+}
+
+function renderKpiBoardOverview() {
+  var container = document.getElementById('kpiBoardOverview');
+  if (!container) return;
+  var monthKey = kpiDataMonth;
+  var boards = store.kpiBoards || [];
+  if (boards.length === 0) { container.innerHTML = '<div class="empty-state">暂未配置KPI板块</div>'; return; }
+  var html = '<div class="grid-2">';
+  boards.forEach(function(b) {
+    var bScore = calcKpiBoardScore(b, monthKey);
+    var monthData = store.kpiMonthlyData?.[monthKey] || {};
+    html += '<div style="border:1px solid #E8E8E8;border-radius:8px;padding:14px;">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">';
+    html += '<strong style="font-size:14px;">' + b.name + '</strong>';
+    html += '<span style="font-size:20px;font-weight:700;color:' + (bScore >= 80 ? '#27AE60' : bScore >= 60 ? '#F39C12' : '#E74C3C') + ';">' + bScore + '分</span></div>';
+    b.metrics.forEach(function(m) {
+      var mt = (store.kpiMonthlyTargets?.[monthKey] || {})[m.id];
+      var metric = mt ? Object.assign({}, m, {baseTarget: mt.baseTarget, stretchTarget: mt.stretchTarget}) : m;
+      var actual = m.source === 'auto' ? calcKpiAutoValue(m, monthKey) : monthData[m.id];
+      var score = calcKpiMetricScore(metric, actual);
+      html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:12px;border-bottom:1px solid #F5F5F5;">';
+      html += '<span>' + m.name + (m.source === 'auto' ? ' <span class="badge badge-blue" style="font-size:10px;">自动</span>' : '') + '</span>';
+      html += '<span style="color:#666;">' + (actual !== null && actual !== undefined ? actual + m.unit : '未填') + ' → <strong style="color:#4A90D9;">' + (score !== null ? score : '-') + '</strong></span></div>';
+    });
+    html += '</div>';
+  });
+  html += '</div>';
+  // 管家KPI得分汇总
+  html += '<div style="margin-top:16px;"><h4 style="font-size:14px;margin-bottom:8px;">管家KPI得分</h4>';
+  html += '<div class="table-scroll-wrapper"><table class="data-table"><thead><tr><th>管家</th><th>负责板块</th><th class="num">KPI得分</th></tr></thead><tbody>';
+  store.staff.filter(function(s) { return s.role !== 'repair'; }).forEach(function(s) {
+    var kr = calcStaffKpiScore(s.id, monthKey);
+    var boardNames = (kr.boards || []).map(function(b) { return b.name; }).join('、') || '未分配';
+    html += '<tr><td>' + s.name + '</td><td>' + boardNames + '</td>';
+    html += '<td class="num"><strong style="color:#8E44AD;">' + (kr.score !== null ? kr.score : '未配置') + '</strong></td></tr>';
+  });
+  html += '</tbody></table></div></div>';
+  container.innerHTML = html;
+}
+
+function changeKpiDataMonth(delta) {
+  var parts = kpiDataMonth.split('-');
+  var y = parseInt(parts[0]), m = parseInt(parts[1]);
+  var d = new Date(y, m - 1 + delta, 1);
+  kpiDataMonth = fmtMonth(d);
+  renderKpiDataEntry();
+  renderKpiBoardOverview();
+}
+
+function setKpiDataMonth(val) {
+  if (val) { kpiDataMonth = val; renderKpiDataEntry(); renderKpiBoardOverview(); }
+}
+
 
 function renderChannelMetricsTable() {
   const monthKey = perfMonth || fmtMonth(new Date());
@@ -4090,13 +4510,14 @@ function showPerfDetailV2(staffId) {
     signScore = (staffSigns[staffId] / signTargets.base) * 60;
   }
   signScore = Math.round(signScore * 10) / 10;
-  const _msRow = store.managerScores[staffId] || {};
-  const managerScore = _msRow[monthKey] !== undefined ? _msRow[monthKey] : 80;
   // 转化得分合入日常综合（与日常综合2项等权）
   const conv = calcConversionScore(staffId, monthKey);
   const opsComposite = Math.round(((daily.composite + conv.conversionScore) / 2) * 10) / 10;
-  const pw = store.perfWeights || { sales: 50, ops: 30, manager: 20 };
-  const finalScore = Math.round((signScore * pw.sales / 100 + opsComposite * pw.ops / 100 + managerScore * pw.manager / 100) * 10) / 10;
+  const pw = store.perfWeights || { sales: 50, ops: 30, kpi: 20 };
+  if (pw.manager !== undefined) { pw.kpi = pw.manager; delete pw.manager; }
+  const kpiResult = calcStaffKpiScore(staffId, monthKey);
+  const kpiScore = kpiResult.score !== null ? kpiResult.score : 0;
+  const finalScore = Math.round((signScore * pw.sales / 100 + opsComposite * pw.ops / 100 + kpiScore * (pw.kpi||0) / 100) * 10) / 10;
 
   const html = `
     <div style="margin-bottom:16px;padding:12px;background:#F5F7FA;border-radius:8px;">
@@ -4115,8 +4536,8 @@ function showPerfDetailV2(staffId) {
           <div style="font-size:16px;font-weight:600;color:#8E44AD;">${conv.conversionScore.toFixed(1)}</div>
         </div>
         <div style="padding:8px;background:#fff;border-radius:6px;">
-          <div style="color:#666;">店长打分 (${pw.manager}%)</div>
-          <div style="font-size:16px;font-weight:600;color:#F39C12;">${managerScore}</div>
+          <div style="color:#666;">KPI板块 (${(pw.kpi||0)}%)</div>
+          <div style="font-size:16px;font-weight:600;color:#8E44AD;">${kpiScore}</div>
         </div>
       </div>
       <div style="text-align:center;margin-top:10px;padding:8px;background:#E8F8F0;border-radius:6px;">
@@ -4387,7 +4808,20 @@ function renderSchedule(body) {
         onclick="setShift('${s.id}', ${d})"
         title="${s.name} ${d}日" style="font-size:11px;${shiftStyle}">${shiftLabel || ''}</td>`;
     }
-    html += `<td style="background:#F0F7FF;font-weight:500;">${restCount} 天</td></tr>`;
+    // 连续工作预警
+    var consecWarn = '';
+    if (isCurrentMonth) {
+      var maxConsec = 0, curConsec = 0;
+      for (var dd = 1; dd <= daysInMonth; dd++) {
+        var sh = staffData[dd] || '';
+        if (sh && sh !== 'rest') { curConsec++; maxConsec = Math.max(maxConsec, curConsec); }
+        else { curConsec = 0; }
+      }
+      if (maxConsec >= 6) {
+        consecWarn = '<span style="display:inline-block;margin-left:8px;background:#FFF3E0;color:#E65100;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500;">⚠️ 连续工作' + maxConsec + '天</span>';
+      }
+    }
+    html += '<td style="background:#F0F7FF;font-weight:500;">' + restCount + ' 天' + consecWarn + '</td></tr>';
   });
 
   // 底部统计行
@@ -6167,10 +6601,15 @@ function renderSettings(area) {
               <span class="drag-handle">⋮⋮</span>
               <div class="item-content">
                 <strong>${s.name}</strong>
+                <span class="badge ${s.role === 'repair' ? 'badge-orange' : 'badge-blue'}">${s.role === 'repair' ? '维修' : '管家'}</span>
                 ${s.floors ? ` · 责任楼层：${s.floors}` : ''}
                 ${s.hireDate ? ` · 入职：${s.hireDate}` : ''}
               </div>
               <div class="item-actions">
+                <select class="form-control" style="width:80px;display:inline-block;padding:4px 6px;font-size:12px;" onchange="setStaffRole('${s.id}', this.value)">
+                  <option value="manager" ${s.role !== 'repair' ? 'selected' : ''}>管家</option>
+                  <option value="repair" ${s.role === 'repair' ? 'selected' : ''}>维修</option>
+                </select>
                 <button class="btn btn-sm" onclick="editStaff('${s.id}')">编辑</button>
                 <button class="btn btn-sm btn-danger" onclick="deleteStaff('${s.id}')">删除</button>
               </div>
@@ -6180,6 +6619,42 @@ function renderSettings(area) {
       </div>
     </div>
 
+
+    <!-- v7.0 岗位管理说明 -->
+    <div class="card">
+      <div class="card-header"><h3>📋 岗位管理说明</h3></div>
+      <div class="card-body">
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;font-size:13px;">
+          <div style="padding:12px;background:#EBF3FC;border-radius:8px;">
+            <strong style="color:#4A90D9;">🏠 管家岗位</strong>
+            <p style="color:#666;margin-top:6px;font-size:12px;line-height:1.8;">考核内容：签约得分 + 日常任务综合 + KPI板块得分<br>适用于负责签约、客户管理、日常运营的管家</p>
+          </div>
+          <div style="padding:12px;background:#FEF5E7;border-radius:8px;">
+            <strong style="color:#F39C12;">🔧 维修岗位</strong>
+            <p style="color:#666;margin-top:6px;font-size:12px;line-height:1.8;">考核内容：仅维修考核模块（维修单量、受理时长、关单时长、好评率等）<br>不参与签约得分和KPI板块得分考核</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- v7.0 KPI板块管理 -->
+    <div class="card">
+      <div class="card-header">
+        <h3>🎯 KPI板块管理</h3>
+        <button class="btn btn-sm btn-primary" onclick="addKpiBoard()">+ 新增板块</button>
+      </div>
+      <div class="card-body" id="kpiBoardSettings">
+        <p style="font-size:13px;color:#666;margin-bottom:12px;">定义门店KPI考核板块和指标。每个指标设置基础目标和卓越目标，系统按公式自动赋分。</p>
+      </div>
+    </div>
+
+    <!-- v7.0 管家板块分工 -->
+    <div class="card">
+      <div class="card-header"><h3>👥 管家板块分工</h3></div>
+      <div class="card-body" id="staffBoardAssignmentSettings">
+        <p style="font-size:13px;color:#666;margin-bottom:12px;">为每个管家分配负责的KPI板块。管家的KPI得分 = 其负责板块得分的平均值。</p>
+      </div>
+    </div>
     <div class="card">
       <div class="card-header">
         <h3>📣 渠道管理</h3>
@@ -6292,6 +6767,8 @@ function renderSettings(area) {
 
   area.innerHTML = html;
   setupDragLists();
+  renderKpiBoardSettings();
+  renderStaffBoardAssignment();
 }
 
 function saveSetting(path, value) {
@@ -6593,6 +7070,13 @@ function addStaff() {
         <input type="date" class="form-control" id="stHire">
       </div>
     </div>
+    <div class="form-group">
+      <label>岗位</label>
+      <select class="form-control" id="stRole">
+        <option value="manager">管家</option>
+        <option value="repair">维修</option>
+      </select>
+    </div>
   `;
   showModal('新增管家', html, () => {
     const name = $('#stName').value.trim();
@@ -6601,7 +7085,8 @@ function addStaff() {
       id: uid(),
       name,
       floors: $('#stFloors').value.trim(),
-      hireDate: $('#stHire').value
+      hireDate: $('#stHire').value,
+      role: $('#stRole') ? $('#stRole').value : 'manager'
     });
     saveStore();
     renderPage();
@@ -6626,11 +7111,19 @@ function editStaff(id) {
         <input type="date" class="form-control" id="stHire" value="${s.hireDate || ''}">
       </div>
     </div>
+    <div class="form-group">
+      <label>岗位</label>
+      <select class="form-control" id="stRole">
+        <option value="manager" ${(s.role||'manager') !== 'repair' ? 'selected' : ''}>管家</option>
+        <option value="repair" ${s.role === 'repair' ? 'selected' : ''}>维修</option>
+      </select>
+    </div>
   `;
   showModal('编辑管家', html, () => {
     s.name = $('#stName').value.trim() || s.name;
     s.floors = $('#stFloors').value.trim();
     s.hireDate = $('#stHire').value;
+    if ($('#stRole')) s.role = $('#stRole').value;
     saveStore();
     renderPage();
   });
@@ -7191,14 +7684,16 @@ window.pasteSchedule = pasteSchedule;
 
 // v6.0 绩效权重操作
 function updatePerfWeight(key, val) {
-  if (!store.perfWeights) store.perfWeights = { sales: 50, ops: 50, manager: 0 };
+  if (!store.perfWeights) store.perfWeights = { sales: 50, ops: 50, kpi: 0 };
+  if (store.perfWeights.manager !== undefined && store.perfWeights.kpi === undefined) { store.perfWeights.kpi = store.perfWeights.manager; delete store.perfWeights.manager; }
   // 迁移：如果旧数据有conversion权重，合入ops
   if (store.perfWeights.conversion !== undefined) {
     store.perfWeights.ops = (store.perfWeights.ops || 0) + (store.perfWeights.conversion || 0);
     delete store.perfWeights.conversion;
   }
+  if (store.perfWeights.manager !== undefined && store.perfWeights.kpi === undefined) { store.perfWeights.kpi = store.perfWeights.manager; delete store.perfWeights.manager; }
   store.perfWeights[key] = parseInt(val) || 0;
-  var total = store.perfWeights.sales + store.perfWeights.ops + store.perfWeights.manager;
+  var total = store.perfWeights.sales + store.perfWeights.ops + store.perfWeights.kpi;
   var ws = document.getElementById('weightSales');
   var wo = document.getElementById('weightOps');
   var wm = document.getElementById('weightManager');
@@ -7206,7 +7701,7 @@ function updatePerfWeight(key, val) {
   var btn = document.getElementById('saveWeightBtn');
   if (ws) ws.textContent = store.perfWeights.sales + '%';
   if (wo) wo.textContent = store.perfWeights.ops + '%';
-  if (wm) wm.textContent = store.perfWeights.manager + '%';
+  if (wm) wm.textContent = store.perfWeights.kpi + '%';
   if (wt) {
     wt.textContent = total + '%';
     wt.style.color = total === 100 ? '#27AE60' : '#E74C3C';
@@ -7219,7 +7714,7 @@ function updatePerfWeight(key, val) {
 
 function savePerfWeights() {
   if (!store.perfWeights) return;
-  var total = store.perfWeights.sales + store.perfWeights.ops + store.perfWeights.manager;
+  var total = store.perfWeights.sales + store.perfWeights.ops + (store.perfWeights.kpi || 0);
   if (total !== 100) { showToast('权重合计必须等于100%'); return; }
   saveStore();
   showToast('权重已保存');
@@ -7254,12 +7749,14 @@ function editSignTargets() {
 // v6.2 导出考核标准
 // ============================================================
 function exportPerformanceStandards() {
-  const pw = store.perfWeights || { sales: 40, ops: 50, manager: 10 };
+  const pw = store.perfWeights || { sales: 40, ops: 50, kpi: 10 };
+  if (pw.manager !== undefined) { pw.kpi = pw.manager; delete pw.manager; }
   const monthKey = perfMonth || fmtMonth(new Date());
   const signTargets = store.monthlySignTargets?.[monthKey] || store.signTargets || { base: 10, stretch: 15 };
   const events = store.posNegEvents || [];
   const tasks = store.customTasks || [];
   const scoring = store.scoringSteps || {};
+  const boards = store.kpiBoards || [];
 
   let text = '【管家绩效考核标准】\n';
   text += '━━━━━━━━━━━━━━━━━━━━━\n\n';
@@ -7268,7 +7765,7 @@ function exportPerformanceStandards() {
   text += '一、版块占比权重\n';
   text += `  销售签约：${pw.sales}%\n`;
   text += `  日常运营（日常+转化等权）：${pw.ops}%\n`;
-  text += `  店长打分：${pw.manager}%\n`;
+  text += `  KPI板块得分：${pw.kpi||0}%\n`;
   text += '  合计：100%\n\n';
 
   // 签约目标
@@ -7322,8 +7819,18 @@ function exportPerformanceStandards() {
 
   // 管家绩效得分汇总
   text += '六、管家绩效得分汇总公式\n';
-  text += `  最终得分 = 签约得分 × ${pw.sales}% + 日常综合 × ${pw.ops}% + 店长打分 × ${pw.manager}%\n`;
+  text += `  最终得分 = 签约得分 × ${pw.sales}% + 日常综合 × ${pw.ops}% + KPI板块得分 × ${(pw.kpi||0)}%\n`;
   text += '  日常综合 =（日常任务得分 + 渠道综合得分 + 转化漏斗得分 + 事件净分）/ 有效项数\n';
+  text += '  KPI板块得分 = 该管家负责板块的得分平均值（按板块分工自动计算）\n';
+  if (boards.length > 0) {
+    text += '\n七、KPI板块定义\n';
+    boards.forEach(b => {
+      text += `  ${b.name}板块：\n`;
+      (b.metrics || []).forEach(m => {
+        text += `    • ${m.name}（${m.unit}）基础目标:${m.baseTarget} 卓越目标:${m.stretchTarget} ${m.isNegative?'(反向)':'(正向)'} [${m.source==='auto'?'自动':'手动'}]\n`;
+      });
+    });
+  }
 
   navigator.clipboard.writeText(text).then(() => {
     showToast('已复制考核标准，可粘贴发送给管家');
@@ -7352,13 +7859,15 @@ function copyPerformanceRanking() {
   });
 
   const signTargets = store.monthlySignTargets?.[monthKey] || store.signTargets || { base: 10, stretch: 15 };
-  const pw = store.perfWeights || { sales: 50, ops: 50, manager: 0 };
+  const pw = store.perfWeights || { sales: 50, ops: 50, kpi: 0 };
   if (pw.conversion !== undefined) {
     pw.ops = (pw.ops || 0) + (pw.conversion || 0);
     delete pw.conversion;
   }
+  if (pw.manager !== undefined) { pw.kpi = pw.manager; delete pw.manager; }
 
-  const perfData = store.staff.map(s => {
+  const managerStaff = store.staff.filter(s => s.role !== 'repair');
+  const perfData = managerStaff.map(s => {
     let signScore;
     const signs = staffSigns[s.id];
     if (signs >= signTargets.stretch) {
@@ -7371,19 +7880,19 @@ function copyPerformanceRanking() {
     signScore = Math.round(signScore * 10) / 10;
     const daily = calcDailyCompositeScore(s.id, monthKey);
     const conv = calcConversionScore(s.id, monthKey);
-    const msRow = store.managerScores[s.id] || {};
-    const managerScore = msRow[monthKey] !== undefined ? msRow[monthKey] : 80;
+    const kpiResult = calcStaffKpiScore(s.id, monthKey);
+    const kpiScore = kpiResult.score !== null ? kpiResult.score : 0;
     const opsComposite = (daily.composite + conv.conversionScore) / 2;
     const wSales = pw.sales / 100;
     const wOps = pw.ops / 100;
-    const wMgr = pw.manager / 100;
-    const finalScore = Math.round((signScore * wSales + opsComposite * wOps + managerScore * wMgr) * 10) / 10;
+    const wKpi = (pw.kpi || 0) / 100;
+    const finalScore = Math.round((signScore * wSales + opsComposite * wOps + kpiScore * wKpi) * 10) / 10;
     return {
       name: s.name,
       signScore,
       dailyScore: Math.round(daily.composite * 10) / 10,
       convScore: Math.round(conv.conversionScore * 10) / 10,
-      managerScore,
+      kpiScore,
       finalScore
     };
   }).sort((a, b) => b.finalScore - a.finalScore);
@@ -7393,7 +7902,7 @@ function copyPerformanceRanking() {
   text += '━━━━━━━━━━━━━━━━━━━━━\n';
   perfData.forEach((p, i) => {
     const medal = medals[i] || `${i + 1}.`;
-    text += `${medal} ${p.name} | 最终得分: ${p.finalScore} | 签约:${p.signScore} 日常:${p.dailyScore} 转化:${p.convScore} 店长:${p.managerScore}\n`;
+    text += `${medal} ${p.name} | 最终得分: ${p.finalScore} | 签约:${p.signScore} 日常:${p.dailyScore} 转化:${p.convScore} KPI:${p.kpiScore}\n`;
   });
 
   navigator.clipboard.writeText(text).then(() => {
@@ -7466,8 +7975,13 @@ function renderRepairAssessment(body) {
   const monthlyData = store.repairMonthlyData?.[monthKey] || {};
   const events = store.repairPosNegEvents || [];
 
-  // 计算每位维修管家的得分
-  const repairData = store.staff.map(s => {
+  // 计算每位维修管家的得分（仅维修岗位）
+  const repairStaff = store.staff.filter(s => s.role === 'repair');
+  if (repairStaff.length === 0) {
+    body.innerHTML = '<div class="card"><div class="card-body"><div class="empty-state"><div class="empty-icon">🔧</div>暂无维修岗位管家<br><span style="font-size:12px;color:#999;">请在设置中为管家分配"维修"岗位</span></div></div></div>';
+    return;
+  }
+  const repairData = repairStaff.map(s => {
     const data = monthlyData[s.id] || {};
     const repairCountScore = calcRepairStepScore(data.repairCount, steps.repairCount);
     const acceptTimeScore = calcRepairStepScore(data.acceptTime, steps.acceptTime);
@@ -7590,7 +8104,7 @@ function renderRepairAssessment(body) {
             </tr>
           </thead>
           <tbody>
-            ${store.staff.map(s => {
+            ${repairStaff.map(s => {
               const d = monthlyData[s.id] || {};
               return `
               <tr>
@@ -7748,11 +8262,12 @@ function renderRepairEventRecords() {
   });
   html += '<th class="center">净分合计</th></tr></thead><tbody>';
 
-  store.staff.forEach(s => {
-    html += `<tr><td>${s.name}</td>`;
+  var repairStaffForEvents = store.staff.filter(function(s) { return s.role === 'repair'; });
+  repairStaffForEvents.forEach(function(s) {
+    html += '<tr><td>' + s.name + '</td>';
     let total = 0;
-    events.forEach(e => {
-      const key = `${s.id}_${monthKey}_${e.id}`;
+    events.forEach(function(e) {
+      const key = s.id + '_' + monthKey + '_' + e.id;
       const rec = records[key] || { plus: 0, minus: 0 };
       const net = rec.plus - rec.minus;
       total += net;
@@ -8166,6 +8681,1140 @@ window.deleteRepairPosNegEvent = deleteRepairPosNegEvent;
 window.copyRepairRanking = copyRepairRanking;
 window.openRepairScoringConfig = openRepairScoringConfig;
 
+
+// ====== v7.0 KPI板块设置函数 ======
+function renderKpiBoardSettings() {
+  var container = document.getElementById('kpiBoardSettings');
+  if (!container) return;
+  var boards = store.kpiBoards || [];
+  var descEl = container.querySelector('p');
+  var html = descEl ? descEl.outerHTML : '';
+  boards.forEach(function(b) {
+    html += '<div style="border:1px solid #E8E8E8;border-radius:8px;padding:14px;margin-bottom:12px;">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">';
+    html += '<strong style="font-size:14px;">' + b.name + '</strong>';
+    html += '<div><button class="btn btn-sm" onclick="editKpiBoard(\'' + b.id + '\')">编辑</button> ';
+    html += '<button class="btn btn-sm" onclick="addKpiMetric(\'' + b.id + '\')">+ 指标</button> ';
+    html += '<button class="btn btn-sm btn-link danger" onclick="deleteKpiBoard(\'' + b.id + '\')">删除</button></div></div>';
+    if (b.metrics && b.metrics.length > 0) {
+      html += '<table class="data-table" style="font-size:12px;"><thead><tr><th>指标</th><th>单位</th><th class="num">基础目标</th><th class="num">卓越目标</th><th>来源</th><th>方向</th><th class="center">操作</th></tr></thead><tbody>';
+      b.metrics.forEach(function(m) {
+        html += '<tr><td>' + m.name + '</td><td>' + m.unit + '</td>';
+        html += '<td class="num">' + m.baseTarget + '</td><td class="num">' + m.stretchTarget + '</td>';
+        html += '<td><span class="badge ' + (m.source === 'auto' ? 'badge-green' : 'badge-gray') + '">' + (m.source === 'auto' ? '自动' : '手动') + '</span></td>';
+        html += '<td>' + (m.isNegative ? '反向' : '正向') + '</td>';
+        html += '<td class="center"><button class="btn btn-sm" onclick="editKpiMetric(\'' + b.id + '\',\'' + m.id + '\')">编辑</button> ';
+        html += '<button class="btn btn-sm btn-link danger" onclick="deleteKpiMetric(\'' + b.id + '\',\'' + m.id + '\')">删除</button></td></tr>';
+      });
+      html += '</tbody></table>';
+    } else {
+      html += '<div style="color:#999;font-size:12px;">暂无指标</div>';
+    }
+    html += '</div>';
+  });
+  container.innerHTML = html;
+}
+
+function renderStaffBoardAssignment() {
+  var container = document.getElementById('staffBoardAssignmentSettings');
+  if (!container) return;
+  var boards = store.kpiBoards || [];
+  var assignment = store.staffBoardAssignment || {};
+  var descEl = container.querySelector('p');
+  var html = descEl ? descEl.outerHTML : '';
+  if (boards.length === 0) {
+    html += '<div style="color:#999;font-size:13px;">请先配置KPI板块</div>';
+  } else {
+    html += '<div class="table-scroll-wrapper"><table class="data-table"><thead><tr><th>管家</th>';
+    boards.forEach(function(b) { html += '<th class="center">' + b.name + '</th>'; });
+    html += '</tr></thead><tbody>';
+    store.staff.forEach(function(s) {
+      var assigned = assignment[s.id] || [];
+      html += '<tr><td>' + s.name + ' <span class="badge ' + (s.role === 'repair' ? 'badge-orange' : 'badge-blue') + '">' + (s.role === 'repair' ? '维修' : '管家') + '</span></td>';
+      boards.forEach(function(b) {
+        var checked = assigned.indexOf(b.id) !== -1;
+        html += '<td class="center"><input type="checkbox" ' + (checked ? 'checked' : '') + ' onchange="toggleStaffBoard(\'' + s.id + '\',\'' + b.id + '\', this.checked)"></td>';
+      });
+      html += '</tr>';
+    });
+    html += '</tbody></table></div>';
+  }
+  container.innerHTML = html;
+}
+
+function toggleStaffBoard(staffId, boardId, checked) {
+  if (!store.staffBoardAssignment) store.staffBoardAssignment = {};
+  if (!store.staffBoardAssignment[staffId]) store.staffBoardAssignment[staffId] = [];
+  var arr = store.staffBoardAssignment[staffId];
+  if (checked && arr.indexOf(boardId) === -1) arr.push(boardId);
+  if (!checked) store.staffBoardAssignment[staffId] = arr.filter(function(x) { return x !== boardId; });
+  saveStore();
+}
+
+function setStaffRole(staffId, role) {
+  var s = store.staff.find(function(x) { return x.id === staffId; });
+  if (s) { s.role = role; saveStore(); showToast('岗位已更新'); }
+}
+
+function addKpiBoard() {
+  var html = '<div class="form-group"><label>板块名称</label><input type="text" class="form-control" id="kbName" placeholder="如：销售、服务"></div>';
+  showModal('新增KPI板块', html, function() {
+    var name = document.getElementById('kbName').value.trim();
+    if (!name) { showToast('请输入名称'); return false; }
+    if (!store.kpiBoards) store.kpiBoards = [];
+    store.kpiBoards.push({ id: 'kb' + Date.now(), name: name, metrics: [] });
+    saveStore();
+    renderKpiBoardSettings();
+    renderStaffBoardAssignment();
+    showToast('板块已添加');
+  });
+}
+
+function editKpiBoard(boardId) {
+  var b = (store.kpiBoards || []).find(function(x) { return x.id === boardId; });
+  if (!b) return;
+  var html = '<div class="form-group"><label>板块名称</label><input type="text" class="form-control" id="kbName" value="' + b.name + '"></div>';
+  showModal('编辑板块', html, function() {
+    b.name = document.getElementById('kbName').value.trim() || b.name;
+    saveStore();
+    renderKpiBoardSettings();
+    renderStaffBoardAssignment();
+  });
+}
+
+function deleteKpiBoard(boardId) {
+  if (!confirm('确定删除该板块吗？相关分工和数据会保留。')) return;
+  store.kpiBoards = store.kpiBoards.filter(function(x) { return x.id !== boardId; });
+  // 清理分工
+  Object.keys(store.staffBoardAssignment || {}).forEach(function(sid) {
+    store.staffBoardAssignment[sid] = store.staffBoardAssignment[sid].filter(function(bid) { return bid !== boardId; });
+  });
+  saveStore();
+  renderKpiBoardSettings();
+  renderStaffBoardAssignment();
+  showToast('板块已删除');
+}
+
+function addKpiMetric(boardId) {
+  var b = (store.kpiBoards || []).find(function(x) { return x.id === boardId; });
+  if (!b) return;
+  var html = '<div class="form-group"><label>指标名称</label><input type="text" class="form-control" id="kmName"></div>';
+  html += '<div class="form-row"><div class="form-group"><label>单位</label><input type="text" class="form-control" id="kmUnit" value="%"></div>';
+  html += '<div class="form-group"><label>数据来源</label><select class="form-control" id="kmSource"><option value="manual">手动填报</option><option value="auto">自动聚合</option></select></div></div>';
+  html += '<div class="form-row"><div class="form-group"><label>基础目标</label><input type="number" class="form-control" id="kmBase" value="80"></div>';
+  html += '<div class="form-group"><label>卓越目标</label><input type="number" class="form-control" id="kmStretch" value="100"></div></div>';
+  html += '<div class="form-row"><div class="form-group"><label>方向</label><select class="form-control" id="kmDir"><option value="positive">正向（越高越好）</option><option value="negative">反向（越低越好）</option></select></div></div>';
+  showModal('新增指标', html, function() {
+    var name = document.getElementById('kmName').value.trim();
+    if (!name) { showToast('请输入指标名称'); return false; }
+    if (!b.metrics) b.metrics = [];
+    b.metrics.push({
+      id: 'km' + Date.now(),
+      name: name,
+      unit: document.getElementById('kmUnit').value || '%',
+      baseTarget: parseFloat(document.getElementById('kmBase').value) || 80,
+      stretchTarget: parseFloat(document.getElementById('kmStretch').value) || 100,
+      source: document.getElementById('kmSource').value || 'manual',
+      baseScore: 60,
+      stretchScore: 100,
+      isNegative: document.getElementById('kmDir').value === 'negative'
+    });
+    saveStore();
+    renderKpiBoardSettings();
+    showToast('指标已添加');
+  });
+}
+
+function editKpiMetric(boardId, metricId) {
+  var b = (store.kpiBoards || []).find(function(x) { return x.id === boardId; });
+  if (!b) return;
+  var m = b.metrics.find(function(x) { return x.id === metricId; });
+  if (!m) return;
+  var html = '<div class="form-group"><label>指标名称</label><input type="text" class="form-control" id="kmName" value="' + m.name + '"></div>';
+  html += '<div class="form-row"><div class="form-group"><label>单位</label><input type="text" class="form-control" id="kmUnit" value="' + m.unit + '"></div>';
+  html += '<div class="form-group"><label>数据来源</label><select class="form-control" id="kmSource"><option value="manual"' + (m.source !== 'auto' ? ' selected' : '') + '>手动</option><option value="auto"' + (m.source === 'auto' ? ' selected' : '') + '>自动</option></select></div></div>';
+  html += '<div class="form-row"><div class="form-group"><label>基础目标</label><input type="number" class="form-control" id="kmBase" value="' + m.baseTarget + '"></div>';
+  html += '<div class="form-group"><label>卓越目标</label><input type="number" class="form-control" id="kmStretch" value="' + m.stretchTarget + '"></div></div>';
+  html += '<div class="form-row"><div class="form-group"><label>方向</label><select class="form-control" id="kmDir"><option value="positive"' + (!m.isNegative ? ' selected' : '') + '>正向</option><option value="negative"' + (m.isNegative ? ' selected' : '') + '>反向</option></select></div></div>';
+  showModal('编辑指标', html, function() {
+    m.name = document.getElementById('kmName').value.trim() || m.name;
+    m.unit = document.getElementById('kmUnit').value || m.unit;
+    m.source = document.getElementById('kmSource').value;
+    m.baseTarget = parseFloat(document.getElementById('kmBase').value) || m.baseTarget;
+    m.stretchTarget = parseFloat(document.getElementById('kmStretch').value) || m.stretchTarget;
+    m.isNegative = document.getElementById('kmDir').value === 'negative';
+    saveStore();
+    renderKpiBoardSettings();
+  });
+}
+
+function deleteKpiMetric(boardId, metricId) {
+  if (!confirm('确定删除该指标吗？')) return;
+  var b = (store.kpiBoards || []).find(function(x) { return x.id === boardId; });
+  if (!b) return;
+  b.metrics = b.metrics.filter(function(x) { return x.id !== metricId; });
+  saveStore();
+  renderKpiBoardSettings();
+  showToast('指标已删除');
+}
+
+
+
+// ============================================================
+// v7.0 第二批功能 - 趋势箭头辅助函数
+// ============================================================
+function getTrendArrow(metric) {
+  var keys = Object.keys(store.dailyData || {}).sort();
+  if (keys.length < 2) return '<span style="color:#999;font-size:12px;">→</span>';
+  var today = todayStr();
+  if (metric === 'occupancy') {
+    // Compare last two days with data
+    var last2 = keys.slice(-2);
+    var d1 = store.dailyData[last2[0]], d2 = store.dailyData[last2[1]];
+    var occ1 = calcOccupancyAt(last2[0]), occ2 = calcOccupancyAt(last2[1]);
+    if (occ2 > occ1) return '<span style="color:#27AE60;font-size:14px;">↑</span>';
+    if (occ2 < occ1) return '<span style="color:#E74C3C;font-size:14px;">↓</span>';
+    return '<span style="color:#999;font-size:14px;">→</span>';
+  }
+  if (metric === 'weekSign') {
+    // Compare last 7 days new sign total vs previous 7 days
+    var total1 = 0, total2 = 0;
+    var recent7 = keys.slice(-7);
+    var prev7 = keys.slice(-14, -7);
+    recent7.forEach(function(k) { total2 += (store.dailyData[k].newSign || 0); });
+    prev7.forEach(function(k) { total1 += (store.dailyData[k].newSign || 0); });
+    if (prev7.length === 0) return '<span style="color:#999;font-size:12px;">→</span>';
+    if (total2 > total1) return '<span style="color:#27AE60;font-size:14px;">↑</span>';
+    if (total2 < total1) return '<span style="color:#E74C3C;font-size:14px;">↓</span>';
+    return '<span style="color:#999;font-size:14px;">→</span>';
+  }
+  return '';
+}
+
+function calcOccupancyAt(dateStr) {
+  var data = store.dailyData[dateStr];
+  if (!data) return 0;
+  // Sum buildings from dailyData
+  var totalRooms = 0;
+  store.buildings.forEach(function(b) { totalRooms += b.totalRooms; });
+  var rented = store.initialRentedTotal || 0;
+  // Sum all netAdd up to this date
+  var keys = Object.keys(store.dailyData).sort();
+  var netTotal = 0;
+  keys.forEach(function(k) {
+    if (k <= dateStr) {
+      netTotal += (store.dailyData[k].netAdd || 0);
+    }
+  });
+  rented += netTotal;
+  if (totalRooms === 0) return 0;
+  return Math.round(rented / totalRooms * 100);
+}
+
+// ============================================================
+// v7.0 第二批功能 - 提醒明细 CRUD
+// ============================================================
+function addReminderItem() {
+  var html = '<div class="form-group"><label>提醒内容</label><input type="text" class="form-control" id="riName" placeholder="如：催缴3栋201租金"></div>';
+  html += '<div class="form-row"><div class="form-group"><label>类型</label><select class="form-control" id="riType"><option>催缴</option><option>退款</option><option>投诉</option><option>续租</option><option>维修</option><option>其他</option></select></div>';
+  html += '<div class="form-group"><label>截止日期</label><input type="date" class="form-control" id="riDeadline"></div></div>';
+  showModal('新增提醒', html, function() {
+    var name = document.getElementById('riName').value.trim();
+    if (!name) { showToast('请输入提醒内容'); return false; }
+    store.reminderItems.push({
+      id: 'ri_' + Date.now(),
+      name: name,
+      type: document.getElementById('riType').value,
+      deadline: document.getElementById('riDeadline').value,
+      done: false,
+      createdAt: todayStr()
+    });
+    saveStore();
+    renderOpTabBody();
+    showToast('提醒已添加');
+  });
+}
+
+function editReminderItem(id) {
+  var item = store.reminderItems.find(function(x) { return x.id === id; });
+  if (!item) return;
+  var html = '<div class="form-group"><label>提醒内容</label><input type="text" class="form-control" id="riName" value="' + item.name + '"></div>';
+  html += '<div class="form-row"><div class="form-group"><label>类型</label><select class="form-control" id="riType"><option>催缴</option><option>退款</option><option>投诉</option><option>续租</option><option>维修</option><option>其他</option></select></div>';
+  html += '<div class="form-group"><label>截止日期</label><input type="date" class="form-control" id="riDeadline" value="' + (item.deadline || '') + '"></div></div>';
+  // Set selected
+  setTimeout(function() { document.getElementById('riType').value = item.type || '其他'; }, 50);
+  showModal('编辑提醒', html, function() {
+    item.name = document.getElementById('riName').value.trim() || item.name;
+    item.type = document.getElementById('riType').value;
+    item.deadline = document.getElementById('riDeadline').value;
+    saveStore();
+    renderOpTabBody();
+  });
+}
+
+function deleteReminderItem(id) {
+  if (!confirm('确定删除此提醒？')) return;
+  store.reminderItems = store.reminderItems.filter(function(x) { return x.id !== id; });
+  saveStore();
+  renderOpTabBody();
+  showToast('已删除');
+}
+
+function toggleReminderItemDone(id) {
+  var item = store.reminderItems.find(function(x) { return x.id === id; });
+  if (!item) return;
+  item.done = !item.done;
+  saveStore();
+  renderOpTabBody();
+}
+
+// ============================================================
+// v7.0 第三批功能 - 数据看板（替代原数据复盘）
+// ============================================================
+var dataReviewSubTab = 'today'; // today / week / month
+
+function renderDataReview(body) {
+  var html = '<div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">';
+  ['today', 'week', 'month'].forEach(function(t) {
+    var labels = { today: '📅 今日概览', week: '📊 本周汇总', month: '📈 本月汇总' };
+    var active = dataReviewSubTab === t ? 'background:#4f46e5;color:#fff;' : 'background:#f3f4f6;color:#374151;';
+    html += '<button class="btn" style="' + active + 'border:1px solid #e5e7eb;padding:6px 16px;border-radius:8px;cursor:pointer;font-size:13px;" onclick="switchDataReviewTab(\'' + t + '\')">' + labels[t] + '</button>';
+  });
+  html += '</div>';
+  html += '<div id="dataReviewContent">';
+  if (dataReviewSubTab === 'today') html += buildTodayOverview();
+  else if (dataReviewSubTab === 'week') html += buildWeekSummary();
+  else html += buildMonthSummary();
+  html += '</div>';
+  html += '<div style="margin-top:16px;text-align:center;">';
+  html += '<button class="btn btn-primary" onclick="copyAllDataReview()" style="padding:8px 24px;border-radius:8px;">📋 一键复制全部</button>';
+  html += '</div>';
+  body.innerHTML = html;
+}
+
+function switchDataReviewTab(tab) {
+  dataReviewSubTab = tab;
+  renderOpTabBody();
+}
+
+function getTodayData() {
+  var today = todayStr();
+  var d = store.dailyData[today];
+  if (!d) return { newSign: 0, checkOut: 0, leads: 0, showings: 0, occupancy: 0, date: today };
+  var totalRooms = 0;
+  (store.buildings || []).forEach(function(b) { totalRooms += (b.totalRooms || 0); });
+  var occupied = 0;
+  Object.values(store.dailyData).forEach(function(dd) { occupied += (dd.newSign || 0); });
+  // Calculate occupancy from buildings
+  var occ = 0;
+  if (typeof calcMonthAvgOccupancy === 'function') {
+    var mk = today.substring(0, 7);
+    occ = calcMonthAvgOccupancy(mk) || 0;
+  }
+  return { newSign: d.newSign || 0, checkOut: d.checkOut || 0, leads: d.leads || 0, showings: d.showings || 0, occupancy: occ, date: today };
+}
+
+function getYesterdayData() {
+  var d = new Date();
+  d.setDate(d.getDate() - 1);
+  var yday = d.toISOString().slice(0, 10);
+  var dd = store.dailyData[yday];
+  if (!dd) return { newSign: 0, checkOut: 0, showings: 0, occupancy: 0 };
+  var mk = yday.substring(0, 7);
+  var occ = 0;
+  if (typeof calcMonthAvgOccupancy === 'function') occ = calcMonthAvgOccupancy(mk) || 0;
+  return { newSign: dd.newSign || 0, checkOut: dd.checkOut || 0, showings: dd.showings || 0, occupancy: occ };
+}
+
+function buildTodayOverview() {
+  var td = getTodayData();
+  var yd = getYesterdayData();
+  var occDiff = td.occupancy - yd.occupancy;
+  var occArrow = occDiff > 0 ? '↑' : (occDiff < 0 ? '↓' : '→');
+  var occColor = occDiff > 0 ? '#10b981' : (occDiff < 0 ? '#ef4444' : '#6b7280');
+
+  var text = '📊 花山河店 · ' + td.date + ' 数据简报\n━━━━━━━━━━━━━━\n';
+  text += '🏠 出租率：' + td.occupancy.toFixed(1) + '%（' + occArrow + ' vs 昨日）\n';
+  text += '📝 新签：' + td.newSign + ' 单\n';
+  text += '🚪 退租：' + td.checkOut + ' 单\n';
+  text += '👀 带看：' + td.showings + ' 组\n';
+  text += '━━━━━━━━━━━━━━';
+
+  var html = '<div class="card"><div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">';
+  html += '<h3 style="margin:0;">📊 今日概览 · ' + td.date + '</h3>';
+  html += '<button class="btn btn-sm" onclick="copySection(\'todaySection\')">📋 复制</button></div>';
+  html += '<div class="card-body" id="todaySection">';
+  html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;">';
+  // Occupancy card
+  html += '<div style="background:linear-gradient(135deg,#667eea22,#764ba222);border-radius:12px;padding:16px;text-align:center;">';
+  html += '<div style="font-size:12px;color:#6b7280;margin-bottom:4px;">🏠 出租率</div>';
+  html += '<div style="font-size:28px;font-weight:700;color:#4f46e5;">' + td.occupancy.toFixed(1) + '%</div>';
+  html += '<div style="font-size:12px;color:' + occColor + ';">' + occArrow + ' ' + Math.abs(occDiff).toFixed(1) + '% vs 昨日</div></div>';
+  // New sign card
+  html += '<div style="background:linear-gradient(135deg,#10b98122,#059b6b22);border-radius:12px;padding:16px;text-align:center;">';
+  html += '<div style="font-size:12px;color:#6b7280;margin-bottom:4px;">📝 新签</div>';
+  html += '<div style="font-size:28px;font-weight:700;color:#10b981;">' + td.newSign + '</div>';
+  html += '<div style="font-size:12px;color:#6b7280;">单</div></div>';
+  // Check out card
+  html += '<div style="background:linear-gradient(135deg,#ef444422,#dc262622);border-radius:12px;padding:16px;text-align:center;">';
+  html += '<div style="font-size:12px;color:#6b7280;margin-bottom:4px;">🚪 退租</div>';
+  html += '<div style="font-size:28px;font-weight:700;color:#ef4444;">' + td.checkOut + '</div>';
+  html += '<div style="font-size:12px;color:#6b7280;">单</div></div>';
+  // Showings card
+  html += '<div style="background:linear-gradient(135deg,#f59e0b22,#d97706aa);border-radius:12px;padding:16px;text-align:center;">';
+  html += '<div style="font-size:12px;color:#6b7280;margin-bottom:4px;">👀 带看</div>';
+  html += '<div style="font-size:28px;font-weight:700;color:#f59e0b;">' + td.showings + '</div>';
+  html += '<div style="font-size:12px;color:#6b7280;">组</div></div>';
+  html += '</div>';
+  // Text summary hidden for copy
+  html += '<textarea id="todayText" style="position:absolute;left:-9999px;">' + text + '</textarea>';
+  html += '</div></div>';
+  return html;
+}
+
+function buildWeekSummary() {
+  var now = new Date();
+  var weekStart = new Date(now);
+  weekStart.setDate(now.getDate() - now.getDay() + 1);
+  var weekDates = [];
+  for (var i = 0; i < 7; i++) {
+    var d = new Date(weekStart);
+    d.setDate(weekStart.getDate() + i);
+    weekDates.push(d.toISOString().slice(0, 10));
+  }
+  var totalNewSign = 0, totalCheckOut = 0, totalShowings = 0, occSum = 0, occCount = 0;
+  var channelStats = {};
+  weekDates.forEach(function(dt) {
+    var dd = store.dailyData[dt];
+    if (dd) {
+      totalNewSign += (dd.newSign || 0);
+      totalCheckOut += (dd.checkOut || 0);
+      totalShowings += (dd.showings || 0);
+      // channel data
+      if (dd.channelData) {
+        Object.entries(dd.channelData).forEach(function(e) {
+          channelStats[e[0]] = (channelStats[e[0]] || 0) + (e[1].newSign || 0);
+        });
+      }
+    }
+  });
+  // occupancy - use period end date (today if current week, else week end)
+  var mk = todayStr().substring(0, 7);
+  var isCurrentWeek = weekDates.indexOf(todayStr()) >= 0;
+  var occDate = isCurrentWeek ? todayStr() : weekDates[6];
+  var endOcc = (typeof calcOccupancyForDate === 'function') ? calcOccupancyForDate(occDate) : { rate: 0 };
+  var occRate = endOcc.rate || 0;
+
+  // Task completion from taskProgress
+  var taskTotal = 0, taskDone = 0;
+  var staffList = store.staff || [];
+  var tasks = store.tasks || [];
+  tasks.forEach(function(t) {
+    staffList.forEach(function(s) {
+      var key = t.id + '_' + s.id + '_' + weekDates[0].replace(/-/g, '').substring(0, 8);
+      weekDates.forEach(function(dt) {
+        var pk = t.frequency === 'weekly' ? getWeekKeyForDate(dt) : dt.replace(/-/g, '');
+        var k = t.id + '_' + s.id + '_' + pk;
+        taskDone += (store.taskProgress[k] || 0);
+        taskTotal += (t.target || 1);
+      });
+    });
+  });
+  var taskRate = taskTotal > 0 ? ((taskDone / taskTotal) * 100).toFixed(1) : '0.0';
+
+  // 管家进线签约情况（仅管家岗位）
+  var staffConvData = [];
+  staffList.filter(function(s) { return s.role !== 'repair'; }).forEach(function(s) {
+    var leads = 0, showings = 0, signs = 0;
+    weekDates.forEach(function(dt) {
+      leads += staffFieldTotal(store.dailyData[dt] || {}, s.id, 'leads');
+      showings += staffFieldTotal(store.dailyData[dt] || {}, s.id, 'showings');
+      signs += staffFieldTotal(store.dailyData[dt] || {}, s.id, 'newSign');
+    });
+    var leadToVisit = leads > 0 ? Math.round(showings / leads * 100) : 0;
+    var visitToSign = showings > 0 ? Math.round(signs / showings * 100) : 0;
+    staffConvData.push({ name: s.name, leads: leads, showings: showings, signs: signs, leadToVisit: leadToVisit, visitToSign: visitToSign });
+  });
+
+  var wkLabel = weekDates[0] + ' ~ ' + weekDates[6];
+  var text = '📊 花山河店 · 本周汇总（' + wkLabel + '）\n━━━━━━━━━━━━━━\n';
+  text += '🏠 截止出租率：' + occRate.toFixed(1) + '%（截至' + occDate + '）\n';
+  text += '📝 本周签约：' + totalNewSign + ' 单\n';
+  text += '🚪 本周退租：' + totalCheckOut + ' 单\n';
+  text += '👀 本周带看：' + totalShowings + ' 组\n';
+  text += '✅ 任务完成率：' + taskRate + '%\n';
+  if (staffConvData.length > 0) {
+    text += '👤 管家进线签约：\n';
+    staffConvData.forEach(function(sc) {
+      text += '  ' + sc.name + '：进线' + sc.leads + '/带看' + sc.showings + '/签约' + sc.signs + '（带看率' + sc.leadToVisit + '% 转化率' + sc.visitToSign + '%）\n';
+    });
+  }
+  if (Object.keys(channelStats).length > 0) {
+    text += '📢 渠道分布：\n';
+    Object.entries(channelStats).sort(function(a, b) { return b[1] - a[1]; }).forEach(function(e) {
+      text += '  ' + e[0] + '：' + e[1] + ' 单\n';
+    });
+  }
+  text += '━━━━━━━━━━━━━━';
+
+  var html = '<div class="card"><div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">';
+  html += '<h3 style="margin:0;">📊 本周汇总 · ' + wkLabel + '</h3>';
+  html += '<button class="btn btn-sm" onclick="copySection(\'weekSection\')">📋 复制</button></div>';
+  html += '<div class="card-body" id="weekSection">';
+  html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px;">';
+  html += buildMetricCard('截止出租率', occRate.toFixed(1) + '%', '#4f46e5');
+  html += buildMetricCard('本周签约', totalNewSign + ' 单', '#10b981');
+  html += buildMetricCard('本周退租', totalCheckOut + ' 单', '#ef4444');
+  html += buildMetricCard('本周带看', totalShowings + ' 组', '#f59e0b');
+  html += buildMetricCard('任务完成率', taskRate + '%', '#8b5cf6');
+  html += '</div>';
+  // 管家进线签约情况
+  if (staffConvData.length > 0) {
+    html += '<div style="margin-bottom:12px;"><strong>👤 管家进线签约情况</strong>';
+    html += '<div class="table-scroll-wrapper"><table class="data-table" style="margin-top:8px;"><thead><tr><th>管家</th><th class="num">进线</th><th class="num">带看</th><th class="num">签约</th><th class="num">带看率</th><th class="num">转化率</th></tr></thead><tbody>';
+    staffConvData.forEach(function(sc) {
+      html += '<tr><td>' + sc.name + '</td><td class="num">' + sc.leads + '</td><td class="num">' + sc.showings + '</td><td class="num"><strong>' + sc.signs + '</strong></td>';
+      html += '<td class="num" style="color:' + (sc.leadToVisit >= 60 ? '#10b981' : '#f59e0b') + ';">' + sc.leadToVisit + '%</td>';
+      html += '<td class="num" style="color:' + (sc.visitToSign >= 20 ? '#10b981' : '#f59e0b') + ';">' + sc.visitToSign + '%</td></tr>';
+    });
+    html += '</tbody></table></div></div>';
+  }
+  if (Object.keys(channelStats).length > 0) {
+    html += '<div style="margin-top:12px;"><strong>📢 渠道分布</strong><div style="margin-top:8px;">';
+    var maxVal = Math.max.apply(null, Object.values(channelStats));
+    Object.entries(channelStats).sort(function(a, b) { return b[1] - a[1]; }).forEach(function(e) {
+      var pct = maxVal > 0 ? ((e[1] / maxVal) * 100).toFixed(0) : 0;
+      html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">';
+      html += '<span style="min-width:60px;font-size:13px;">' + e[0] + '</span>';
+      html += '<div style="flex:1;background:#f3f4f6;border-radius:4px;height:20px;overflow:hidden;">';
+      html += '<div style="width:' + pct + '%;height:100%;background:linear-gradient(90deg,#667eea,#764ba2);border-radius:4px;"></div></div>';
+      html += '<span style="font-size:12px;color:#6b7280;min-width:40px;">' + e[1] + '单</span></div>';
+    });
+    html += '</div></div>';
+  }
+  html += '<textarea id="weekText" style="position:absolute;left:-9999px;">' + text + '</textarea>';
+  html += '</div></div>';
+  return html;
+}
+
+function buildMonthSummary() {
+  var mk = todayStr().substring(0, 7);
+  var totalNewSign = 0, totalCheckOut = 0, totalShowings = 0;
+  var channelStats = {};
+  var dailyOccList = [];
+  var daysInMonth = 0;
+  if (typeof getDaysInMonth === 'function') daysInMonth = getDaysInMonth(mk);
+
+  // Iterate dailyData for this month
+  Object.entries(store.dailyData).forEach(function(entry) {
+    var dt = entry[0], dd = entry[1];
+    if (dt.startsWith(mk)) {
+      totalNewSign += (dd.newSign || 0);
+      totalCheckOut += (dd.checkOut || 0);
+      totalShowings += (dd.showings || 0);
+      if (dd.channelData) {
+        Object.entries(dd.channelData).forEach(function(e) {
+          channelStats[e[0]] = (channelStats[e[0]] || 0) + (e[1].newSign || 0);
+        });
+      }
+    }
+  });
+  // occupancy - use period end date (today if current month, else month end)
+  var today = todayStr();
+  var isCurrentMonth = today.startsWith(mk);
+  var monthEndDate;
+  if (isCurrentMonth) {
+    monthEndDate = today;
+  } else {
+    // last day of month
+    var parts = mk.split('-');
+    var lastDay = new Date(parseInt(parts[0]), parseInt(parts[1]), 0);
+    monthEndDate = lastDay.toISOString().slice(0, 10);
+  }
+  var endOcc = (typeof calcOccupancyForDate === 'function') ? calcOccupancyForDate(monthEndDate) : { rate: 0 };
+  var occRate = endOcc.rate || 0;
+
+  // Task completion
+  var taskTotal = 0, taskDone = 0;
+  var staffList = store.staff || [];
+  var tasks = store.tasks || [];
+  tasks.forEach(function(t) {
+    staffList.forEach(function(s) {
+      if (t.frequency === 'monthly') {
+        var k = t.id + '_' + s.id + '_' + mk;
+        taskDone += (store.taskProgress[k] || 0);
+        taskTotal += (t.target || 1);
+      } else if (t.frequency === 'weekly') {
+        var weeks = [];
+        if (typeof getWeeksInMonth === 'function') {
+          var parts2 = mk.split('-');
+          weeks = getWeeksInMonth(parseInt(parts2[0]), parseInt(parts2[1]) - 1);
+        }
+        weeks.forEach(function(wk) {
+          var k = t.id + '_' + s.id + '_' + wk;
+          taskDone += (store.taskProgress[k] || 0);
+          taskTotal += (t.target || 1);
+        });
+      } else {
+        for (var d = 1; d <= daysInMonth; d++) {
+          var dk = mk + '-' + String(d).padStart(2, '0');
+          var pk = dk.replace(/-/g, '');
+          var k = t.id + '_' + s.id + '_' + pk;
+          taskDone += (store.taskProgress[k] || 0);
+          taskTotal += (t.target || 1);
+        }
+      }
+    });
+  });
+  var taskRate = taskTotal > 0 ? ((taskDone / taskTotal) * 100).toFixed(1) : '0.0';
+
+  // 管家进线签约情况（仅管家岗位）
+  var staffConvData = [];
+  staffList.filter(function(s) { return s.role !== 'repair'; }).forEach(function(s) {
+    var leads = 0, showings = 0, signs = 0;
+    Object.entries(store.dailyData).forEach(function(entry) {
+      if (entry[0].startsWith(mk)) {
+        leads += staffFieldTotal(entry[1], s.id, 'leads');
+        showings += staffFieldTotal(entry[1], s.id, 'showings');
+        signs += staffFieldTotal(entry[1], s.id, 'newSign');
+      }
+    });
+    var leadToVisit = leads > 0 ? Math.round(showings / leads * 100) : 0;
+    var visitToSign = showings > 0 ? Math.round(signs / showings * 100) : 0;
+    staffConvData.push({ name: s.name, leads: leads, showings: showings, signs: signs, leadToVisit: leadToVisit, visitToSign: visitToSign });
+  });
+
+  // KPI scores
+  var kpiHtml = '';
+  var kpiScores = [];
+  (store.kpiBoards || []).forEach(function(board) {
+    var score = 0, count = 0;
+    (board.metrics || []).forEach(function(m) {
+      staffList.forEach(function(s) {
+        var k = 'kpi_' + board.id + '_' + m.id + '_' + s.id + '_' + mk;
+        var v = parseFloat(store[k]) || 0;
+        score += v;
+        count++;
+      });
+    });
+    if (count > 0) {
+      var avg = (score / count).toFixed(1);
+      kpiScores.push({ name: board.name, avg: avg });
+    }
+  });
+
+  var text = '📊 花山河店 · ' + mk + ' 月度汇总\n━━━━━━━━━━━━━━\n';
+  text += '🏠 截止出租率：' + occRate.toFixed(1) + '%（截至' + monthEndDate + '）\n';
+  text += '📝 月度签约：' + totalNewSign + ' 单\n';
+  text += '🚪 月度退租：' + totalCheckOut + ' 单\n';
+  text += '👀 月度带看：' + totalShowings + ' 组\n';
+  text += '✅ 任务完成率：' + taskRate + '%\n';
+  if (staffConvData.length > 0) {
+    text += '👤 管家进线签约：\n';
+    staffConvData.forEach(function(sc) {
+      text += '  ' + sc.name + '：进线' + sc.leads + '/带看' + sc.showings + '/签约' + sc.signs + '（带看率' + sc.leadToVisit + '% 转化率' + sc.visitToSign + '%）\n';
+    });
+  }
+  if (Object.keys(channelStats).length > 0) {
+    text += '📢 渠道贡献：\n';
+    Object.entries(channelStats).sort(function(a, b) { return b[1] - a[1]; }).forEach(function(e) {
+      text += '  ' + e[0] + '：' + e[1] + ' 单\n';
+    });
+  }
+  if (kpiScores.length > 0) {
+    text += '📋 KPI板块得分：\n';
+    kpiScores.forEach(function(k) { text += '  ' + k.name + '：' + k.avg + '\n'; });
+  }
+  text += '━━━━━━━━━━━━━━';
+
+  var html = '<div class="card"><div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">';
+  html += '<h3 style="margin:0;">📊 月度汇总 · ' + mk + '</h3>';
+  html += '<button class="btn btn-sm" onclick="copySection(\'monthSection\')">📋 复制</button></div>';
+  html += '<div class="card-body" id="monthSection">';
+  html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px;">';
+  html += buildMetricCard('截止出租率', occRate.toFixed(1) + '%', '#4f46e5');
+  html += buildMetricCard('月度签约', totalNewSign + ' 单', '#10b981');
+  html += buildMetricCard('月度退租', totalCheckOut + ' 单', '#ef4444');
+  html += buildMetricCard('月度带看', totalShowings + ' 组', '#f59e0b');
+  html += buildMetricCard('任务完成率', taskRate + '%', '#8b5cf6');
+  html += '</div>';
+  // 管家进线签约情况
+  if (staffConvData.length > 0) {
+    html += '<div style="margin-bottom:12px;"><strong>👤 管家进线签约情况</strong>';
+    html += '<div class="table-scroll-wrapper"><table class="data-table" style="margin-top:8px;"><thead><tr><th>管家</th><th class="num">进线</th><th class="num">带看</th><th class="num">签约</th><th class="num">带看率</th><th class="num">转化率</th></tr></thead><tbody>';
+    staffConvData.forEach(function(sc) {
+      html += '<tr><td>' + sc.name + '</td><td class="num">' + sc.leads + '</td><td class="num">' + sc.showings + '</td><td class="num"><strong>' + sc.signs + '</strong></td>';
+      html += '<td class="num" style="color:' + (sc.leadToVisit >= 60 ? '#10b981' : '#f59e0b') + ';">' + sc.leadToVisit + '%</td>';
+      html += '<td class="num" style="color:' + (sc.visitToSign >= 20 ? '#10b981' : '#f59e0b') + ';">' + sc.visitToSign + '%</td></tr>';
+    });
+    html += '</tbody></table></div></div>';
+  }
+  if (Object.keys(channelStats).length > 0) {
+    html += '<div style="margin-bottom:12px;"><strong>📢 渠道贡献分析</strong><div style="margin-top:8px;">';
+    var maxVal = Math.max.apply(null, Object.values(channelStats));
+    var totalChannel = Object.values(channelStats).reduce(function(a, b) { return a + b; }, 0);
+    Object.entries(channelStats).sort(function(a, b) { return b[1] - a[1]; }).forEach(function(e) {
+      var pct = maxVal > 0 ? ((e[1] / maxVal) * 100).toFixed(0) : 0;
+      var share = totalChannel > 0 ? ((e[1] / totalChannel) * 100).toFixed(1) : 0;
+      html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">';
+      html += '<span style="min-width:60px;font-size:13px;">' + e[0] + '</span>';
+      html += '<div style="flex:1;background:#f3f4f6;border-radius:4px;height:20px;overflow:hidden;">';
+      html += '<div style="width:' + pct + '%;height:100%;background:linear-gradient(90deg,#10b981,#059b6b);border-radius:4px;"></div></div>';
+      html += '<span style="font-size:12px;color:#6b7280;min-width:60px;">' + e[1] + '单(' + share + '%)</span></div>';
+    });
+    html += '</div></div>';
+  }
+  if (kpiScores.length > 0) {
+    html += '<div style="margin-top:12px;"><strong>📋 KPI板块得分</strong>';
+    html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-top:8px;">';
+    kpiScores.forEach(function(k) {
+      html += '<div style="background:#f9fafb;border-radius:8px;padding:10px;text-align:center;">';
+      html += '<div style="font-size:12px;color:#6b7280;">' + k.name + '</div>';
+      html += '<div style="font-size:20px;font-weight:700;color:#4f46e5;">' + k.avg + '</div></div>';
+    });
+    html += '</div></div>';
+  }
+  html += '<textarea id="monthText" style="position:absolute;left:-9999px;">' + text + '</textarea>';
+  html += '</div></div>';
+  return html;
+}
+
+function buildMetricCard(label, value, color) {
+  var h = '<div style="background:' + color + '11;border-radius:12px;padding:14px;text-align:center;border:1px solid ' + color + '22;">';
+  h += '<div style="font-size:11px;color:#6b7280;margin-bottom:4px;">' + label + '</div>';
+  h += '<div style="font-size:22px;font-weight:700;color:' + color + ';">' + value + '</div></div>';
+  return h;
+}
+
+function getWeekKeyForDate(dateStr) {
+  var d = new Date(dateStr);
+  var start = new Date(d);
+  start.setDate(d.getDate() - d.getDay() + 1);
+  return start.toISOString().slice(0, 10).replace(/-/g, '');
+}
+
+function copySection(sectionId) {
+  var el = document.getElementById(sectionId);
+  if (!el) return;
+  // Find hidden textarea within this section's parent card
+  var card = el.closest('.card');
+  var ta = card ? card.querySelector('textarea') : null;
+  if (!ta) { showToast('无内容可复制'); return; }
+  var text = ta.value;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(function() { showToast('已复制到剪贴板'); });
+  } else {
+    ta.style.position = 'static'; ta.select(); document.execCommand('copy'); ta.style.position = 'absolute'; ta.style.left = '-9999px';
+    showToast('已复制到剪贴板');
+  }
+}
+
+function copyAllDataReview() {
+  var parts = [];
+  // Build all three sections text
+  parts.push(buildTodayTextSummary());
+  parts.push(buildWeekTextSummary());
+  parts.push(buildMonthTextSummary());
+  var full = parts.join('\n\n');
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(full).then(function() { showToast('已全部复制到剪贴板'); });
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = full; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+    showToast('已全部复制到剪贴板');
+  }
+}
+
+function buildTodayTextSummary() {
+  var td = getTodayData();
+  var yd = getYesterdayData();
+  var occDiff = td.occupancy - yd.occupancy;
+  var occArrow = occDiff > 0 ? '↑' : (occDiff < 0 ? '↓' : '→');
+  var text = '📊 花山河店 · ' + td.date + ' 数据简报\n━━━━━━━━━━━━━━\n';
+  text += '🏠 出租率：' + td.occupancy.toFixed(1) + '%（' + occArrow + ' vs 昨日）\n';
+  text += '📝 新签：' + td.newSign + ' 单\n';
+  text += '🚪 退租：' + td.checkOut + ' 单\n';
+  text += '👀 带看：' + td.showings + ' 组\n';
+  text += '━━━━━━━━━━━━━━';
+  return text;
+}
+
+function buildWeekTextSummary() {
+  var now = new Date();
+  var weekStart = new Date(now);
+  weekStart.setDate(now.getDate() - now.getDay() + 1);
+  var weekDates = [];
+  for (var i = 0; i < 7; i++) {
+    var d = new Date(weekStart);
+    d.setDate(weekStart.getDate() + i);
+    weekDates.push(d.toISOString().slice(0, 10));
+  }
+  var totalNewSign = 0, totalCheckOut = 0, totalShowings = 0;
+  weekDates.forEach(function(dt) {
+    var dd = store.dailyData[dt];
+    if (dd) {
+      totalNewSign += (dd.newSign || 0);
+      totalCheckOut += (dd.checkOut || 0);
+      totalShowings += (dd.showings || 0);
+    }
+  });
+  var mk = todayStr().substring(0, 7);
+  var avgOcc = 0;
+  if (typeof calcMonthAvgOccupancy === 'function') avgOcc = calcMonthAvgOccupancy(mk) || 0;
+  var wkLabel = weekDates[0] + ' ~ ' + weekDates[6];
+  var text = '📊 花山河店 · 本周汇总（' + wkLabel + '）\n━━━━━━━━━━━━━━\n';
+  text += '🏠 平均出租率：' + avgOcc.toFixed(1) + '%\n';
+  text += '📝 本周签约：' + totalNewSign + ' 单\n';
+  text += '🚪 本周退租：' + totalCheckOut + ' 单\n';
+  text += '👀 本周带看：' + totalShowings + ' 组\n';
+  text += '━━━━━━━━━━━━━━';
+  return text;
+}
+
+function buildMonthTextSummary() {
+  var mk = todayStr().substring(0, 7);
+  var totalNewSign = 0, totalCheckOut = 0, totalShowings = 0;
+  Object.entries(store.dailyData).forEach(function(entry) {
+    if (entry[0].startsWith(mk)) {
+      totalNewSign += (entry[1].newSign || 0);
+      totalCheckOut += (entry[1].checkOut || 0);
+      totalShowings += (entry[1].showings || 0);
+    }
+  });
+  var avgOcc = 0;
+  if (typeof calcMonthAvgOccupancy === 'function') avgOcc = calcMonthAvgOccupancy(mk) || 0;
+  var text = '📊 花山河店 · ' + mk + ' 月度汇总\n━━━━━━━━━━━━━━\n';
+  text += '🏠 月度出租率：' + avgOcc.toFixed(1) + '%\n';
+  text += '📝 月度签约：' + totalNewSign + ' 单\n';
+  text += '🚪 月度退租：' + totalCheckOut + ' 单\n';
+  text += '👀 月度带看：' + totalShowings + ' 组\n';
+  text += '━━━━━━━━━━━━━━';
+  return text;
+}
+
+// ============================================================
+// v7.0 第三批功能 - 任务下达
+// ============================================================
+var storeTasksFilter = 'all'; // all / active / completed / archived
+var storeTasksExpanded = {};  // taskId -> true/false
+
+function renderStoreTasks(body) {
+  var tasks = (store.storeManagerTasks || []).slice().sort(function(a, b) { return (b.createdAt || '').localeCompare(a.createdAt || ''); });
+  var filtered = tasks;
+  if (storeTasksFilter !== 'all') filtered = tasks.filter(function(t) { return t.status === storeTasksFilter; });
+
+  var html = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px;">';
+  html += '<h3 style="margin:0;">📋 任务下达</h3>';
+  html += '<button class="btn btn-primary" onclick="showCreateStoreTask()">+ 创建任务</button></div>';
+
+  // Filter tabs
+  html += '<div style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;">';
+  [{ k: 'all', l: '全部' }, { k: 'active', l: '进行中' }, { k: 'completed', l: '已完成' }, { k: 'archived', l: '已归档' }].forEach(function(f) {
+    var active = storeTasksFilter === f.k ? 'background:#4f46e5;color:#fff;' : 'background:#f3f4f6;color:#374151;';
+    var count = f.k === 'all' ? tasks.length : tasks.filter(function(t) { return t.status === f.k; }).length;
+    html += '<button class="btn" style="' + active + 'border:1px solid #e5e7eb;padding:4px 12px;border-radius:16px;cursor:pointer;font-size:12px;" onclick="setStoreTasksFilter(\'' + f.k + '\')">' + f.l + ' (' + count + ')</button>';
+  });
+  html += '</div>';
+
+  if (filtered.length === 0) {
+    html += '<div class="empty-state"><div class="empty-icon">📋</div>暂无任务</div>';
+  } else {
+    filtered.forEach(function(task) {
+      var isExpanded = storeTasksExpanded[task.id];
+      var statusColors = { active: '#f59e0b', completed: '#10b981', archived: '#6b7280' };
+      var statusLabels = { active: '进行中', completed: '已完成', archived: '已归档' };
+      var typeColors = { '巡楼': '#8b5cf6', '朋友圈': '#3b82f6', '小红书': '#ef4444', '带看': '#10b981', '其他': '#6b7280' };
+
+      html += '<div class="card" style="margin-bottom:12px;cursor:pointer;border-left:3px solid ' + (statusColors[task.status] || '#6b7280') + ';" onclick="toggleStoreTaskExpand(\'' + task.id + '\')">';
+      html += '<div class="card-body" style="padding:12px;">';
+      html += '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">';
+      html += '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">';
+      html += '<strong style="font-size:14px;">' + (task.name || '未命名任务') + '</strong>';
+      html += '<span style="background:' + (typeColors[task.type] || '#6b7280') + '22;color:' + (typeColors[task.type] || '#6b7280') + ';padding:2px 8px;border-radius:10px;font-size:11px;">' + (task.type || '其他') + '</span>';
+      html += '<span style="background:' + (statusColors[task.status] || '#6b7280') + '22;color:' + (statusColors[task.status] || '#6b7280') + ';padding:2px 8px;border-radius:10px;font-size:11px;">' + (statusLabels[task.status] || task.status) + '</span>';
+      html += '</div>';
+      html += '<div style="font-size:12px;color:#6b7280;">截止：' + (task.deadline || '未设置') + '</div>';
+      html += '</div>';
+      // Assignee info
+      var assigneeLabel = '全部管家';
+      if (task.assignee && task.assignee !== 'all') {
+        var assignees = Array.isArray(task.assignee) ? task.assignee : [task.assignee];
+        var names = assignees.map(function(sid) {
+          var s = (store.staff || []).find(function(x) { return x.id === sid; });
+          return s ? s.name : sid;
+        });
+        assigneeLabel = names.join('、');
+      }
+      html += '<div style="font-size:12px;color:#6b7280;margin-top:6px;">👤 分配给：' + assigneeLabel + '</div>';
+
+      // Report stats
+      var reports = task.reports || [];
+      var assignees2 = task.assignee === 'all' ? (store.staff || []) : (store.staff || []).filter(function(s) { return (Array.isArray(task.assignee) ? task.assignee : [task.assignee]).indexOf(s.id) >= 0; });
+      var expectedCount = assignees2.length;
+      var reportedIds = {};
+      reports.forEach(function(r) { reportedIds[r.staffId] = true; });
+      var reportedCount = Object.keys(reportedIds).length;
+      var completionPct = expectedCount > 0 ? ((reportedCount / expectedCount) * 100).toFixed(0) : 0;
+
+      html += '<div style="display:flex;align-items:center;gap:8px;margin-top:8px;">';
+      html += '<div style="flex:1;background:#f3f4f6;border-radius:4px;height:8px;overflow:hidden;">';
+      html += '<div style="width:' + completionPct + '%;height:100%;background:linear-gradient(90deg,#10b981,#059b6b);border-radius:4px;"></div></div>';
+      html += '<span style="font-size:11px;color:#6b7280;">' + reportedCount + '/' + expectedCount + ' (' + completionPct + '%)</span>';
+      html += '</div>';
+
+      // Expanded content
+      if (isExpanded) {
+        html += '<div style="margin-top:12px;border-top:1px solid #e5e7eb;padding-top:12px;" onclick="event.stopPropagation()">';
+        if (task.description) html += '<p style="font-size:13px;color:#374151;margin-bottom:12px;">' + task.description + '</p>';
+        // Reports list
+        html += '<div style="font-size:13px;font-weight:600;margin-bottom:8px;">📝 上报记录</div>';
+        if (reports.length === 0) {
+          html += '<div style="font-size:12px;color:#9ca3af;padding:8px 0;">暂无上报</div>';
+        } else {
+          reports.forEach(function(r) {
+            var staff = (store.staff || []).find(function(s) { return s.id === r.staffId; });
+            html += '<div style="background:#f9fafb;border-radius:8px;padding:10px;margin-bottom:6px;">';
+            html += '<div style="display:flex;justify-content:space-between;align-items:center;">';
+            html += '<span style="font-size:12px;font-weight:600;">' + (staff ? staff.name : r.staffId) + '</span>';
+            html += '<span style="font-size:11px;color:#6b7280;">' + (r.date || '') + ' ' + (r.completedAt || '') + '</span></div>';
+            html += '<p style="font-size:12px;color:#374151;margin:4px 0 0;">' + (r.content || '-') + '</p></div>';
+          });
+        }
+        // Action buttons
+        html += '<div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;">';
+        if (task.status === 'active') {
+          html += '<button class="btn btn-sm" onclick="addManualReport(\'' + task.id + '\')">📝 录入上报</button>';
+          html += '<button class="btn btn-sm btn-primary" onclick="completeStoreTask(\'' + task.id + '\')">✅ 标记完成</button>';
+        }
+        if (task.status !== 'archived') {
+          html += '<button class="btn btn-sm" onclick="archiveStoreTask(\'' + task.id + '\')">📦 归档</button>';
+        }
+        html += '<button class="btn btn-sm btn-danger" onclick="deleteStoreTask(\'' + task.id + '\')">🗑️ 删除</button>';
+        html += '</div></div>';
+      }
+      html += '</div></div>';
+    });
+  }
+
+  // Bottom summary section
+  html += buildStoreTaskSummary(tasks);
+  body.innerHTML = html;
+}
+
+function buildStoreTaskSummary(tasks) {
+  var activeTasks = tasks.filter(function(t) { return t.status === 'active'; });
+  var staffList = store.staff || [];
+
+  // Week task completion
+  var now = new Date();
+  var weekStart = new Date(now);
+  weekStart.setDate(now.getDate() - now.getDay() + 1);
+  var weekDates = [];
+  for (var i = 0; i < 7; i++) {
+    var d = new Date(weekStart);
+    d.setDate(weekStart.getDate() + i);
+    weekDates.push(d.toISOString().slice(0, 10));
+  }
+
+  // Per-staff stats
+  var staffStats = {};
+  staffList.forEach(function(s) { staffStats[s.id] = { name: s.name, reported: 0, total: 0 }; });
+  activeTasks.forEach(function(t) {
+    var assignees = t.assignee === 'all' ? staffList : staffList.filter(function(s) { return (Array.isArray(t.assignee) ? t.assignee : [t.assignee]).indexOf(s.id) >= 0; });
+    assignees.forEach(function(s) {
+      staffStats[s.id].total++;
+      var hasReport = (t.reports || []).some(function(r) { return r.staffId === s.id; });
+      if (hasReport) staffStats[s.id].reported++;
+    });
+  });
+
+  var html = '<div class="card" style="margin-top:16px;"><div class="card-header"><h3 style="margin:0;">📊 任务汇总</h3></div>';
+  html += '<div class="card-body">';
+  html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:12px;">';
+  html += buildMetricCard('进行中任务', activeTasks.length + ' 个', '#f59e0b');
+  var totalReported = 0, totalExpected = 0;
+  Object.values(staffStats).forEach(function(s) { totalReported += s.reported; totalExpected += s.total; });
+  var overallRate = totalExpected > 0 ? ((totalReported / totalExpected) * 100).toFixed(0) : 0;
+  html += buildMetricCard('本周完成率', overallRate + '%', '#10b981');
+  html += '</div>';
+  // Per-staff breakdown
+  if (staffList.length > 0) {
+    html += '<div style="font-size:13px;font-weight:600;margin-bottom:8px;">👥 各管家完成情况</div>';
+    Object.values(staffStats).forEach(function(s) {
+      var pct = s.total > 0 ? ((s.reported / s.total) * 100).toFixed(0) : 0;
+      html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">';
+      html += '<span style="min-width:50px;font-size:12px;">' + s.name + '</span>';
+      html += '<div style="flex:1;background:#f3f4f6;border-radius:4px;height:16px;overflow:hidden;">';
+      html += '<div style="width:' + pct + '%;height:100%;background:linear-gradient(90deg,#667eea,#764ba2);border-radius:4px;"></div></div>';
+      html += '<span style="font-size:11px;color:#6b7280;min-width:50px;">' + s.reported + '/' + s.total + '</span></div>';
+    });
+  }
+  // Copy summary button
+  var summaryText = '📋 花山河店 · 任务下达汇总\n━━━━━━━━━━━━━━\n';
+  summaryText += '进行中任务：' + activeTasks.length + ' 个\n';
+  summaryText += '本周完成率：' + overallRate + '%\n';
+  summaryText += '━━━━━━━━━━━━━━\n';
+  Object.values(staffStats).forEach(function(s) {
+    summaryText += s.name + '：' + s.reported + '/' + s.total + '\n';
+  });
+  html += '<div style="margin-top:12px;text-align:center;">';
+  html += '<button class="btn btn-sm" onclick="copyStoreTaskSummary()">📋 复制汇总数据</button></div>';
+  html += '<textarea id="taskSummaryText" style="position:absolute;left:-9999px;">' + summaryText + '</textarea>';
+  html += '</div></div>';
+  return html;
+}
+
+function setStoreTasksFilter(f) {
+  storeTasksFilter = f;
+  renderOpTabBody();
+}
+
+function toggleStoreTaskExpand(taskId) {
+  storeTasksExpanded[taskId] = !storeTasksExpanded[taskId];
+  renderOpTabBody();
+}
+
+function showCreateStoreTask() {
+  var staffList = store.staff || [];
+  var html = '<div class="form-group"><label>任务名称</label><input type="text" class="form-control" id="stName" placeholder="如：每日巡楼检查"></div>';
+  html += '<div class="form-row"><div class="form-group"><label>任务类型</label><select class="form-control" id="stType">';
+  ['巡楼', '朋友圈', '小红书', '带看', '其他'].forEach(function(t) { html += '<option>' + t + '</option>'; });
+  html += '</select></div>';
+  html += '<div class="form-group"><label>频率</label><select class="form-control" id="stFreq"><option value="once">一次性</option><option value="daily">每日</option><option value="weekly">每周</option></select></div></div>';
+  html += '<div class="form-group"><label>分配给</label><select class="form-control" id="stAssignee" multiple style="min-height:80px;">';
+  html += '<option value="all" selected>全部管家</option>';
+  staffList.forEach(function(s) { html += '<option value="' + s.id + '">' + s.name + '</option>'; });
+  html += '</select><div style="font-size:11px;color:#9ca3af;margin-top:4px;">按住Ctrl/Cmd可多选</div></div>';
+  html += '<div class="form-group"><label>截止日期</label><input type="date" class="form-control" id="stDeadline"></div>';
+  html += '<div class="form-group"><label>任务描述</label><textarea class="form-control" id="stDesc" rows="3" placeholder="任务具体要求和注意事项..."></textarea></div>';
+
+  showModal('创建任务', html, function() {
+    var sel = document.getElementById('stAssignee');
+    var selected = [];
+    for (var i = 0; i < sel.options.length; i++) {
+      if (sel.options[i].selected) selected.push(sel.options[i].value);
+    }
+    var assignee = selected.indexOf('all') >= 0 ? 'all' : selected;
+    if (!store.storeManagerTasks) store.storeManagerTasks = [];
+    store.storeManagerTasks.push({
+      id: 'st_' + Date.now(),
+      name: document.getElementById('stName').value,
+      type: document.getElementById('stType').value,
+      assignee: assignee,
+      description: document.getElementById('stDesc').value,
+      deadline: document.getElementById('stDeadline').value,
+      frequency: document.getElementById('stFreq').value,
+      status: 'active',
+      createdAt: todayStr(),
+      reports: []
+    });
+    saveStore();
+    renderOpTabBody();
+    showToast('任务已创建');
+  });
+}
+
+function addManualReport(taskId) {
+  var task = (store.storeManagerTasks || []).find(function(t) { return t.id === taskId; });
+  if (!task) return;
+  var staffList = store.staff || [];
+  var html = '<div class="form-group"><label>上报人</label><select class="form-control" id="rpStaff">';
+  staffList.forEach(function(s) { html += '<option value="' + s.id + '">' + s.name + '</option>'; });
+  html += '</select></div>';
+  html += '<div class="form-group"><label>上报内容</label><textarea class="form-control" id="rpContent" rows="3" placeholder="执行情况和结果..."></textarea></div>';
+  html += '<div class="form-group"><label>日期</label><input type="date" class="form-control" id="rpDate" value="' + todayStr() + '"></div>';
+
+  showModal('录入上报', html, function() {
+    if (!task.reports) task.reports = [];
+    task.reports.push({
+      staffId: document.getElementById('rpStaff').value,
+      date: document.getElementById('rpDate').value,
+      content: document.getElementById('rpContent').value,
+      completedAt: new Date().toTimeString().substring(0, 5)
+    });
+    saveStore();
+    renderOpTabBody();
+    showToast('上报已录入');
+  });
+}
+
+function completeStoreTask(taskId) {
+  var task = (store.storeManagerTasks || []).find(function(t) { return t.id === taskId; });
+  if (!task) return;
+  task.status = 'completed';
+  saveStore();
+  renderOpTabBody();
+  showToast('任务已标记为完成');
+}
+
+function archiveStoreTask(taskId) {
+  var task = (store.storeManagerTasks || []).find(function(t) { return t.id === taskId; });
+  if (!task) return;
+  task.status = 'archived';
+  saveStore();
+  renderOpTabBody();
+  showToast('任务已归档');
+}
+
+function deleteStoreTask(taskId) {
+  if (!confirm('确定删除此任务？')) return;
+  store.storeManagerTasks = (store.storeManagerTasks || []).filter(function(t) { return t.id !== taskId; });
+  delete storeTasksExpanded[taskId];
+  saveStore();
+  renderOpTabBody();
+  showToast('任务已删除');
+}
+
+function copyStoreTaskSummary() {
+  var ta = document.getElementById('taskSummaryText');
+  if (!ta) return;
+  var text = ta.value;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(function() { showToast('已复制到剪贴板'); });
+  } else {
+    ta.style.position = 'static'; ta.select(); document.execCommand('copy'); ta.style.position = 'absolute'; ta.style.left = '-9999px';
+    showToast('已复制到剪贴板');
+  }
+}
+
+
+
+// v7.0 新增函数暴露到window
+window.setStaffRole = setStaffRole;
+window.addKpiBoard = addKpiBoard;
+window.editKpiBoard = editKpiBoard;
+window.deleteKpiBoard = deleteKpiBoard;
+window.addKpiMetric = addKpiMetric;
+window.editKpiMetric = editKpiMetric;
+window.deleteKpiMetric = deleteKpiMetric;
+window.toggleStaffBoard = toggleStaffBoard;
+window.renderKpiBoardSettings = renderKpiBoardSettings;
+window.renderStaffBoardAssignment = renderStaffBoardAssignment;
+window.saveKpiMonthlyData = saveKpiMonthlyData;
+window.changeKpiDataMonth = changeKpiDataMonth;
+window.setKpiDataMonth = setKpiDataMonth;
+window.changeTaskExecWeek = changeTaskExecWeek;
+// v7.0 第二批功能 - window bindings
+window.getTrendArrow = getTrendArrow;
+window.calcOccupancyAt = calcOccupancyAt;
+window.addReminderItem = addReminderItem;
+window.editReminderItem = editReminderItem;
+window.deleteReminderItem = deleteReminderItem;
+window.toggleReminderItemDone = toggleReminderItemDone;
+// v7.0 第三批功能 - window bindings
+window.renderDataReview = renderDataReview;
+window.switchDataReviewTab = switchDataReviewTab;
+window.copySection = copySection;
+window.copyAllDataReview = copyAllDataReview;
+window.renderStoreTasks = renderStoreTasks;
+window.setStoreTasksFilter = setStoreTasksFilter;
+window.toggleStoreTaskExpand = toggleStoreTaskExpand;
+window.showCreateStoreTask = showCreateStoreTask;
+window.addManualReport = addManualReport;
+window.completeStoreTask = completeStoreTask;
+window.archiveStoreTask = archiveStoreTask;
+window.deleteStoreTask = deleteStoreTask;
+window.copyStoreTaskSummary = copyStoreTaskSummary;
 // v6.0 初始化卡片增强
 setTimeout(initCardLayoutEnhancements, 100);
 
