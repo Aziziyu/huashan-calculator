@@ -2497,10 +2497,10 @@
       "netAdd": 3
     },
     "2026-09-05": {
-      "newSign": 2,
+      "newSign": 4,
       "checkOut": 1,
-      "leads": 4,
-      "showings": 4,
+      "leads": 8,
+      "showings": 8,
       "staff": {},
       "buildings": {},
       "opsLog": [
@@ -2563,9 +2563,69 @@
           "field": "newSign",
           "delta": 1,
           "time": "2026-09-07T01:20:55.911Z"
+        },
+        {
+          "staffId": "s3",
+          "field": "leads",
+          "delta": 1,
+          "time": "2026-09-07T01:21:01.329Z"
+        },
+        {
+          "staffId": "s3",
+          "field": "leads",
+          "delta": 1,
+          "time": "2026-09-07T01:21:01.477Z"
+        },
+        {
+          "staffId": "s3",
+          "field": "leads",
+          "delta": 1,
+          "time": "2026-09-07T01:21:01.628Z"
+        },
+        {
+          "staffId": "s3",
+          "field": "leads",
+          "delta": 1,
+          "time": "2026-09-07T01:21:01.777Z"
+        },
+        {
+          "staffId": "s3",
+          "field": "showings",
+          "delta": 1,
+          "time": "2026-09-07T01:21:02.828Z"
+        },
+        {
+          "staffId": "s3",
+          "field": "showings",
+          "delta": 1,
+          "time": "2026-09-07T01:21:02.994Z"
+        },
+        {
+          "staffId": "s3",
+          "field": "showings",
+          "delta": 1,
+          "time": "2026-09-07T01:21:03.160Z"
+        },
+        {
+          "staffId": "s3",
+          "field": "showings",
+          "delta": 1,
+          "time": "2026-09-07T01:21:03.327Z"
+        },
+        {
+          "staffId": "s3",
+          "field": "newSign",
+          "delta": 1,
+          "time": "2026-09-07T01:21:04.561Z"
+        },
+        {
+          "staffId": "s3",
+          "field": "newSign",
+          "delta": 1,
+          "time": "2026-09-07T01:21:04.710Z"
         }
       ],
-      "netAdd": 1
+      "netAdd": 3
     }
   },
   "channelData": {
@@ -3425,7 +3485,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/7 09:20:54",
+    "lastSyncTime": "2026/9/7 09:21:04",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
