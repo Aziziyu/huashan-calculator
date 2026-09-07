@@ -2634,10 +2634,10 @@
       "netAdd": 3
     },
     "2026-09-06": {
-      "newSign": 1,
+      "newSign": 2,
       "checkOut": 0,
-      "leads": 0,
-      "showings": 2,
+      "leads": 5,
+      "showings": 5,
       "staff": {},
       "buildings": {},
       "opsLog": [
@@ -2658,9 +2658,63 @@
           "field": "newSign",
           "delta": 1,
           "time": "2026-09-07T01:21:32.430Z"
+        },
+        {
+          "staffId": "s2",
+          "field": "leads",
+          "delta": 1,
+          "time": "2026-09-07T01:21:39.411Z"
+        },
+        {
+          "staffId": "s2",
+          "field": "leads",
+          "delta": 1,
+          "time": "2026-09-07T01:21:39.560Z"
+        },
+        {
+          "staffId": "s2",
+          "field": "leads",
+          "delta": 1,
+          "time": "2026-09-07T01:21:39.727Z"
+        },
+        {
+          "staffId": "s2",
+          "field": "leads",
+          "delta": 1,
+          "time": "2026-09-07T01:21:39.894Z"
+        },
+        {
+          "staffId": "s2",
+          "field": "showings",
+          "delta": 1,
+          "time": "2026-09-07T01:21:41.161Z"
+        },
+        {
+          "staffId": "s2",
+          "field": "showings",
+          "delta": 1,
+          "time": "2026-09-07T01:21:41.327Z"
+        },
+        {
+          "staffId": "s2",
+          "field": "showings",
+          "delta": 1,
+          "time": "2026-09-07T01:21:41.477Z"
+        },
+        {
+          "staffId": "s2",
+          "field": "newSign",
+          "delta": 1,
+          "time": "2026-09-07T01:21:43.061Z"
+        },
+        {
+          "staffId": "s4",
+          "field": "leads",
+          "delta": 1,
+          "time": "2026-09-07T01:21:47.645Z"
         }
       ],
-      "netAdd": 1
+      "netAdd": 2
     }
   },
   "channelData": {
@@ -3520,7 +3574,7 @@
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/7 09:21:31",
+    "lastSyncTime": "2026/9/7 09:21:39",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
