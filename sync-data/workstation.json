@@ -3569,12 +3569,12 @@
   },
   "currentPage": "operation",
   "currentOperationGroup": "team",
-  "currentOperationTab": "repair",
+  "currentOperationTab": "performance",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/7 09:25:07",
+    "lastSyncTime": "2026/9/7 09:25:15",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
