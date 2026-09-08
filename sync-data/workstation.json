@@ -3797,9 +3797,9 @@
     "startRate": 81.18,
     "estimatedMoveOut": 20
   },
-  "currentPage": "dashboard",
-  "currentOperationGroup": "team",
-  "currentOperationTab": "performance",
+  "currentPage": "operation",
+  "currentOperationGroup": "task",
+  "currentOperationTab": "task-exec",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "storeManagerTasks": [],
