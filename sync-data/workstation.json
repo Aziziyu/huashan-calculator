@@ -3812,15 +3812,15 @@
     "estimatedMoveOut": 20
   },
   "currentPage": "operation",
-  "currentOperationGroup": "team",
-  "currentOperationTab": "performance",
+  "currentOperationGroup": "task",
+  "currentOperationTab": "task-exec",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "storeManagerTasks": [],
   "reminderItems": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/8 16:57:57",
+    "lastSyncTime": "2026/9/8 16:58:07",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
