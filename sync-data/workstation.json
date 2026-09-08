@@ -69,6 +69,13 @@
       "floors": "",
       "hireDate": "",
       "role": "manager"
+    },
+    {
+      "id": "mtrzqqnnuvhje",
+      "name": "余建锋",
+      "floors": "",
+      "hireDate": "2024-01-01",
+      "role": "repair"
     }
   ],
   "channels": [
@@ -3683,7 +3690,7 @@
   "reminderItems": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/8 09:28:25",
+    "lastSyncTime": "2026/9/8 09:28:33",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
