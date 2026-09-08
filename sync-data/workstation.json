@@ -3074,7 +3074,20 @@
       ]
     }
   ],
-  "staffBoardAssignment": {},
+  "staffBoardAssignment": {
+    "s4": [
+      "kb1"
+    ],
+    "s2": [
+      "kb2"
+    ],
+    "s1": [
+      "kb3"
+    ],
+    "s3": [
+      "kb4"
+    ]
+  },
   "kpiMonthlyData": {},
   "kpiMonthlyTargets": {},
   "genericDiscounts": [
@@ -3690,7 +3703,7 @@
   "reminderItems": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/8 09:28:46",
+    "lastSyncTime": "2026/9/8 09:28:54",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
