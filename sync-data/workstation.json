@@ -3379,9 +3379,9 @@
   ],
   "repairEventRecords": {},
   "repairWeights": {
-    "repairCount": 20,
-    "acceptTime": 15,
-    "closeTime": 15,
+    "repairCount": 10,
+    "acceptTime": 20,
+    "closeTime": 20,
     "reviewCount": 10,
     "goodRate": 20,
     "event": 20
@@ -3820,7 +3820,7 @@
   "reminderItems": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/8 16:55:08",
+    "lastSyncTime": "2026/9/8 16:55:19",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
