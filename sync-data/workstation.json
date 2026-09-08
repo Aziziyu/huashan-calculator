@@ -3332,7 +3332,13 @@
     "perBad": 5,
     "maxDeduct": 20
   },
-  "repairMonthlyData": {},
+  "repairMonthlyData": {
+    "2026-08": {
+      "mtrzqqnnuvhje": {
+        "repairCount": 107
+      }
+    }
+  },
   "repairPosNegEvents": [
     {
       "id": "rpe1",
@@ -3810,7 +3816,7 @@
   "reminderItems": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/8 16:51:58",
+    "lastSyncTime": "2026/9/8 16:52:08",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
