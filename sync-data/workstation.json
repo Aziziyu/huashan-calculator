@@ -3694,16 +3694,16 @@
     "startRate": 81.18,
     "estimatedMoveOut": 20
   },
-  "currentPage": "settings",
-  "currentOperationGroup": "team",
-  "currentOperationTab": "performance",
+  "currentPage": "operation",
+  "currentOperationGroup": "daily",
+  "currentOperationTab": "daily-data",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "storeManagerTasks": [],
   "reminderItems": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/8 09:28:54",
+    "lastSyncTime": "2026/9/8 09:29:08",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
