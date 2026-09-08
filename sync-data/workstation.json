@@ -3813,14 +3813,14 @@
   },
   "currentPage": "operation",
   "currentOperationGroup": "team",
-  "currentOperationTab": "repair",
+  "currentOperationTab": "performance",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "storeManagerTasks": [],
   "reminderItems": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/8 16:56:33",
+    "lastSyncTime": "2026/9/8 16:56:42",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
