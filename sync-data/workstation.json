@@ -3811,7 +3811,7 @@
     "startRate": 81.18,
     "estimatedMoveOut": 20
   },
-  "currentPage": "operation",
+  "currentPage": "settings",
   "currentOperationGroup": "team",
   "currentOperationTab": "performance",
   "currentPriceTab": "list",
@@ -3820,7 +3820,7 @@
   "reminderItems": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/8 17:00:20",
+    "lastSyncTime": "2026/9/8 17:00:32",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
