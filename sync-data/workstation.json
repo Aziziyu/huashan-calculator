@@ -3791,14 +3791,14 @@
   },
   "currentPage": "operation",
   "currentOperationGroup": "daily",
-  "currentOperationTab": "daily-data",
+  "currentOperationTab": "data-review",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "storeManagerTasks": [],
   "reminderItems": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/8 09:30:27",
+    "lastSyncTime": "2026/9/8 09:30:47",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
