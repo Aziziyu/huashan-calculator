@@ -617,8 +617,8 @@
       "deadline": "2026-08-28",
       "note": "",
       "lastDone": "2026-08-31",
-      "weekDay": null,
-      "monthDay": null,
+      "weekDay": "",
+      "monthDay": "",
       "time": ""
     }
   ],
@@ -3806,7 +3806,7 @@
   "reminderItems": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/8 09:39:41",
+    "lastSyncTime": "2026/9/8 09:39:50",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
