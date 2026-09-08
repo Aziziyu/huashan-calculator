@@ -2731,10 +2731,10 @@
       "opsMigrated": true
     },
     "2026-09-07": {
-      "newSign": 1,
+      "newSign": 2,
       "checkOut": 0,
-      "leads": 3,
-      "showings": 2,
+      "leads": 5,
+      "showings": 3,
       "staff": {},
       "buildings": {},
       "opsLog": [
@@ -2773,9 +2773,57 @@
           "field": "newSign",
           "delta": 1,
           "time": "2026-09-08T01:30:17.588Z"
+        },
+        {
+          "staffId": "s2",
+          "field": "leads",
+          "delta": -1,
+          "time": "2026-09-08T01:30:30.857Z"
+        },
+        {
+          "staffId": "s2",
+          "field": "leads",
+          "delta": -1,
+          "time": "2026-09-08T01:30:31.005Z"
+        },
+        {
+          "staffId": "s2",
+          "field": "leads",
+          "delta": 1,
+          "time": "2026-09-08T01:30:32.907Z"
+        },
+        {
+          "staffId": "s2",
+          "field": "leads",
+          "delta": 1,
+          "time": "2026-09-08T01:30:33.340Z"
+        },
+        {
+          "staffId": "s2",
+          "field": "leads",
+          "delta": 1,
+          "time": "2026-09-08T01:30:34.040Z"
+        },
+        {
+          "staffId": "s2",
+          "field": "leads",
+          "delta": 1,
+          "time": "2026-09-08T01:30:34.407Z"
+        },
+        {
+          "staffId": "s2",
+          "field": "newSign",
+          "delta": 1,
+          "time": "2026-09-08T01:30:36.324Z"
+        },
+        {
+          "staffId": "s2",
+          "field": "showings",
+          "delta": 1,
+          "time": "2026-09-08T01:30:37.523Z"
         }
       ],
-      "netAdd": 1
+      "netAdd": 2
     }
   },
   "channelData": {
@@ -3750,7 +3798,7 @@
   "reminderItems": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/8 09:30:11",
+    "lastSyncTime": "2026/9/8 09:30:27",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
