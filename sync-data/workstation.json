@@ -3154,9 +3154,9 @@
         {
           "id": "km6",
           "name": "维修受理时长",
-          "unit": "小时",
-          "baseTarget": 72,
-          "stretchTarget": 24,
+          "unit": "分钟",
+          "baseTarget": 30,
+          "stretchTarget": 15,
           "source": "manual",
           "baseScore": 60,
           "stretchScore": 100,
@@ -3820,7 +3820,7 @@
   "reminderItems": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/8 17:00:51",
+    "lastSyncTime": "2026/9/8 17:01:01",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
