@@ -3336,7 +3336,8 @@
     "2026-08": {
       "mtrzqqnnuvhje": {
         "repairCount": 107,
-        "acceptTime": 0.06
+        "acceptTime": 0.06,
+        "closeTime": 14.25
       }
     }
   },
@@ -3817,7 +3818,7 @@
   "reminderItems": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/8 16:52:45",
+    "lastSyncTime": "2026/9/8 16:52:54",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
