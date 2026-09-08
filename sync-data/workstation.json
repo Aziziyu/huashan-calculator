@@ -46,25 +46,29 @@
       "id": "s1",
       "name": "余润泽",
       "floors": "",
-      "hireDate": ""
+      "hireDate": "",
+      "role": "manager"
     },
     {
       "id": "s2",
       "name": "邱靖杰",
       "floors": "",
-      "hireDate": ""
+      "hireDate": "",
+      "role": "manager"
     },
     {
       "id": "s3",
       "name": "李乐晶",
       "floors": "",
-      "hireDate": ""
+      "hireDate": "",
+      "role": "manager"
     },
     {
       "id": "s4",
       "name": "罗明婧",
       "floors": "",
-      "hireDate": ""
+      "hireDate": "",
+      "role": "manager"
     }
   ],
   "channels": [
@@ -463,7 +467,7 @@
       "done": false
     }
   ],
-  "todoResetDate": "2026-09-04",
+  "todoResetDate": "2026-09-08",
   "myTodos": [
     {
       "id": "mt1",
@@ -2494,7 +2498,8 @@
           "time": "2026-09-05T01:43:45.510Z"
         }
       ],
-      "netAdd": 3
+      "netAdd": 3,
+      "opsMigrated": true
     },
     "2026-09-05": {
       "newSign": 4,
@@ -2631,7 +2636,8 @@
           "time": "2026-09-07T01:21:10.178Z"
         }
       ],
-      "netAdd": 3
+      "netAdd": 3,
+      "opsMigrated": true
     },
     "2026-09-06": {
       "newSign": 2,
@@ -2714,7 +2720,8 @@
           "time": "2026-09-07T01:21:47.645Z"
         }
       ],
-      "netAdd": 2
+      "netAdd": 2,
+      "opsMigrated": true
     }
   },
   "channelData": {
@@ -2961,8 +2968,108 @@
   "perfWeights": {
     "sales": 50,
     "ops": 30,
-    "manager": 20
+    "kpi": 20
   },
+  "kpiBoards": [
+    {
+      "id": "kb1",
+      "name": "销售",
+      "metrics": [
+        {
+          "id": "km1",
+          "name": "出租率目标达成率",
+          "unit": "%",
+          "baseTarget": 90,
+          "stretchTarget": 98,
+          "source": "auto",
+          "baseScore": 60,
+          "stretchScore": 100
+        },
+        {
+          "id": "km2",
+          "name": "租金收缴率",
+          "unit": "%",
+          "baseTarget": 95,
+          "stretchTarget": 99,
+          "source": "manual",
+          "baseScore": 60,
+          "stretchScore": 100
+        },
+        {
+          "id": "km3",
+          "name": "旺季占比",
+          "unit": "%",
+          "baseTarget": 60,
+          "stretchTarget": 80,
+          "source": "manual",
+          "baseScore": 60,
+          "stretchScore": 100
+        }
+      ]
+    },
+    {
+      "id": "kb2",
+      "name": "服务",
+      "metrics": [
+        {
+          "id": "km4",
+          "name": "满意度评分",
+          "unit": "分",
+          "baseTarget": 85,
+          "stretchTarget": 95,
+          "source": "manual",
+          "baseScore": 60,
+          "stretchScore": 100
+        }
+      ]
+    },
+    {
+      "id": "kb3",
+      "name": "物业",
+      "metrics": [
+        {
+          "id": "km5",
+          "name": "巡楼完成率",
+          "unit": "%",
+          "baseTarget": 80,
+          "stretchTarget": 100,
+          "source": "auto",
+          "baseScore": 60,
+          "stretchScore": 100
+        },
+        {
+          "id": "km6",
+          "name": "维修受理时长",
+          "unit": "小时",
+          "baseTarget": 72,
+          "stretchTarget": 24,
+          "source": "manual",
+          "baseScore": 60,
+          "stretchScore": 100,
+          "isNegative": true
+        }
+      ]
+    },
+    {
+      "id": "kb4",
+      "name": "支持",
+      "metrics": [
+        {
+          "id": "km7",
+          "name": "内容发布完成率",
+          "unit": "%",
+          "baseTarget": 80,
+          "stretchTarget": 100,
+          "source": "manual",
+          "baseScore": 60,
+          "stretchScore": 100
+        }
+      ]
+    }
+  ],
+  "staffBoardAssignment": {},
+  "kpiMonthlyData": {},
+  "kpiMonthlyTargets": {},
   "genericDiscounts": [
     {
       "id": "gdisc_1",
@@ -3572,9 +3679,11 @@
   "currentOperationTab": "performance",
   "currentPriceTab": "list",
   "salaryTodos": [],
+  "storeManagerTasks": [],
+  "reminderItems": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/7 09:44:12",
+    "lastSyncTime": "2026/9/7 09:44:19",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
