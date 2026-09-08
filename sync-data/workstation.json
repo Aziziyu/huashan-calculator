@@ -3177,6 +3177,17 @@
           "source": "manual",
           "baseScore": 60,
           "stretchScore": 100
+        },
+        {
+          "id": "km1788858272938",
+          "name": "尾期账单退款逾期",
+          "unit": "个",
+          "baseTarget": 80,
+          "stretchTarget": 5,
+          "source": "manual",
+          "baseScore": 60,
+          "stretchScore": 100,
+          "isNegative": true
         }
       ]
     }
@@ -3811,7 +3822,7 @@
     "startRate": 81.18,
     "estimatedMoveOut": 20
   },
-  "currentPage": "settings",
+  "currentPage": "operation",
   "currentOperationGroup": "team",
   "currentOperationTab": "performance",
   "currentPriceTab": "list",
@@ -3820,7 +3831,7 @@
   "reminderItems": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/8 17:04:23",
+    "lastSyncTime": "2026/9/8 17:04:31",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
