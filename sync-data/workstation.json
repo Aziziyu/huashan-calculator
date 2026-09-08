@@ -338,7 +338,9 @@
     "mt9s3143lj0ps_s3_2026-W35": 1,
     "mt9s3143lj0ps_s2_2026-W35": 2,
     "t1_s1_2026-W35": 2,
-    "t1_s3_2026-W35": 1
+    "t1_s3_2026-W35": 1,
+    "t1_s4_2026-W36": 1,
+    "t1_s2_2026-W36": 1
   },
   "posNegEvents": [
     {
@@ -3798,7 +3800,7 @@
   "reminderItems": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/8 09:32:27",
+    "lastSyncTime": "2026/9/8 09:32:38",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
