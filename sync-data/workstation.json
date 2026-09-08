@@ -3335,7 +3335,8 @@
   "repairMonthlyData": {
     "2026-08": {
       "mtrzqqnnuvhje": {
-        "repairCount": 107
+        "repairCount": 107,
+        "acceptTime": 0.06
       }
     }
   },
@@ -3816,7 +3817,7 @@
   "reminderItems": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/8 16:52:37",
+    "lastSyncTime": "2026/9/8 16:52:45",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
