@@ -3337,7 +3337,8 @@
       "mtrzqqnnuvhje": {
         "repairCount": 107,
         "acceptTime": 0.06,
-        "closeTime": 14.25
+        "closeTime": 14.25,
+        "reviewCount": 8
       }
     }
   },
@@ -3818,7 +3819,7 @@
   "reminderItems": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/8 16:52:54",
+    "lastSyncTime": "2026/9/8 16:53:03",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
