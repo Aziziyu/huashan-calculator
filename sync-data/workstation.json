@@ -3338,7 +3338,8 @@
         "repairCount": 107,
         "acceptTime": 0.06,
         "closeTime": 14.25,
-        "reviewCount": 8
+        "reviewCount": 8,
+        "goodRate": 100
       }
     }
   },
@@ -3819,7 +3820,7 @@
   "reminderItems": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/8 16:53:03",
+    "lastSyncTime": "2026/9/8 16:53:15",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
