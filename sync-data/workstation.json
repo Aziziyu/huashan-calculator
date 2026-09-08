@@ -341,7 +341,8 @@
     "t1_s3_2026-W35": 1,
     "t1_s4_2026-W36": 2,
     "t1_s2_2026-W36": 2,
-    "t1_s1_2026-W36": 1
+    "t1_s1_2026-W36": 2,
+    "t1_s3_2026-W36": 1
   },
   "posNegEvents": [
     {
@@ -3801,7 +3802,7 @@
   "reminderItems": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/8 09:32:48",
+    "lastSyncTime": "2026/9/8 09:33:04",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
