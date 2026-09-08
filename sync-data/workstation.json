@@ -3206,7 +3206,11 @@
       "kb4"
     ]
   },
-  "kpiMonthlyData": {},
+  "kpiMonthlyData": {
+    "2026-08": {
+      "km1788858272938": 1
+    }
+  },
   "kpiMonthlyTargets": {},
   "genericDiscounts": [
     {
@@ -3822,7 +3826,7 @@
     "startRate": 81.18,
     "estimatedMoveOut": 20
   },
-  "currentPage": "operation",
+  "currentPage": "settings",
   "currentOperationGroup": "team",
   "currentOperationTab": "performance",
   "currentPriceTab": "list",
@@ -3831,7 +3835,7 @@
   "reminderItems": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/8 17:04:55",
+    "lastSyncTime": "2026/9/8 17:05:05",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
