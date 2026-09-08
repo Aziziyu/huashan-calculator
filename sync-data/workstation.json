@@ -3182,8 +3182,8 @@
           "id": "km1788858272938",
           "name": "尾期账单退款逾期",
           "unit": "个",
-          "baseTarget": 1,
-          "stretchTarget": 5,
+          "baseTarget": 3,
+          "stretchTarget": 1,
           "source": "manual",
           "baseScore": 60,
           "stretchScore": 100,
@@ -3835,7 +3835,7 @@
   "reminderItems": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/8 17:05:16",
+    "lastSyncTime": "2026/9/8 17:05:28",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
