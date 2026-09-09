@@ -486,7 +486,7 @@
       "done": false
     }
   ],
-  "todoResetDate": "2026-09-08",
+  "todoResetDate": "2026-09-09",
   "myTodos": [
     {
       "id": "mt1",
@@ -2835,7 +2835,8 @@
           "time": "2026-09-08T01:30:37.523Z"
         }
       ],
-      "netAdd": 2
+      "netAdd": 2,
+      "opsMigrated": true
     }
   },
   "channelData": {
@@ -3835,7 +3836,7 @@
   "reminderItems": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/8 17:07:15",
+    "lastSyncTime": "2026/9/8 17:07:29",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
