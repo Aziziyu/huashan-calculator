@@ -486,7 +486,7 @@
       "done": false
     }
   ],
-  "todoResetDate": "2026-09-09",
+  "todoResetDate": "2026-09-10",
   "myTodos": [
     {
       "id": "mt1",
@@ -3827,7 +3827,7 @@
     "startRate": 81.18,
     "estimatedMoveOut": 20
   },
-  "currentPage": "operation",
+  "currentPage": "settings",
   "currentOperationGroup": "team",
   "currentOperationTab": "performance",
   "currentPriceTab": "list",
@@ -3836,7 +3836,7 @@
   "reminderItems": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/10 14:00:44",
+    "lastSyncTime": "2026/9/9 20:10:46",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
