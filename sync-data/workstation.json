@@ -3827,7 +3827,7 @@
     "startRate": 81.18,
     "estimatedMoveOut": 20
   },
-  "currentPage": "calculator",
+  "currentPage": "operation",
   "currentOperationGroup": "daily",
   "currentOperationTab": "daily-data",
   "currentPriceTab": "list",
@@ -3836,7 +3836,7 @@
   "reminderItems": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/12 11:56:48",
+    "lastSyncTime": "2026/9/12 11:56:41",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
