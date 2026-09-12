@@ -3829,14 +3829,14 @@
   },
   "currentPage": "operation",
   "currentOperationGroup": "daily",
-  "currentOperationTab": "daily-data",
+  "currentOperationTab": "data-review",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "storeManagerTasks": [],
   "reminderItems": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/12 11:56:41",
+    "lastSyncTime": "2026/9/12 11:58:29",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
