@@ -3828,8 +3828,8 @@
     "estimatedMoveOut": 20
   },
   "currentPage": "settings",
-  "currentOperationGroup": "team",
-  "currentOperationTab": "performance",
+  "currentOperationGroup": "daily",
+  "currentOperationTab": "daily-data",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "storeManagerTasks": [],
