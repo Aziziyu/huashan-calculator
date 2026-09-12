@@ -3827,16 +3827,16 @@
     "startRate": 81.18,
     "estimatedMoveOut": 20
   },
-  "currentPage": "settings",
-  "currentOperationGroup": "daily",
-  "currentOperationTab": "daily-data",
+  "currentPage": "operation",
+  "currentOperationGroup": "team",
+  "currentOperationTab": "performance",
   "currentPriceTab": "list",
   "salaryTodos": [],
   "storeManagerTasks": [],
   "reminderItems": [],
   "cloudSync": {
     "pat": "",
-    "lastSyncTime": "2026/9/12 15:54:23",
+    "lastSyncTime": "2026/9/12 15:54:34",
     "lastSyncDirection": "upload",
     "autoSync": true
   }
